@@ -1,0 +1,76 @@
+{
+  "pages": [
+    {
+      "number": 1,
+      "type": "cover",
+      "title": "EKKO",
+      "content": "The LinkedIn for Creatives"
+    },
+    {
+      "number": 2,
+      "type": "content",
+      "title": "The Problem",
+      "content": "Present the core problem: creatives lack a dedicated professional platform for finding consistent, high-quality work. Existing solutions either bury talent under unrelated content, focus on narrow disciplines, or offer clunky hiring tools. Companies struggle to find and hire vetted creative talent quickly."
+    },
+    {
+      "number": 3,
+      "type": "content",
+      "title": "Market Opportunity",
+      "content": "Showcase the massive market opportunity with key metrics: Creator economy valued at $191-205B in 2024, projected to reach $528B-$1.3T by 2030. Freelance platform market at $6.37B growing to $14.39B by 2030. Visualize the market size and growth trajectory."
+    },
+    {
+      "number": 4,
+      "type": "content",
+      "title": "The Solution: EKKO",
+      "content": "Introduce EKKO as the first all-in-one creative hiring and collaboration platform for all disciplines. Highlight key differentiators: portfolio-driven interface, built-in project management, escrow payments, and licensing management. Position as the LinkedIn specifically designed for creatives."
+    },
+    {
+      "number": 5,
+      "type": "content",
+      "title": "How It Works",
+      "content": "Illustrate the user journey for both creatives and clients. Show the seamless workflow from profile creation to project completion, highlighting the integrated tools that eliminate the need for multiple platforms."
+    },
+    {
+      "number": 6,
+      "type": "content",
+      "title": "Competitive Landscape",
+      "content": "Map the competitive landscape showing how EKKO fills the gap between generalist platforms (Upwork, Fiverr) and portfolio sites (Behance, Dribbble). Highlight the unique positioning as the only platform combining discovery, hiring, payments, and licensing."
+    },
+    {
+      "number": 7,
+      "type": "content",
+      "title": "Business Model",
+      "content": "Detail the multi-revenue stream approach: transaction fees (10%), verification tiers (Red/Black/Platinum), advertising, partnerships, and future revenue from events and digital products. Show the path to sustainable monetization."
+    },
+    {
+      "number": 8,
+      "type": "content",
+      "title": "Go-to-Market Strategy",
+      "content": "Outline the phased launch strategy: soft launch with 5,000 beta users, public launch targeting 50,000 users, and scaling to 200,000+ by year 2. Highlight key channels: content marketing, partnerships with creative software, influencer collaborations."
+    },
+    {
+      "number": 9,
+      "type": "content",
+      "title": "Financial Projections",
+      "content": "Present 5-year financial projections showing user growth from 50,000 to 500,000, revenue scaling from $400K to $25M ARR, and path to profitability. Include key metrics like GMV, paid subscriber conversion, and gross margins."
+    },
+    {
+      "number": 10,
+      "type": "content",
+      "title": "The Team",
+      "content": "Introduce the founding team and key advisors, highlighting relevant experience in creative industries, marketplace platforms, and technology. Show the expertise needed to execute this vision."
+    },
+    {
+      "number": 11,
+      "type": "content",
+      "title": "Roadmap & Milestones",
+      "content": "Present the development roadmap from MVP through public launch and scaling. Highlight key milestones: beta launch, verification tiers, team collaboration features, enterprise offering, and international expansion."
+    },
+    {
+      "number": 12,
+      "type": "final",
+      "title": "Join the Creative Revolution",
+      "content": "Where creatives connect, collaborate, and get hired."
+    }
+  ]
+}

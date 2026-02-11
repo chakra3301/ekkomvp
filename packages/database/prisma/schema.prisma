@@ -1,0 +1,919 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL") // Uncomment if direct connection works
+}
+
+// ============ ENUMS ============
+
+enum UserRole {
+  CREATIVE
+  CLIENT
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  BUSY
+  NOT_AVAILABLE
+}
+
+enum VerificationStatus {
+  NONE
+  EMAIL_VERIFIED
+  RED_BADGE
+  BLACK_BADGE
+  PLATINUM
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
+}
+
+enum PortfolioBlockType {
+  TEXT
+  IMAGE
+  IMAGE_GALLERY
+  VIDEO
+  VIDEO_EMBED
+  AUDIO
+  MODEL_3D
+  EMBED
+  DIVIDER
+}
+
+enum PortfolioLayout {
+  GRID
+  MASONRY
+  LIST
+}
+
+enum BudgetType {
+  FIXED
+  HOURLY
+  MILESTONE
+}
+
+enum LocationType {
+  REMOTE
+  ONSITE
+  HYBRID
+}
+
+enum ProjectStatus {
+  DRAFT
+  OPEN
+  IN_REVIEW
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ApplicationStatus {
+  PENDING
+  VIEWED
+  SHORTLISTED
+  ACCEPTED
+  DECLINED
+}
+
+enum NotificationType {
+  FOLLOW
+  LIKE
+  COMMENT
+  MESSAGE
+  WORK_REQUEST
+  APPLICATION
+  WORK_ORDER_UPDATE
+  DELIVERY
+  MILESTONE_UPDATE
+  ESCROW_UPDATE
+  COLLECTIVE_INVITE
+  COLLECTIVE_JOIN_REQUEST
+  COLLECTIVE_JOIN_APPROVED
+  COLLECTIVE_POST
+}
+
+enum CollectiveVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum CollectiveJoinType {
+  OPEN
+  REQUEST
+  INVITE_ONLY
+}
+
+enum CollectiveMemberStatus {
+  ACTIVE
+  PENDING
+  INVITED
+  BANNED
+}
+
+enum CollectivePostVisibility {
+  COLLECTIVE_ONLY
+  BOTH
+}
+
+enum WorkOrderStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  DELIVERED
+  IN_REVISION
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  DELIVERED
+  IN_REVISION
+  APPROVED
+}
+
+enum DeliveryStatus {
+  PENDING_REVIEW
+  APPROVED
+  REVISION_REQUESTED
+}
+
+enum EscrowStatus {
+  PENDING
+  FUNDED
+  PARTIALLY_RELEASED
+  RELEASED
+  REFUNDED
+}
+
+// ============ MODELS ============
+
+model User {
+  id            String     @id @default(uuid()) @db.Uuid
+  email         String     @unique
+  role          UserRole
+  status        UserStatus @default(ACTIVE)
+  emailVerified Boolean    @default(false) @map("email_verified")
+  onboarded     Boolean    @default(false)
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  profile           Profile?
+  portfolioItems    PortfolioItem[]
+  portfolioProjects PortfolioProject[]
+  posts             Post[]
+  likes             Like[]
+  comments          Comment[]
+  projects          Project[]     @relation("ClientProjects")
+  applications      Application[]
+
+  // Follow relations
+  following  Follow[] @relation("Following")
+  followers  Follow[] @relation("Followers")
+
+  // Bookmarks
+  bookmarks Bookmark[]
+
+  // Block relations
+  blockedUsers   Block[] @relation("Blocker")
+  blockedByUsers Block[] @relation("Blocked")
+
+  // Messaging relations
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  conversationsAsParticipant1 Conversation[] @relation("Participant1")
+  conversationsAsParticipant2 Conversation[] @relation("Participant2")
+
+  // Notification relations
+  notificationsReceived Notification[] @relation("NotificationsReceived")
+  notificationsSent     Notification[] @relation("NotificationsSent")
+
+  // Work order relations
+  workOrdersAsClient   WorkOrder[] @relation("ClientWorkOrders")
+  workOrdersAsCreative WorkOrder[] @relation("CreativeWorkOrders")
+  directRequests       Project[]   @relation("DirectRequests")
+
+  // Collective relations
+  collectivesCreated            Collective[]                @relation("CollectiveCreator")
+  collectiveMemberships         CollectiveMember[]
+  collectivePortfoliosCreated   CollectivePortfolioProject[] @relation("CollectiveProjectCreator")
+  collectiveBlockContributions  CollectivePortfolioBlock[]   @relation("CollectiveBlockContributor")
+
+  @@map("users")
+}
+
+model Profile {
+  id                 String             @id @default(uuid()) @db.Uuid
+  userId             String             @unique @map("user_id") @db.Uuid
+  username           String             @unique
+  displayName        String             @map("display_name")
+  bio                String?
+  headline           String?
+  avatarUrl          String?            @map("avatar_url")
+  bannerUrl          String?            @map("banner_url")
+  location           String?
+  country            String?
+  website            String?
+  instagramUrl       String?            @map("instagram_url")
+  linkedinUrl        String?            @map("linkedin_url")
+  twitterUrl         String?            @map("twitter_url")
+  tiktokUrl          String?            @map("tiktok_url")
+  hourlyRateMin      Int?               @map("hourly_rate_min")
+  hourlyRateMax      Int?               @map("hourly_rate_max")
+  availability       AvailabilityStatus @default(AVAILABLE)
+  verificationStatus VerificationStatus @default(NONE) @map("verification_status")
+
+  // Social counters
+  followersCount     Int                @default(0) @map("followers_count")
+  followingCount     Int                @default(0) @map("following_count")
+
+  // Client-specific fields
+  companyName        String?            @map("company_name")
+  companyLogo        String?            @map("company_logo")
+  companyDescription String?            @map("company_description")
+  industry           String?
+
+  // Subscription
+  subscriptionTier   SubscriptionTier   @default(FREE) @map("subscription_tier")
+  subscribedAt       DateTime?          @map("subscribed_at")
+
+  // Analytics counter
+  profileViewsCount  Int                @default(0) @map("profile_views_count")
+
+  // Profile customization
+  accentColor               String?            @map("accent_color")
+  pageBackground            Json?              @map("page_background")
+  notificationPreferences   Json?              @map("notification_preferences")
+
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills      ProfileSkill[]
+  disciplines ProfileDiscipline[]
+
+  @@index([username])
+  @@index([location])
+  @@index([availability])
+  @@map("profiles")
+}
+
+model Discipline {
+  id          String @id @default(uuid()) @db.Uuid
+  name        String @unique
+  slug        String @unique
+  description String?
+  iconUrl     String? @map("icon_url")
+  sortOrder   Int    @default(0) @map("sort_order")
+
+  // Relations
+  profiles ProfileDiscipline[]
+  projects Project[]
+
+  @@map("disciplines")
+}
+
+model ProfileDiscipline {
+  profileId    String  @map("profile_id") @db.Uuid
+  disciplineId String  @map("discipline_id") @db.Uuid
+  isPrimary    Boolean @default(false) @map("is_primary")
+
+  profile    Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  discipline Discipline @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, disciplineId])
+  @@map("profile_disciplines")
+}
+
+model Skill {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  category  String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  profiles ProfileSkill[]
+
+  @@index([category])
+  @@map("skills")
+}
+
+model ProfileSkill {
+  profileId   String @map("profile_id") @db.Uuid
+  skillId     String @map("skill_id") @db.Uuid
+  proficiency Int    @default(3) // 1-5 scale
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  skill   Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([profileId, skillId])
+  @@map("profile_skills")
+}
+
+model PortfolioItem {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  title        String
+  description  String?
+  mediaUrls    String[]  @map("media_urls")
+  mediaType    MediaType @default(IMAGE) @map("media_type")
+  thumbnailUrl String?   @map("thumbnail_url")
+  category     String?
+  tags         String[]
+  projectName  String?   @map("project_name")
+  clientName   String?   @map("client_name")
+  projectUrl   String?   @map("project_url")
+  sortOrder    Int       @default(0) @map("sort_order")
+  isPublic     Boolean   @default(true) @map("is_public")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([category])
+  @@map("portfolio_items")
+}
+
+// Portfolio Project (case study / gallery)
+model PortfolioProject {
+  id           String          @id @default(uuid()) @db.Uuid
+  userId       String          @map("user_id") @db.Uuid
+  title        String
+  slug         String
+  description  String?
+  coverUrl     String?         @map("cover_url")
+  thumbnailUrl String?         @map("thumbnail_url")
+  category     String?
+  tags         String[]
+  clientName   String?         @map("client_name")
+  projectDate  DateTime?       @map("project_date")
+  projectUrl   String?         @map("project_url")
+  layout       PortfolioLayout @default(GRID)
+  sortOrder    Int             @default(0) @map("sort_order")
+  isPublic     Boolean         @default(true) @map("is_public")
+  isFeatured   Boolean         @default(false) @map("is_featured")
+  viewCount    Int             @default(0) @map("view_count")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blocks PortfolioBlock[]
+
+  @@unique([userId, slug])
+  @@index([userId])
+  @@index([category])
+  @@map("portfolio_projects")
+}
+
+// Portfolio Block (individual content block within a project)
+model PortfolioBlock {
+  id        String             @id @default(uuid()) @db.Uuid
+  projectId String             @map("project_id") @db.Uuid
+  type      PortfolioBlockType
+  content   Json               // Flexible content based on type
+  sortOrder Int                @default(0) @map("sort_order")
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  project PortfolioProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("portfolio_blocks")
+}
+
+model Post {
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  content       String?
+  mediaUrls     String[]  @map("media_urls")
+  mediaType     MediaType @default(IMAGE) @map("media_type")
+  likesCount    Int       @default(0) @map("likes_count")
+  commentsCount Int       @default(0) @map("comments_count")
+  isEdited      Boolean   @default(false) @map("is_edited")
+  isPinned      Boolean   @default(false) @map("is_pinned")
+  pinnedAt      DateTime? @map("pinned_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Collective fields
+  collectiveId         String?                   @map("collective_id") @db.Uuid
+  collectiveVisibility CollectivePostVisibility?  @map("collective_visibility")
+
+  // Relations
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collective Collective? @relation(fields: [collectiveId], references: [id], onDelete: Cascade)
+  likes      Like[]
+  comments   Comment[]
+  blocks     PostBlock[]
+  bookmarks  Bookmark[]
+
+  // Denormalized counters
+  bookmarksCount Int @default(0) @map("bookmarks_count")
+
+  // Tags
+  tags String[] @default([])
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@index([collectiveId])
+  @@map("posts")
+}
+
+// Post content blocks (Text, Image, Gallery, Video, Audio, 3D Model, Embed - no Divider)
+model PostBlock {
+  id        String             @id @default(uuid()) @db.Uuid
+  postId    String             @map("post_id") @db.Uuid
+  type      PortfolioBlockType
+  content   Json
+  sortOrder Int                @default(0) @map("sort_order")
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@map("post_blocks")
+}
+
+model Like {
+  id        String   @id @default(uuid()) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@map("likes")
+}
+
+model Comment {
+  id        String   @id @default(uuid()) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@map("comments")
+}
+
+model Project {
+  id           String        @id @default(uuid()) @db.Uuid
+  clientId     String        @map("client_id") @db.Uuid
+  title        String
+  description  String
+  budgetType   BudgetType    @map("budget_type")
+  budgetMin    Int?          @map("budget_min")
+  budgetMax    Int?          @map("budget_max")
+  duration     String?
+  locationType LocationType  @map("location_type")
+  location     String?
+  deadline     DateTime?
+  status       ProjectStatus @default(DRAFT)
+  attachments  String[]
+  skillsNeeded String[]      @map("skills_needed")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  // Direct request fields
+  isDirect         Boolean  @default(false) @map("is_direct")
+  targetCreativeId String?  @map("target_creative_id") @db.Uuid
+
+  // Relations
+  client          User          @relation("ClientProjects", fields: [clientId], references: [id], onDelete: Cascade)
+  targetCreative  User?         @relation("DirectRequests", fields: [targetCreativeId], references: [id])
+  discipline      Discipline?   @relation(fields: [disciplineId], references: [id])
+  disciplineId    String?       @map("discipline_id") @db.Uuid
+  applications    Application[]
+  workOrders      WorkOrder[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([targetCreativeId])
+  @@map("projects")
+}
+
+model Application {
+  id           String            @id @default(uuid()) @db.Uuid
+  projectId    String            @map("project_id") @db.Uuid
+  creativeId   String            @map("creative_id") @db.Uuid
+  coverLetter  String            @map("cover_letter")
+  proposedRate Int?              @map("proposed_rate")
+  timeline     String?
+  attachments  String[]
+  status       ApplicationStatus @default(PENDING)
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  creative User    @relation(fields: [creativeId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, creativeId])
+  @@index([projectId])
+  @@index([creativeId])
+  @@map("applications")
+}
+
+model Conversation {
+  id             String    @id @default(uuid()) @db.Uuid
+  participant1Id String    @map("participant_1_id") @db.Uuid
+  participant2Id String    @map("participant_2_id") @db.Uuid
+  lastMessageAt  DateTime? @map("last_message_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  participant1 User      @relation("Participant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2 User      @relation("Participant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+  messages     Message[]
+
+  @@unique([participant1Id, participant2Id])
+  @@index([participant1Id])
+  @@index([participant2Id])
+  @@map("conversations")
+}
+
+model Message {
+  id             String    @id @default(uuid()) @db.Uuid
+  conversationId String    @map("conversation_id") @db.Uuid
+  senderId       String    @map("sender_id") @db.Uuid
+  receiverId     String    @map("receiver_id") @db.Uuid
+  content        String
+  attachments    String[]
+  readAt         DateTime? @map("read_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver     User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("messages")
+}
+
+model Follow {
+  id          String   @id @default(uuid()) @db.Uuid
+  followerId  String   @map("follower_id") @db.Uuid
+  followingId String   @map("following_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  follower  User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+  @@map("follows")
+}
+
+model Notification {
+  id         String           @id @default(uuid()) @db.Uuid
+  type       NotificationType
+  userId     String           @map("user_id") @db.Uuid
+  actorId    String           @map("actor_id") @db.Uuid
+  entityId   String?          @map("entity_id") @db.Uuid
+  entityType String?          @map("entity_type")
+  read       Boolean          @default(false)
+  createdAt  DateTime         @default(now()) @map("created_at")
+
+  user  User @relation("NotificationsReceived", fields: [userId], references: [id], onDelete: Cascade)
+  actor User @relation("NotificationsSent", fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([actorId])
+  @@map("notifications")
+}
+
+model WorkOrder {
+  id               String          @id @default(uuid()) @db.Uuid
+  projectId        String          @map("project_id") @db.Uuid
+  clientId         String          @map("client_id") @db.Uuid
+  creativeId       String          @map("creative_id") @db.Uuid
+  status           WorkOrderStatus @default(PENDING)
+  agreedRate       Int             @map("agreed_rate")
+  agreedBudgetType BudgetType      @map("agreed_budget_type")
+  startDate        DateTime?       @map("start_date")
+  deadline         DateTime?
+  completedAt      DateTime?       @map("completed_at")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  client     User        @relation("ClientWorkOrders", fields: [clientId], references: [id], onDelete: Cascade)
+  creative   User        @relation("CreativeWorkOrders", fields: [creativeId], references: [id], onDelete: Cascade)
+  milestones Milestone[]
+  deliveries Delivery[]
+  escrow     Escrow?
+
+  @@index([clientId])
+  @@index([creativeId])
+  @@index([projectId])
+  @@index([status])
+  @@map("work_orders")
+}
+
+model Milestone {
+  id          String          @id @default(uuid()) @db.Uuid
+  workOrderId String          @map("work_order_id") @db.Uuid
+  title       String
+  description String?
+  amount      Int
+  dueDate     DateTime?       @map("due_date")
+  status      MilestoneStatus @default(PENDING)
+  order       Int             @default(0)
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  workOrder  WorkOrder  @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  deliveries Delivery[]
+
+  @@index([workOrderId])
+  @@map("milestones")
+}
+
+model Delivery {
+  id           String         @id @default(uuid()) @db.Uuid
+  workOrderId  String         @map("work_order_id") @db.Uuid
+  milestoneId  String?        @map("milestone_id") @db.Uuid
+  message      String
+  attachments  String[]
+  status       DeliveryStatus @default(PENDING_REVIEW)
+  revisionNote String?        @map("revision_note")
+  createdAt    DateTime       @default(now()) @map("created_at")
+
+  // Relations
+  workOrder WorkOrder  @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+  milestone Milestone? @relation(fields: [milestoneId], references: [id])
+
+  @@index([workOrderId])
+  @@index([milestoneId])
+  @@map("deliveries")
+}
+
+model Escrow {
+  id             String       @id @default(uuid()) @db.Uuid
+  workOrderId    String       @unique @map("work_order_id") @db.Uuid
+  totalAmount    Int          @map("total_amount")
+  fundedAmount   Int          @default(0) @map("funded_amount")
+  releasedAmount Int          @default(0) @map("released_amount")
+  status         EscrowStatus @default(PENDING)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  // Relations
+  workOrder WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+
+  @@map("escrows")
+}
+
+// ============ COLLECTIVES ============
+
+model Collective {
+  id           String               @id @default(uuid()) @db.Uuid
+  name         String
+  slug         String               @unique
+  description  String?
+  bannerUrl    String?              @map("banner_url")
+  visibility   CollectiveVisibility @default(PUBLIC)
+  joinType     CollectiveJoinType   @default(OPEN) @map("join_type")
+  creatorId    String               @map("creator_id") @db.Uuid
+  membersCount Int                  @default(0) @map("members_count")
+  postsCount   Int                  @default(0) @map("posts_count")
+  createdAt    DateTime             @default(now()) @map("created_at")
+  updatedAt    DateTime             @updatedAt @map("updated_at")
+
+  // Relations
+  creator           User                       @relation("CollectiveCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  members           CollectiveMember[]
+  roles             CollectiveRole[]
+  posts             Post[]
+  portfolioProjects CollectivePortfolioProject[]
+
+  @@index([creatorId])
+  @@index([slug])
+  @@map("collectives")
+}
+
+model CollectiveRole {
+  id           String   @id @default(uuid()) @db.Uuid
+  collectiveId String   @map("collective_id") @db.Uuid
+  name         String
+  slug         String
+  isDefault    Boolean  @default(false) @map("is_default")
+  permissions  Json
+  sortOrder    Int      @default(0) @map("sort_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  collective Collective         @relation(fields: [collectiveId], references: [id], onDelete: Cascade)
+  members    CollectiveMember[]
+
+  @@unique([collectiveId, slug])
+  @@index([collectiveId])
+  @@map("collective_roles")
+}
+
+model CollectiveMember {
+  collectiveId String                 @map("collective_id") @db.Uuid
+  userId       String                 @map("user_id") @db.Uuid
+  roleId       String                 @map("role_id") @db.Uuid
+  status       CollectiveMemberStatus @default(ACTIVE)
+  joinedAt     DateTime               @default(now()) @map("joined_at")
+
+  // Relations
+  collective Collective     @relation(fields: [collectiveId], references: [id], onDelete: Cascade)
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role       CollectiveRole @relation(fields: [roleId], references: [id])
+
+  @@id([collectiveId, userId])
+  @@index([userId])
+  @@index([roleId])
+  @@map("collective_members")
+}
+
+model CollectivePortfolioProject {
+  id           String          @id @default(uuid()) @db.Uuid
+  collectiveId String          @map("collective_id") @db.Uuid
+  createdById  String          @map("created_by_id") @db.Uuid
+  title        String
+  slug         String
+  description  String?
+  coverUrl     String?         @map("cover_url")
+  category     String?
+  tags         String[]
+  layout       PortfolioLayout @default(GRID)
+  sortOrder    Int             @default(0) @map("sort_order")
+  viewCount    Int             @default(0) @map("view_count")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  collective Collective                @relation(fields: [collectiveId], references: [id], onDelete: Cascade)
+  createdBy  User                      @relation("CollectiveProjectCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  blocks     CollectivePortfolioBlock[]
+
+  @@unique([collectiveId, slug])
+  @@index([collectiveId])
+  @@map("collective_portfolio_projects")
+}
+
+model CollectivePortfolioBlock {
+  id            String             @id @default(uuid()) @db.Uuid
+  projectId     String             @map("project_id") @db.Uuid
+  contributorId String?            @map("contributor_id") @db.Uuid
+  type          PortfolioBlockType
+  content       Json
+  sortOrder     Int                @default(0) @map("sort_order")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  project     CollectivePortfolioProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  contributor User?                      @relation("CollectiveBlockContributor", fields: [contributorId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([contributorId])
+  @@map("collective_portfolio_blocks")
+}
+
+// ============ BOOKMARKS ============
+
+model Bookmark {
+  id        String   @id @default(uuid()) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([userId])
+  @@map("bookmarks")
+}
+
+// ============ TRUST & SAFETY ============
+
+enum ReportTargetType {
+  POST
+  USER
+  COLLECTIVE
+  COMMENT
+}
+
+enum ReportReason {
+  SPAM
+  HARASSMENT
+  HATE_SPEECH
+  VIOLENCE
+  NSFW
+  IMPERSONATION
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
+
+model Report {
+  id          String           @id @default(uuid()) @db.Uuid
+  reporterId  String           @map("reporter_id") @db.Uuid
+  targetType  ReportTargetType @map("target_type")
+  targetId    String           @map("target_id") @db.Uuid
+  reason      ReportReason
+  description String?
+  status      ReportStatus     @default(PENDING)
+  reviewedBy  String?          @map("reviewed_by") @db.Uuid
+  reviewedAt  DateTime?        @map("reviewed_at")
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  @@index([status])
+  @@index([targetType, targetId])
+  @@index([reporterId])
+  @@map("reports")
+}
+
+model Block {
+  id        String   @id @default(uuid()) @db.Uuid
+  blockerId String   @map("blocker_id") @db.Uuid
+  blockedId String   @map("blocked_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  blocker User @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
+  @@map("blocks")
+}
+
+// ============ PREMIUM & ANALYTICS ============
+
+enum SubscriptionTier {
+  FREE
+  PRO
+  BUSINESS
+}
+
+model ProfileView {
+  id        String   @id @default(uuid()) @db.Uuid
+  profileId String   @map("profile_id") @db.Uuid
+  viewerId  String?  @map("viewer_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([profileId, createdAt])
+  @@index([viewerId])
+  @@map("profile_views")
+}
+
+model PostView {
+  id        String   @id @default(uuid()) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  viewerId  String?  @map("viewer_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([postId, createdAt])
+  @@index([viewerId])
+  @@map("post_views")
+}
