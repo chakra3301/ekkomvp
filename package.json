@@ -11,8 +11,7 @@
     "db:generate": "turbo db:generate",
     "db:push": "turbo db:push",
     "db:studio": "pnpm --filter @ekko/database db:studio",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "postinstall": "cd packages/database && prisma generate"
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
     "@ekko/eslint-config": "workspace:*",
