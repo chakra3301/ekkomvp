@@ -65,7 +65,7 @@ export default function LandingPage() {
           <div className="flex flex-col gap-3 max-w-xs mx-auto">
             <Link
               href="/register"
-              className="inline-flex items-center justify-center gap-2 h-12 rounded-xl btn-liquid-glass bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-opacity"
+              className="inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-opacity shadow-lg"
             >
               Get Started
               <ArrowRight className="h-4 w-4" />
@@ -165,7 +165,7 @@ export default function LandingPage() {
           </p>
           <Link
             href="/register"
-            className="inline-flex items-center justify-center gap-2 h-12 px-8 rounded-xl btn-liquid-glass bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-opacity"
+            className="inline-flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-opacity shadow-lg"
           >
             Join EKKO Connect
             <ArrowRight className="h-4 w-4" />

@@ -1,29 +1,51 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { prisma } from "@ekko/database";
+import { prisma, UserRole } from "@ekko/database";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
+  const next = searchParams.get("next") ?? "/discover";
 
   if (code) {
     const supabase = createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data.user) {
-      // Verify the user exists in our database
-      const dbUser = await prisma.user.findUnique({
+      let dbUser = await prisma.user.findUnique({
         where: { id: data.user.id },
         include: { connectProfile: { select: { id: true } } },
       });
 
       if (!dbUser) {
-        // User doesn't exist in DB — redirect to main EKKO to complete signup first
-        return NextResponse.redirect(`${origin}/login?error=no_account`);
+        // New user — create account in DB
+        const metadata = data.user.user_metadata || {};
+
+        dbUser = await prisma.user.create({
+          data: {
+            id: data.user.id,
+            email: data.user.email!,
+            role: UserRole.CREATIVE,
+            emailVerified: !!data.user.email_confirmed_at,
+            phone: metadata.phone || null,
+            dateOfBirth: metadata.date_of_birth
+              ? new Date(metadata.date_of_birth)
+              : null,
+          },
+          include: { connectProfile: { select: { id: true } } },
+        });
+
+        // OAuth signups won't have DOB in metadata — send to complete-profile
+        const hasCompletedInfo = !!metadata.date_of_birth;
+        if (!hasCompletedInfo) {
+          return NextResponse.redirect(`${origin}/complete-profile`);
+        }
+
+        // Email signup with full metadata — go to Connect profile setup
+        return NextResponse.redirect(`${origin}/profile/setup`);
       }
 
-      // If no Connect profile, send to setup
+      // Existing user — check for ConnectProfile
       if (!dbUser.connectProfile) {
         return NextResponse.redirect(`${origin}/profile/setup`);
       }

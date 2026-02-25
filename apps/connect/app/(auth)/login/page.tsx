@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { OAuthButtons } from "@/components/auth/oauth-buttons";
 
 function LoginForm() {
   const router = useRouter();
@@ -54,11 +55,24 @@ function LoginForm() {
 
         {error && (
           <div className="glass-card bg-destructive/10 border-destructive/30 p-3 rounded-lg mb-4 text-sm text-destructive text-center">
-            {error === "no_account"
-              ? "Please create an EKKO account first."
-              : "Authentication failed. Please try again."}
+            {error === "auth_callback_error"
+              ? "Authentication failed. Please try again."
+              : "Something went wrong. Please try again."}
           </div>
         )}
+
+        <OAuthButtons redirectTo={redirect || undefined} />
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-border/50" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background/60 px-2 text-muted-foreground">
+              Or continue with email
+            </span>
+          </div>
+        </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-2">
