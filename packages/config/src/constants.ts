@@ -217,3 +217,48 @@ export const PROFICIENCY_LEVELS = [
   { value: 4, label: "Advanced" },
   { value: 5, label: "Expert" },
 ] as const;
+
+// ============ EKKO CONNECT ============
+
+export const CONNECT_LIMITS = {
+  MAX_MEDIA_SLOTS: 6,
+  MIN_MEDIA_SLOTS: 1,
+  MAX_PROMPTS: 3,
+  MIN_PROMPTS: 1,
+  HEADLINE_MAX: 200,
+  LOOKING_FOR_MAX: 500,
+  PROMPT_ANSWER_MAX: 500,
+  MATCH_NOTE_MAX: 255,
+  MESSAGE_MAX: 1000,
+  DISCOVERY_BATCH_SIZE: 10,
+  MESSAGES_PAGE_SIZE: 30,
+  MATCHES_PAGE_SIZE: 20,
+  LIKES_PAGE_SIZE: 20,
+  // Daily like limits by tier
+  DAILY_LIKES_FREE: 50,
+  DAILY_LIKES_PRO: 200,
+  DAILY_LIKES_BUSINESS: 999999, // effectively unlimited
+  BIO_MAX: 500,
+  MAX_FILE_SIZE_CONNECT: 10 * 1024 * 1024, // 10MB (images)
+  MAX_FILE_SIZE_CONNECT_VIDEO: 50 * 1024 * 1024, // 50MB
+  MAX_FILE_SIZE_CONNECT_AUDIO: 20 * 1024 * 1024, // 20MB
+  MAX_FILE_SIZE_CONNECT_MODEL: 50 * 1024 * 1024, // 50MB
+} as const;
+
+export const CONNECT_PROMPTS = [
+  "My most creative project was...",
+  "I'm looking to collaborate on...",
+  "A skill I want to learn is...",
+  "My dream creative project would be...",
+  "The medium I'm most passionate about is...",
+  "I get inspired by...",
+  "My creative process usually starts with...",
+  "A project I'm most proud of is...",
+  "I believe great design/art should...",
+  "Something surprising about my work is...",
+  "The best feedback I ever received was...",
+  "I'm currently working on...",
+  "My creative superpower is...",
+  "I want to connect with people who...",
+  "A tool I can't live without is...",
+] as const;

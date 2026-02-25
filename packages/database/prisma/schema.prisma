@@ -106,6 +106,30 @@ enum NotificationType {
   COLLECTIVE_JOIN_REQUEST
   COLLECTIVE_JOIN_APPROVED
   COLLECTIVE_POST
+  CONNECT_LIKE
+  CONNECT_MATCH
+  CONNECT_MESSAGE
+}
+
+// ============ CONNECT ENUMS ============
+
+enum SwipeType {
+  LIKE
+  PASS
+}
+
+enum ConnectContentType {
+  PHOTO
+  VIDEO
+  AUDIO
+  MODEL
+  PROMPT
+}
+
+enum ConnectMatchStatus {
+  ACTIVE
+  UNMATCHED
+  BLOCKED
 }
 
 enum CollectiveVisibility {
@@ -217,6 +241,14 @@ model User {
   collectiveMemberships         CollectiveMember[]
   collectivePortfoliosCreated   CollectivePortfolioProject[] @relation("CollectiveProjectCreator")
   collectiveBlockContributions  CollectivePortfolioBlock[]   @relation("CollectiveBlockContributor")
+
+  // Connect relations
+  connectProfile         ConnectProfile?
+  connectSwipesSent      ConnectSwipe[]    @relation("SwipeSender")
+  connectSwipesReceived  ConnectSwipe[]    @relation("SwipeTarget")
+  connectMatchesAsUser1  ConnectMatch[]    @relation("ConnectMatchUser1")
+  connectMatchesAsUser2  ConnectMatch[]    @relation("ConnectMatchUser2")
+  connectMessagesSent    ConnectMessage[]  @relation("ConnectMessageSender")
 
   @@map("users")
 }
@@ -916,4 +948,105 @@ model PostView {
   @@index([postId, createdAt])
   @@index([viewerId])
   @@map("post_views")
+}
+
+// ============ EKKO CONNECT ============
+
+model ConnectProfile {
+  id          String  @id @default(uuid()) @db.Uuid
+  userId      String  @unique @map("user_id") @db.Uuid
+  headline    String? @db.VarChar(200)
+  lookingFor  String? @map("looking_for") @db.VarChar(500)
+  bio         String? @db.VarChar(500)
+
+  // 6 media slots: [{url, mediaType, sortOrder}]
+  mediaSlots  Json    @default("[]") @map("media_slots")
+
+  // 3 prompts: [{question, answer}]
+  prompts     Json    @default("[]")
+
+  // Social handles (Connect-specific, separate from main profile)
+  instagramHandle String? @map("instagram_handle") @db.VarChar(100)
+  twitterHandle   String? @map("twitter_handle") @db.VarChar(100)
+  linkedinHandle  String? @map("linkedin_handle") @db.VarChar(100)
+  websiteUrl      String? @map("website_url") @db.VarChar(500)
+
+  // Discovery fields
+  disciplineIds String[] @map("discipline_ids") @db.Uuid
+  location      String?  @db.VarChar(200)
+
+  // Counters
+  likesReceivedCount Int @default(0) @map("likes_received_count")
+  matchesCount       Int @default(0) @map("matches_count")
+
+  // Status
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([isActive, location])
+  @@map("connect_profiles")
+}
+
+model ConnectSwipe {
+  id               String             @id @default(uuid()) @db.Uuid
+  userId           String             @map("user_id") @db.Uuid
+  targetUserId     String             @map("target_user_id") @db.Uuid
+  type             SwipeType
+  likedContentType ConnectContentType? @map("liked_content_type")
+  likedContentIndex Int?              @map("liked_content_index")
+  matchNote        String?            @map("match_note") @db.VarChar(255)
+  createdAt        DateTime           @default(now()) @map("created_at")
+
+  // Relations
+  user       User @relation("SwipeSender", fields: [userId], references: [id], onDelete: Cascade)
+  targetUser User @relation("SwipeTarget", fields: [targetUserId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetUserId])
+  @@index([userId])
+  @@index([targetUserId])
+  @@index([createdAt])
+  @@map("connect_swipes")
+}
+
+model ConnectMatch {
+  id                  String             @id @default(uuid()) @db.Uuid
+  user1Id             String             @map("user_1_id") @db.Uuid
+  user2Id             String             @map("user_2_id") @db.Uuid
+  status              ConnectMatchStatus @default(ACTIVE)
+  ekkoConversationId  String?            @map("ekko_conversation_id") @db.Uuid
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+
+  // Relations
+  user1    User             @relation("ConnectMatchUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2    User             @relation("ConnectMatchUser2", fields: [user2Id], references: [id], onDelete: Cascade)
+  messages ConnectMessage[]
+
+  @@unique([user1Id, user2Id])
+  @@index([user1Id])
+  @@index([user2Id])
+  @@index([status])
+  @@map("connect_matches")
+}
+
+model ConnectMessage {
+  id        String    @id @default(uuid()) @db.Uuid
+  matchId   String    @map("match_id") @db.Uuid
+  senderId  String    @map("sender_id") @db.Uuid
+  content   String    @db.VarChar(1000)
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  match  ConnectMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  sender User         @relation("ConnectMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([matchId, readAt])
+  @@index([matchId, createdAt])
+  @@index([senderId])
+  @@map("connect_messages")
 }

@@ -1,0 +1,184 @@
+import Link from "next/link";
+import { Heart, Users, Sparkles, ArrowRight, Palette, Music, Camera, Pen } from "lucide-react";
+
+const steps = [
+  {
+    icon: Sparkles,
+    title: "Build Your Profile",
+    description: "Showcase your work with photos, videos, audio, and 3D models.",
+  },
+  {
+    icon: Heart,
+    title: "Discover Creatives",
+    description: "Swipe through profiles tailored to your interests and disciplines.",
+  },
+  {
+    icon: Users,
+    title: "Connect & Collaborate",
+    description: "Match with creatives and start meaningful conversations.",
+  },
+];
+
+const disciplines = [
+  { icon: Camera, label: "Photography" },
+  { icon: Palette, label: "Design" },
+  { icon: Music, label: "Music" },
+  { icon: Pen, label: "Writing" },
+];
+
+export default function LandingPage() {
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto max-w-lg">
+        {/* Header */}
+        <header className="flex items-center justify-between px-4 py-4">
+          <h1 className="text-xl font-bold font-heading">
+            <span className="text-primary">EKKO</span>{" "}
+            <span className="text-foreground">Connect</span>
+          </h1>
+          <Link
+            href="/login"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Sign In
+          </Link>
+        </header>
+
+        {/* Hero */}
+        <section className="px-4 pt-8 pb-12 text-center">
+          <div className="inline-flex items-center gap-1.5 glass-card px-3 py-1.5 text-xs font-medium text-primary mb-6">
+            <Sparkles className="h-3.5 w-3.5" />
+            For Creatives, By Creatives
+          </div>
+
+          <h2 className="text-4xl font-bold font-heading leading-tight mb-4">
+            Find Your
+            <br />
+            <span className="text-primary">Creative Match</span>
+          </h2>
+
+          <p className="text-muted-foreground text-base leading-relaxed mb-8 max-w-xs mx-auto">
+            Discover collaborators, clients, and creatives who share your
+            passion. Swipe, match, and create together.
+          </p>
+
+          <div className="flex flex-col gap-3 max-w-xs mx-auto">
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center gap-2 h-12 rounded-xl btn-liquid-glass bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-opacity"
+            >
+              Get Started
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center h-12 rounded-xl btn-liquid-glass font-medium text-base"
+            >
+              I already have an account
+            </Link>
+          </div>
+        </section>
+
+        {/* Disciplines */}
+        <section className="px-4 pb-10">
+          <div className="flex items-center justify-center gap-3">
+            {disciplines.map((d) => (
+              <div
+                key={d.label}
+                className="glass-card flex flex-col items-center gap-1.5 px-4 py-3 flex-1"
+              >
+                <d.icon className="h-5 w-5 text-primary" />
+                <span className="text-[11px] font-medium text-muted-foreground">
+                  {d.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* How It Works */}
+        <section className="px-4 pb-12">
+          <h3 className="text-lg font-bold font-heading text-center mb-6">
+            How It Works
+          </h3>
+          <div className="space-y-4">
+            {steps.map((step, i) => (
+              <div key={step.title} className="glass-card p-4 flex items-start gap-4">
+                <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/10 text-primary shrink-0">
+                  <step.icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-xs font-bold text-primary">
+                      {i + 1}
+                    </span>
+                    <h4 className="font-bold text-sm">{step.title}</h4>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Features */}
+        <section className="px-4 pb-12">
+          <div className="glass-card p-6 text-center">
+            <h3 className="text-lg font-bold font-heading mb-4">
+              Why EKKO Connect?
+            </h3>
+            <div className="grid grid-cols-2 gap-4 text-left">
+              <div>
+                <p className="text-sm font-semibold mb-1">Rich Profiles</p>
+                <p className="text-xs text-muted-foreground">
+                  Photos, video, audio & 3D
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold mb-1">Smart Matching</p>
+                <p className="text-xs text-muted-foreground">
+                  Filtered by discipline & goals
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold mb-1">Real Conversations</p>
+                <p className="text-xs text-muted-foreground">
+                  Chat with your matches
+                </p>
+              </div>
+              <div>
+                <p className="text-sm font-semibold mb-1">Built for Creatives</p>
+                <p className="text-xs text-muted-foreground">
+                  Not dating — creating
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="px-4 pb-12 text-center">
+          <p className="text-muted-foreground text-sm mb-4">
+            Ready to find your creative match?
+          </p>
+          <Link
+            href="/register"
+            className="inline-flex items-center justify-center gap-2 h-12 px-8 rounded-xl btn-liquid-glass bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-opacity"
+          >
+            Join EKKO Connect
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </section>
+
+        {/* Footer */}
+        <footer className="border-t border-white/20 dark:border-white/10 px-4 py-6 text-center">
+          <p className="text-xs text-muted-foreground">
+            &copy; {new Date().getFullYear()} EKKO. All rights reserved.
+          </p>
+        </footer>
+      </div>
+    </div>
+  );
+}

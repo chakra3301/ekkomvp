@@ -19,6 +19,10 @@ import { blockRouter } from "./routers/block";
 import { adminRouter } from "./routers/admin";
 import { subscriptionRouter } from "./routers/subscription";
 import { analyticsRouter } from "./routers/analytics";
+import { connectProfileRouter } from "./routers/connect-profile";
+import { connectDiscoverRouter } from "./routers/connect-discover";
+import { connectMatchRouter } from "./routers/connect-match";
+import { connectChatRouter } from "./routers/connect-chat";
 
 export const appRouter = router({
   auth: authRouter,
@@ -41,6 +45,10 @@ export const appRouter = router({
   admin: adminRouter,
   subscription: subscriptionRouter,
   analytics: analyticsRouter,
+  connectProfile: connectProfileRouter,
+  connectDiscover: connectDiscoverRouter,
+  connectMatch: connectMatchRouter,
+  connectChat: connectChatRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -1,0 +1,134 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { LayoutGrid, Layers, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+import { cn } from "@/lib/utils";
+import { useProfile } from "@/hooks";
+import { trpc } from "@/lib/trpc/client";
+import { Button } from "@/components/ui/button";
+import { SwipeCardStack } from "@/components/connect/swipe-card-stack";
+import { BrowseGrid } from "@/components/connect/browse-grid";
+
+export default function DiscoverPage() {
+  const [viewMode, setViewMode] = useState<"stack" | "grid">("stack");
+  const { user } = useProfile();
+
+  const { data: connectProfile, isLoading: profileLoading } =
+    trpc.connectProfile.getCurrent.useQuery(undefined, {
+      enabled: !!user,
+    });
+
+  const { data: discoveryQueue, isLoading: queueLoading } =
+    trpc.connectDiscover.getDiscoveryQueue.useQuery(
+      { limit: 10 },
+      { enabled: !!connectProfile }
+    );
+
+  const swipeMutation = trpc.connectMatch.swipe.useMutation();
+  const utils = trpc.useUtils();
+
+  const handleSwipe = async (targetUserId: string, type: "LIKE" | "PASS") => {
+    try {
+      const result = await swipeMutation.mutateAsync({
+        targetUserId,
+        type,
+      });
+
+      if (result.matched) {
+        toast.success("It's a Match! You can now chat.", {
+          action: {
+            label: "View",
+            onClick: () => window.location.href = "/matches",
+          },
+        });
+      }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Swipe failed";
+      if (message.includes("Daily like limit")) {
+        toast.error(message);
+      }
+    }
+  };
+
+  // Loading states
+  if (profileLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // No Connect profile yet
+  if (!connectProfile) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
+        <div className="glass-card p-8 max-w-sm w-full">
+          <h2 className="text-2xl font-bold font-heading mb-2">
+            Welcome to Connect
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            Find your creative match. Set up your profile to start discovering
+            collaborators, clients, and creatives.
+          </p>
+          <Link href="/profile/setup">
+            <Button className="w-full" size="lg">
+              Set Up Profile
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const profiles = discoveryQueue || [];
+
+  return (
+    <div className="relative">
+      {/* View mode toggle */}
+      <div className="absolute top-2 right-4 z-10 flex gap-1 p-1 glass-card">
+        <button
+          onClick={() => setViewMode("stack")}
+          className={cn(
+            "p-2 rounded-lg transition-colors",
+            viewMode === "stack"
+              ? "bg-primary/20 text-primary"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Layers className="h-4 w-4" />
+        </button>
+        <button
+          onClick={() => setViewMode("grid")}
+          className={cn(
+            "p-2 rounded-lg transition-colors",
+            viewMode === "grid"
+              ? "bg-primary/20 text-primary"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <LayoutGrid className="h-4 w-4" />
+        </button>
+      </div>
+
+      {queueLoading ? (
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : viewMode === "stack" ? (
+        <SwipeCardStack profiles={profiles as any} onSwipe={handleSwipe} />
+      ) : (
+        <BrowseGrid
+          profiles={profiles as any}
+          onSelect={(profile) => {
+            // For grid mode, just like for now
+            handleSwipe(profile.userId, "LIKE");
+          }}
+        />
+      )}
+    </div>
+  );
+}
