@@ -8,8 +8,9 @@ import {
   Send,
   Loader2,
   MoreHorizontal,
-  ExternalLink,
   UserX,
+  ShieldAlert,
+  Flag,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -26,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getInitials, formatRelativeTime } from "@/lib/utils";
+import { ReportDialog } from "@/components/connect/report-dialog";
 
 export default function ChatPage({
   params,
@@ -35,6 +37,7 @@ export default function ChatPage({
   const router = useRouter();
   const { user } = useProfile();
   const [message, setMessage] = useState("");
+  const [reportOpen, setReportOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: match, isLoading: matchLoading } =
@@ -54,7 +57,7 @@ export default function ChatPage({
   const sendMessage = trpc.connectChat.sendMessage.useMutation();
   const markAsRead = trpc.connectChat.markAsRead.useMutation();
   const unmatch = trpc.connectMatch.unmatch.useMutation();
-  const bridgeToEkko = trpc.connectChat.bridgeToEkko.useMutation();
+  const blockUser = trpc.block.block.useMutation();
   const utils = trpc.useUtils();
 
   // Mark messages as read
@@ -118,17 +121,17 @@ export default function ChatPage({
     }
   };
 
-  const handleBridge = async () => {
+  const handleBlock = async () => {
+    if (!confirm("Block this user? This will also unmatch you.")) return;
     try {
-      const result = await bridgeToEkko.mutateAsync(params.matchId);
-      const ekkoUrl =
-        process.env.NEXT_PUBLIC_EKKO_URL || "http://localhost:3000";
-      window.open(
-        `${ekkoUrl}/messages?conversation=${result.conversationId}`,
-        "_blank"
-      );
+      const otherUserId =
+        match.user1Id === user?.id ? match.user2Id : match.user1Id;
+      await blockUser.mutateAsync(otherUserId);
+      await unmatch.mutateAsync(params.matchId);
+      toast.success("User blocked");
+      router.push("/matches");
     } catch {
-      toast.error("Failed to create EKKO conversation");
+      toast.error("Failed to block user");
     }
   };
 
@@ -155,10 +158,6 @@ export default function ChatPage({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleBridge}>
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Continue on EKKO
-            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={handleUnmatch}
               className="text-destructive"
@@ -166,18 +165,20 @@ export default function ChatPage({
               <UserX className="h-4 w-4 mr-2" />
               Unmatch
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={handleBlock}
+              className="text-destructive"
+            >
+              <ShieldAlert className="h-4 w-4 mr-2" />
+              Block
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setReportOpen(true)}>
+              <Flag className="h-4 w-4 mr-2" />
+              Report
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      {/* Continue on EKKO banner */}
-      <button
-        onClick={handleBridge}
-        className="flex items-center justify-center gap-2 px-4 py-2 text-xs text-primary bg-primary/10 hover:bg-primary/20 transition-colors"
-      >
-        <ExternalLink className="h-3 w-3" />
-        Continue this conversation on EKKO
-      </button>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
@@ -244,6 +245,13 @@ export default function ChatPage({
           <Send className="h-4 w-4" />
         </Button>
       </div>
+
+      <ReportDialog
+        targetType="USER"
+        targetId={match.user1Id === user?.id ? match.user2Id : match.user1Id}
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+      />
     </div>
   );
 }

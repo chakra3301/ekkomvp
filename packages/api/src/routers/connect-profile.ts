@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { prisma } from "@ekko/database";
-import { CONNECT_LIMITS } from "@ekko/config";
+import { CONNECT_LIMITS, CONNECT_TIERS } from "@ekko/config";
 
 import { router, protectedProcedure } from "../trpc";
 
@@ -102,6 +102,8 @@ export const connectProfileRouter = router({
         websiteUrl: z.string().url().max(500).optional().or(z.literal("")),
         disciplineIds: z.array(z.string().uuid()).optional(),
         location: z.string().max(200).optional(),
+        latitude: z.number().min(-90).max(90).optional(),
+        longitude: z.number().min(-180).max(180).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -130,6 +132,8 @@ export const connectProfileRouter = router({
           websiteUrl: input.websiteUrl || null,
           disciplineIds: input.disciplineIds || [],
           location: input.location,
+          latitude: input.latitude,
+          longitude: input.longitude,
         },
       });
 
@@ -157,6 +161,8 @@ export const connectProfileRouter = router({
         websiteUrl: z.string().url().max(500).optional().or(z.literal("")),
         disciplineIds: z.array(z.string().uuid()).optional(),
         location: z.string().max(200).optional(),
+        latitude: z.number().min(-90).max(90).nullable().optional(),
+        longitude: z.number().min(-180).max(180).nullable().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -171,6 +177,20 @@ export const connectProfileRouter = router({
         });
       }
 
+      // Validate media slots against tier limit
+      if (input.mediaSlots) {
+        const maxSlots =
+          existing.connectTier === "INFINITE"
+            ? CONNECT_TIERS.INFINITE.maxMediaSlots
+            : CONNECT_TIERS.FREE.maxMediaSlots;
+        if (input.mediaSlots.length > maxSlots) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Your plan allows up to ${maxSlots} media slots. Upgrade for more!`,
+          });
+        }
+      }
+
       const updateData: Record<string, unknown> = {};
       if (input.headline !== undefined) updateData.headline = input.headline;
       if (input.lookingFor !== undefined) updateData.lookingFor = input.lookingFor;
@@ -182,6 +202,8 @@ export const connectProfileRouter = router({
       if (input.websiteUrl !== undefined) updateData.websiteUrl = input.websiteUrl || null;
       if (input.disciplineIds !== undefined) updateData.disciplineIds = input.disciplineIds;
       if (input.location !== undefined) updateData.location = input.location;
+      if (input.latitude !== undefined) updateData.latitude = input.latitude;
+      if (input.longitude !== undefined) updateData.longitude = input.longitude;
 
       const profile = await prisma.connectProfile.update({
         where: { userId: ctx.user.id },

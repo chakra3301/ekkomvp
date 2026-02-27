@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import Image from "next/image";
-import { Plus, X, Loader2, Video, Music, Box } from "lucide-react";
+import { Plus, X, Loader2, Video, Music } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -14,6 +14,7 @@ import {
   isModelUrl,
   isModelFile,
 } from "@/lib/supabase/storage";
+import { ModelViewerSlot } from "./model-viewer-slot";
 import { CONNECT_LIMITS } from "@ekko/config";
 
 export interface MediaSlot {
@@ -26,6 +27,7 @@ interface MediaSlotGridProps {
   slots: MediaSlot[];
   onChange: (slots: MediaSlot[]) => void;
   userId: string;
+  maxSlots?: number;
 }
 
 function getMaxSize(file: File): number {
@@ -39,7 +41,7 @@ function formatSize(bytes: number): string {
   return `${Math.round(bytes / (1024 * 1024))}MB`;
 }
 
-export function MediaSlotGrid({ slots, onChange, userId }: MediaSlotGridProps) {
+export function MediaSlotGrid({ slots, onChange, userId, maxSlots = 6 }: MediaSlotGridProps) {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
   const handleUpload = useCallback(
@@ -129,15 +131,7 @@ export function MediaSlotGrid({ slots, onChange, userId }: MediaSlotGridProps) {
                 </div>
               </div>
             ) : slot.mediaType === "MODEL" || isModelUrl(slot.url) ? (
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex flex-col items-center justify-center gap-2">
-                <Box className="h-8 w-8 text-primary" />
-                <span className="text-xs text-muted-foreground px-2 truncate max-w-full">
-                  3D Model
-                </span>
-                <div className="absolute bottom-2 left-2 bg-black/60 rounded-full p-1">
-                  <Box className="h-3 w-3 text-white" />
-                </div>
-              </div>
+              <ModelViewerSlot src={slot.url} />
             ) : slot.mediaType === "VIDEO" || isVideoUrl(slot.url) ? (
               <div className="absolute inset-0 bg-black flex items-center justify-center">
                 <video
@@ -195,7 +189,7 @@ export function MediaSlotGrid({ slots, onChange, userId }: MediaSlotGridProps) {
 
   return (
     <div className="grid grid-cols-3 gap-2 aspect-[3/4]">
-      {Array.from({ length: 6 }, (_, i) => renderSlot(i))}
+      {Array.from({ length: maxSlots }, (_, i) => renderSlot(i))}
     </div>
   );
 }

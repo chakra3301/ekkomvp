@@ -234,15 +234,40 @@ export const CONNECT_LIMITS = {
   MESSAGES_PAGE_SIZE: 30,
   MATCHES_PAGE_SIZE: 20,
   LIKES_PAGE_SIZE: 20,
-  // Daily like limits by tier
-  DAILY_LIKES_FREE: 50,
-  DAILY_LIKES_PRO: 200,
-  DAILY_LIKES_BUSINESS: 999999, // effectively unlimited
+  // Daily like limits by Connect tier
+  DAILY_LIKES_FREE: 10,
+  DAILY_LIKES_INFINITE: 999999, // effectively unlimited
+  // Media slot limits by Connect tier
+  MAX_MEDIA_SLOTS_INFINITE: 12,
+  CUSTOM_PROMPT_QUESTION_MAX: 150,
   BIO_MAX: 500,
   MAX_FILE_SIZE_CONNECT: 10 * 1024 * 1024, // 10MB (images)
   MAX_FILE_SIZE_CONNECT_VIDEO: 50 * 1024 * 1024, // 50MB
   MAX_FILE_SIZE_CONNECT_AUDIO: 20 * 1024 * 1024, // 20MB
   MAX_FILE_SIZE_CONNECT_MODEL: 50 * 1024 * 1024, // 50MB
+} as const;
+
+export const CONNECT_TIERS = {
+  FREE: {
+    name: "Free",
+    dailyLikes: 10,
+    maxMediaSlots: 6,
+    badge: false,
+    seeWhoLikes: false,
+    globalSearch: false,
+    topOfStack: false,
+    price: null,
+  },
+  INFINITE: {
+    name: "Infinite",
+    dailyLikes: 999999,
+    maxMediaSlots: 12,
+    badge: true,
+    seeWhoLikes: true,
+    globalSearch: true,
+    topOfStack: true,
+    price: "$9.99/mo",
+  },
 } as const;
 
 export const CONNECT_PROMPTS = [

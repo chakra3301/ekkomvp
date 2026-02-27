@@ -1,16 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { Heart, Loader2, Lock } from "lucide-react";
+import { Heart, Loader2, Lock, Infinity } from "lucide-react";
 import { toast } from "sonner";
 
 import { useProfile } from "@/hooks";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
+import { UpgradeModal } from "@/components/connect/upgrade-modal";
 import type { MediaSlot } from "@/components/connect/media-slot-grid";
 
 export default function LikesPage() {
-  const { user, profile } = useProfile();
+  const { user } = useProfile();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+
+  const { data: connectProfile } = trpc.connectProfile.getCurrent.useQuery(
+    undefined,
+    { enabled: !!user }
+  );
 
   const { data, isLoading } = trpc.connectDiscover.getLikesReceived.useQuery(
     { limit: 20 },
@@ -20,9 +28,7 @@ export default function LikesPage() {
   const swipeMutation = trpc.connectMatch.swipe.useMutation();
   const utils = trpc.useUtils();
 
-  const isPremium =
-    profile?.subscriptionTier === "PRO" ||
-    profile?.subscriptionTier === "BUSINESS";
+  const isInfinite = connectProfile?.connectTier === "INFINITE";
 
   const handleLikeBack = async (targetUserId: string) => {
     try {
@@ -87,7 +93,8 @@ export default function LikesPage() {
 
       <div className="grid grid-cols-2 gap-3">
         {likes.map((like) => {
-          const mediaSlots = (like.user.connectProfile?.mediaSlots || []) as unknown as MediaSlot[];
+          const mediaSlots = (like.user.connectProfile?.mediaSlots ||
+            []) as unknown as MediaSlot[];
           const firstImage = mediaSlots.find((s) => s.mediaType === "PHOTO");
           const displayName = like.user.profile?.displayName || "Creative";
 
@@ -103,13 +110,13 @@ export default function LikesPage() {
                     alt={displayName}
                     fill
                     sizes="(max-width: 512px) 50vw, 256px"
-                    className={`object-cover ${!isPremium ? "blur-lg" : ""}`}
+                    className={`object-cover ${!isInfinite ? "blur-lg" : ""}`}
                   />
                 ) : (
                   <div className="w-full h-full bg-muted flex items-center justify-center">
                     <span
                       className={`text-3xl font-bold text-muted-foreground ${
-                        !isPremium ? "blur-lg" : ""
+                        !isInfinite ? "blur-lg" : ""
                       }`}
                     >
                       {displayName[0]?.toUpperCase()}
@@ -117,7 +124,7 @@ export default function LikesPage() {
                   </div>
                 )}
 
-                {!isPremium && (
+                {!isInfinite && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20">
                     <Lock className="h-8 w-8 text-white mb-2" />
                     <p className="text-white text-xs font-medium">
@@ -128,20 +135,20 @@ export default function LikesPage() {
 
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3">
                   <p className="text-white font-semibold text-sm truncate">
-                    {isPremium ? displayName : "???"}
+                    {isInfinite ? displayName : "???"}
                   </p>
                 </div>
               </div>
 
               {/* Match note */}
-              {like.matchNote && isPremium && (
+              {like.matchNote && isInfinite && (
                 <div className="px-3 py-2 text-xs text-muted-foreground italic">
                   &ldquo;{like.matchNote}&rdquo;
                 </div>
               )}
 
               {/* Action buttons */}
-              {isPremium && (
+              {isInfinite && (
                 <div className="flex gap-2 p-2">
                   <Button
                     variant="outline"
@@ -167,15 +174,26 @@ export default function LikesPage() {
         })}
       </div>
 
-      {!isPremium && (
+      {!isInfinite && (
         <div className="mt-6 glass-card p-6 text-center">
-          <h3 className="font-bold mb-2">Upgrade to EKKO Pro</h3>
+          <h3 className="font-bold mb-2 flex items-center justify-center gap-1">
+            Upgrade to Infinite <Infinity className="h-4 w-4 text-primary" />
+          </h3>
           <p className="text-sm text-muted-foreground mb-4">
-            See who liked you and get 200 daily likes.
+            See who liked you, get unlimited likes, and more.
           </p>
-          <Button>Upgrade to Pro</Button>
+          <Button onClick={() => setUpgradeOpen(true)}>
+            <Infinity className="h-4 w-4 mr-2" />
+            Go Infinite
+          </Button>
         </div>
       )}
+
+      <UpgradeModal
+        open={upgradeOpen}
+        onOpenChange={setUpgradeOpen}
+        trigger="See everyone who liked your profile"
+      />
     </div>
   );
 }

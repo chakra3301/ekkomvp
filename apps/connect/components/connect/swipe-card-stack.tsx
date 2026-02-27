@@ -2,10 +2,19 @@
 
 import { useState, useCallback } from "react";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
-import { Heart, X } from "lucide-react";
+import { Heart, X, MoreHorizontal, ShieldAlert, Flag } from "lucide-react";
+import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
+import { trpc } from "@/lib/trpc/client";
 import { ConnectProfileCard } from "./connect-profile-card";
+import { ReportDialog } from "./report-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { MediaSlot } from "./media-slot-grid";
 import type { PromptEntry } from "./prompt-editor";
 
@@ -19,6 +28,7 @@ interface ProfileData {
   instagramHandle: string | null;
   twitterHandle: string | null;
   websiteUrl: string | null;
+  connectTier?: string | null;
   mediaSlots: MediaSlot[];
   prompts: PromptEntry[];
   user: {
@@ -39,10 +49,14 @@ function SwipeCard({
   profile,
   onSwipe,
   isTop,
+  onBlock,
+  onReport,
 }: {
   profile: ProfileData;
   onSwipe: (type: "LIKE" | "PASS") => void;
   isTop: boolean;
+  onBlock: () => void;
+  onReport: () => void;
 }) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
@@ -92,6 +106,32 @@ function SwipeCard({
         </>
       )}
 
+      {/* More menu */}
+      {isTop && (
+        <div className="absolute top-3 right-3 z-30">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-2 rounded-full bg-black/40 hover:bg-black/60 transition-colors">
+                <MoreHorizontal className="h-5 w-5 text-white" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={onBlock}
+                className="text-destructive"
+              >
+                <ShieldAlert className="h-4 w-4 mr-2" />
+                Block
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onReport}>
+                <Flag className="h-4 w-4 mr-2" />
+                Report
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
+
       <div className="h-full overflow-y-auto rounded-3xl">
         <ConnectProfileCard
           displayName={profile.user.profile?.displayName || "Creative"}
@@ -108,6 +148,7 @@ function SwipeCard({
           instagramHandle={profile.instagramHandle}
           twitterHandle={profile.twitterHandle}
           websiteUrl={profile.websiteUrl}
+          connectTier={profile.connectTier}
           className="min-h-full"
         />
       </div>
@@ -117,6 +158,9 @@ function SwipeCard({
 
 export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [reportTarget, setReportTarget] = useState<string | null>(null);
+
+  const blockUser = trpc.block.block.useMutation();
 
   const handleSwipe = useCallback(
     (type: "LIKE" | "PASS") => {
@@ -126,6 +170,20 @@ export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
       setCurrentIndex((i) => i + 1);
     },
     [profiles, currentIndex, onSwipe]
+  );
+
+  const handleBlock = useCallback(
+    async (userId: string) => {
+      if (!confirm("Block this user? They won't appear in your discovery.")) return;
+      try {
+        await blockUser.mutateAsync(userId);
+        toast.success("User blocked");
+        setCurrentIndex((i) => i + 1);
+      } catch {
+        toast.error("Failed to block user");
+      }
+    },
+    [blockUser]
   );
 
   const visibleProfiles = profiles.slice(currentIndex, currentIndex + 2);
@@ -154,6 +212,8 @@ export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
               profile={profile}
               onSwipe={handleSwipe}
               isTop={i === 0}
+              onBlock={() => handleBlock(profile.userId)}
+              onReport={() => setReportTarget(profile.userId)}
             />
           ))}
         </AnimatePresence>
@@ -174,6 +234,21 @@ export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
           <Heart className="h-8 w-8 text-primary" />
         </button>
       </div>
+
+      {/* Report dialog */}
+      {reportTarget && (
+        <ReportDialog
+          targetType="USER"
+          targetId={reportTarget}
+          open={!!reportTarget}
+          onOpenChange={(open) => {
+            if (!open) {
+              setReportTarget(null);
+              setCurrentIndex((i) => i + 1);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

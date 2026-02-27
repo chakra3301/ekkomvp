@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { LayoutGrid, Layers, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -12,23 +12,64 @@ import { Button } from "@/components/ui/button";
 import { SwipeCardStack } from "@/components/connect/swipe-card-stack";
 import { BrowseGrid } from "@/components/connect/browse-grid";
 
+const FILTER_KEY = "ekko-connect-filters";
+
+interface DiscoveryFilters {
+  city: string;
+  maxDistanceMiles: number;
+  globalSearch: boolean;
+  role: "ALL" | "CREATIVE" | "CLIENT";
+}
+
+function loadFilters(): DiscoveryFilters | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = localStorage.getItem(FILTER_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch {}
+  return null;
+}
+
 export default function DiscoverPage() {
   const [viewMode, setViewMode] = useState<"stack" | "grid">("stack");
+  const [filters, setFilters] = useState<DiscoveryFilters | null>(null);
   const { user } = useProfile();
+
+  useEffect(() => {
+    setFilters(loadFilters());
+  }, []);
 
   const { data: connectProfile, isLoading: profileLoading } =
     trpc.connectProfile.getCurrent.useQuery(undefined, {
       enabled: !!user,
     });
 
+  // Build query filters from localStorage settings + profile GPS
+  const queryFilters = (() => {
+    const f: Record<string, unknown> = {};
+    if (filters?.role && filters.role !== "ALL") f.role = filters.role;
+    if (filters?.city) f.location = filters.city;
+    if (filters?.globalSearch) {
+      f.globalSearch = true;
+    } else if (
+      connectProfile?.latitude != null &&
+      connectProfile?.longitude != null &&
+      filters?.maxDistanceMiles
+    ) {
+      f.latitude = connectProfile.latitude;
+      f.longitude = connectProfile.longitude;
+      f.maxDistanceMiles = filters.maxDistanceMiles;
+    }
+    return Object.keys(f).length > 0 ? f : undefined;
+  })();
+
   const { data: discoveryQueue, isLoading: queueLoading } =
     trpc.connectDiscover.getDiscoveryQueue.useQuery(
-      { limit: 10 },
+      { limit: 10, filters: queryFilters as any },
       { enabled: !!connectProfile }
     );
 
   const swipeMutation = trpc.connectMatch.swipe.useMutation();
-  const utils = trpc.useUtils();
 
   const handleSwipe = async (targetUserId: string, type: "LIKE" | "PASS") => {
     try {
@@ -41,12 +82,13 @@ export default function DiscoverPage() {
         toast.success("It's a Match! You can now chat.", {
           action: {
             label: "View",
-            onClick: () => window.location.href = "/matches",
+            onClick: () => (window.location.href = "/matches"),
           },
         });
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Swipe failed";
+      const message =
+        error instanceof Error ? error.message : "Swipe failed";
       if (message.includes("Daily like limit")) {
         toast.error(message);
       }
@@ -124,7 +166,6 @@ export default function DiscoverPage() {
         <BrowseGrid
           profiles={profiles as any}
           onSelect={(profile) => {
-            // For grid mode, just like for now
             handleSwipe(profile.userId, "LIKE");
           }}
         />

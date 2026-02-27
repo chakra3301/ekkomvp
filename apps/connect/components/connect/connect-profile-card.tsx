@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { MapPin, Video, Music, Box, Instagram, Globe } from "lucide-react";
+import { MapPin, Video, Music, Instagram, Globe, Infinity } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { isVideoUrl, isAudioUrl, isModelUrl } from "@/lib/supabase/storage";
+import { ModelViewerSlot } from "./model-viewer-slot";
+import { InstagramPreview } from "./instagram-preview";
 import type { MediaSlot } from "./media-slot-grid";
 import type { PromptEntry } from "./prompt-editor";
 
@@ -22,6 +24,7 @@ interface ConnectProfileCardProps {
   instagramHandle?: string | null;
   twitterHandle?: string | null;
   websiteUrl?: string | null;
+  connectTier?: string | null;
   className?: string;
 }
 
@@ -44,12 +47,7 @@ function renderMediaSlot(slot: MediaSlot, isFeatured?: boolean) {
   }
 
   if (slot.mediaType === "MODEL" || isModelUrl(slot.url)) {
-    return (
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex flex-col items-center justify-center gap-2">
-        <Box className={cn("text-primary", isFeatured ? "h-12 w-12" : "h-8 w-8")} />
-        <span className="text-xs text-muted-foreground">3D Model</span>
-      </div>
-    );
+    return <ModelViewerSlot src={slot.url} isFeatured={isFeatured} />;
   }
 
   if (slot.mediaType === "VIDEO" || isVideoUrl(slot.url)) {
@@ -59,8 +57,8 @@ function renderMediaSlot(slot: MediaSlot, isFeatured?: boolean) {
           src={slot.url}
           className="w-full h-full object-cover"
           muted
-          autoPlay={isFeatured}
-          loop={isFeatured}
+          autoPlay
+          loop
           playsInline
         />
         <div className="absolute bottom-1 left-1 bg-black/60 rounded-full p-0.5">
@@ -93,6 +91,7 @@ export function ConnectProfileCard({
   instagramHandle,
   twitterHandle,
   websiteUrl,
+  connectTier,
   className,
 }: ConnectProfileCardProps) {
   const featuredSlot = mediaSlots.find((s) => s.sortOrder === 0);
@@ -122,7 +121,14 @@ export function ConnectProfileCard({
               ? "text-white"
               : "text-foreground"
           )}>
-            <h2 className="text-2xl font-bold">{displayName}</h2>
+            <h2 className="text-2xl font-bold flex items-center gap-2">
+              {displayName}
+              {connectTier === "INFINITE" && (
+                <span className="inline-flex items-center gap-0.5 bg-primary/20 text-primary px-2 py-0.5 rounded-full text-xs font-semibold">
+                  <Infinity className="h-3 w-3" />
+                </span>
+              )}
+            </h2>
             {headline && (
               <p className={cn(
                 "text-sm mt-0.5",
@@ -206,6 +212,9 @@ export function ConnectProfileCard({
               <p className="text-sm">{prompt.answer}</p>
             </div>
           ))}
+
+        {/* Instagram Preview */}
+        {instagramHandle && <InstagramPreview handle={instagramHandle} />}
 
         {/* Social Links */}
         {hasSocials && (

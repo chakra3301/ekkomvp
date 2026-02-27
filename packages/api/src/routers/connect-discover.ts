@@ -4,6 +4,24 @@ import { CONNECT_LIMITS } from "@ekko/config";
 
 import { router, protectedProcedure } from "../trpc";
 
+// Haversine distance in miles between two lat/lng points
+function haversineDistance(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const R = 3959; // Earth radius in miles
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 export const connectDiscoverRouter = router({
   getDiscoveryQueue: protectedProcedure
     .input(
@@ -14,7 +32,10 @@ export const connectDiscoverRouter = router({
             disciplineIds: z.array(z.string().uuid()).optional(),
             role: z.enum(["CREATIVE", "CLIENT", "ALL"]).optional(),
             location: z.string().optional(),
-            subscriptionTier: z.enum(["FREE", "PRO", "BUSINESS", "ALL"]).optional(),
+            latitude: z.number().optional(),
+            longitude: z.number().optional(),
+            maxDistanceMiles: z.number().min(1).max(500).optional(),
+            globalSearch: z.boolean().optional(),
           })
           .optional(),
       })
@@ -57,32 +78,55 @@ export const connectDiscoverRouter = router({
         where.disciplineIds = { hasSome: filters.disciplineIds };
       }
 
-      if (filters?.location) {
+      if (filters?.location && !filters?.globalSearch) {
         where.location = { contains: filters.location, mode: "insensitive" };
       }
 
-      // Role & tier filters apply to the related User/Profile
+      // Role filter applies to the related User
       const userWhere: Record<string, unknown> = {};
       if (filters?.role && filters.role !== "ALL") {
         userWhere.role = filters.role;
       }
 
-      const profileWhere: Record<string, unknown> = {};
-      if (filters?.subscriptionTier && filters.subscriptionTier !== "ALL") {
-        profileWhere.subscriptionTier = filters.subscriptionTier;
+      if (Object.keys(userWhere).length > 0) {
+        where.user = userWhere;
       }
 
-      if (Object.keys(userWhere).length > 0 || Object.keys(profileWhere).length > 0) {
-        where.user = {
-          ...userWhere,
-          ...(Object.keys(profileWhere).length > 0 ? { profile: profileWhere } : {}),
+      // Distance-based bounding box pre-filter (when not global search)
+      const useDistanceFilter =
+        !filters?.globalSearch &&
+        filters?.latitude != null &&
+        filters?.longitude != null &&
+        filters?.maxDistanceMiles;
+
+      if (useDistanceFilter) {
+        // Rough bounding box (~1 degree lat ≈ 69 miles)
+        const latDelta = filters!.maxDistanceMiles! / 69;
+        const lonDelta =
+          filters!.maxDistanceMiles! /
+          (69 * Math.cos((filters!.latitude! * Math.PI) / 180));
+        where.latitude = {
+          gte: filters!.latitude! - latDelta,
+          lte: filters!.latitude! + latDelta,
+        };
+        where.longitude = {
+          gte: filters!.longitude! - lonDelta,
+          lte: filters!.longitude! + lonDelta,
         };
       }
 
+      // Fetch more than needed so we can filter by actual distance
+      const fetchLimit = useDistanceFilter ? limit * 3 : limit;
+
       const profiles = await prisma.connectProfile.findMany({
         where,
-        take: limit,
-        orderBy: [{ updatedAt: "desc" }],
+        take: fetchLimit,
+        orderBy: [
+          { connectTier: "desc" },        // INFINITE (alphabetically > FREE) first
+          { likesReceivedCount: "desc" },  // Most liked
+          { matchesCount: "desc" },        // Most connected
+          { updatedAt: "desc" },           // Most recently active
+        ],
         include: {
           user: {
             include: {
@@ -106,6 +150,21 @@ export const connectDiscoverRouter = router({
           },
         },
       });
+
+      // Post-filter by exact Haversine distance
+      if (useDistanceFilter) {
+        const filtered = profiles.filter((p) => {
+          if (p.latitude == null || p.longitude == null) return false;
+          const dist = haversineDistance(
+            filters!.latitude!,
+            filters!.longitude!,
+            p.latitude,
+            p.longitude
+          );
+          return dist <= filters!.maxDistanceMiles!;
+        });
+        return filtered.slice(0, limit);
+      }
 
       return profiles;
     }),

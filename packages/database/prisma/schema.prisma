@@ -132,6 +132,11 @@ enum ConnectMatchStatus {
   BLOCKED
 }
 
+enum ConnectTier {
+  FREE
+  INFINITE
+}
+
 enum CollectiveVisibility {
   PUBLIC
   PRIVATE
@@ -976,10 +981,15 @@ model ConnectProfile {
   // Discovery fields
   disciplineIds String[] @map("discipline_ids") @db.Uuid
   location      String?  @db.VarChar(200)
+  latitude      Float?   @map("latitude")
+  longitude     Float?   @map("longitude")
 
   // Counters
   likesReceivedCount Int @default(0) @map("likes_received_count")
   matchesCount       Int @default(0) @map("matches_count")
+
+  // Tier
+  connectTier ConnectTier @default(FREE) @map("connect_tier")
 
   // Status
   isActive  Boolean  @default(true) @map("is_active")

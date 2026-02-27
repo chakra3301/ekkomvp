@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Heart, Users, Sparkles, ArrowRight, Palette, Music, Camera, Pen } from "lucide-react";
 
 const steps = [
@@ -31,11 +32,8 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-lg">
         {/* Header */}
-        <header className="flex items-center justify-between px-4 py-4">
-          <h1 className="text-xl font-bold font-heading">
-            <span className="text-primary">EKKO</span>{" "}
-            <span className="text-foreground">Connect</span>
-          </h1>
+        <header className="relative z-10 flex items-center justify-between px-4 py-4">
+          <Image src="/logo.png" alt="EKKO Connect" width={36} height={36} />
           <Link
             href="/login"
             className="text-sm font-medium text-primary hover:underline"
@@ -44,38 +42,51 @@ export default function LandingPage() {
           </Link>
         </header>
 
-        {/* Hero */}
-        <section className="px-4 pt-8 pb-12 text-center">
-          <div className="inline-flex items-center gap-1.5 glass-card px-3 py-1.5 text-xs font-medium text-primary mb-6">
-            <Sparkles className="h-3.5 w-3.5" />
-            For Creatives, By Creatives
+        {/* Hero with sky background */}
+        <section className="relative px-4 pt-8 pb-12 text-center overflow-hidden">
+          <div className="absolute inset-0 -top-16">
+            <Image
+              src="/sky.png"
+              alt=""
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background" />
           </div>
 
-          <h2 className="text-4xl font-bold font-heading leading-tight mb-4">
-            Find Your
-            <br />
-            <span className="text-primary">Creative Match</span>
-          </h2>
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-1.5 glass-card px-3 py-1.5 text-xs font-medium text-primary mb-6">
+              <Sparkles className="h-3.5 w-3.5" />
+              For Creatives, By Creatives
+            </div>
 
-          <p className="text-muted-foreground text-base leading-relaxed mb-8 max-w-xs mx-auto">
-            Discover collaborators, clients, and creatives who share your
-            passion. Swipe, match, and create together.
-          </p>
+            <h2 className="text-4xl font-bold font-heading leading-tight mb-4 drop-shadow-lg">
+              Find Your
+              <br />
+              <span className="text-primary">Creative Match</span>
+            </h2>
 
-          <div className="flex flex-col gap-3 max-w-xs mx-auto">
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-opacity shadow-lg"
-            >
-              Get Started
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center h-12 rounded-xl btn-liquid-glass font-medium text-base"
-            >
-              I already have an account
-            </Link>
+            <p className="text-muted-foreground text-base leading-relaxed mb-8 max-w-xs mx-auto drop-shadow">
+              Discover collaborators, clients, and creatives who share your
+              passion. Swipe, match, and create together.
+            </p>
+
+            <div className="flex flex-col gap-3 max-w-xs mx-auto">
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-primary text-primary-foreground font-semibold text-base hover:opacity-90 transition-opacity shadow-lg"
+              >
+                Get Started
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center h-12 rounded-xl btn-liquid-glass font-medium text-base"
+              >
+                I already have an account
+              </Link>
+            </div>
           </div>
         </section>
 

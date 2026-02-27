@@ -25,18 +25,16 @@ export const connectMatchRouter = router({
 
       // Check daily like limit
       if (input.type === "LIKE") {
-        const userProfile = await prisma.profile.findUnique({
+        const connectProfile = await prisma.connectProfile.findUnique({
           where: { userId },
-          select: { subscriptionTier: true },
+          select: { connectTier: true },
         });
 
-        const tier = userProfile?.subscriptionTier || "FREE";
+        const tier = connectProfile?.connectTier || "FREE";
         const dailyLimit =
-          tier === "BUSINESS"
-            ? CONNECT_LIMITS.DAILY_LIKES_BUSINESS
-            : tier === "PRO"
-              ? CONNECT_LIMITS.DAILY_LIKES_PRO
-              : CONNECT_LIMITS.DAILY_LIKES_FREE;
+          tier === "INFINITE"
+            ? CONNECT_LIMITS.DAILY_LIKES_INFINITE
+            : CONNECT_LIMITS.DAILY_LIKES_FREE;
 
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);

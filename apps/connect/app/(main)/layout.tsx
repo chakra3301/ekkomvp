@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Compass, Heart, MessageCircle, User, Settings } from "lucide-react";
 
@@ -34,10 +35,7 @@ export default function MainLayout({
         {/* Top Header */}
         <header className="sticky top-0 z-20 glass border-b border-white/20 dark:border-white/10">
           <div className="flex items-center justify-between px-4 py-3">
-            <h1 className="text-xl font-bold font-heading">
-              <span className="text-primary">EKKO</span>{" "}
-              <span className="text-foreground">Connect</span>
-            </h1>
+            <Image src="/logo.png" alt="EKKO Connect" width={32} height={32} />
             <Link href="/settings" className="p-2 rounded-lg hover:bg-white/20 dark:hover:bg-white/10 transition-colors">
               <Settings className="h-5 w-5 text-muted-foreground" />
             </Link>
