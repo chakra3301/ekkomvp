@@ -237,4 +237,87 @@ export const connectDiscoverRouter = router({
 
       return { likes, nextCursor };
     }),
+
+  getSwipeHistory: protectedProcedure
+    .input(
+      z.object({
+        cursor: z.string().uuid().optional(),
+        limit: z.number().min(1).max(50).default(CONNECT_LIMITS.HISTORY_PAGE_SIZE),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.user.id;
+      const { cursor, limit } = input;
+
+      // Exclude blocked users
+      const blocks = await prisma.block.findMany({
+        where: {
+          OR: [{ blockerId: userId }, { blockedId: userId }],
+        },
+        select: { blockerId: true, blockedId: true },
+      });
+      const blockedSet = new Set<string>();
+      blocks.forEach((b) => {
+        blockedSet.add(b.blockerId);
+        blockedSet.add(b.blockedId);
+      });
+      blockedSet.delete(userId);
+
+      const swipes = await prisma.connectSwipe.findMany({
+        where: {
+          userId,
+          ...(blockedSet.size > 0
+            ? { targetUserId: { notIn: Array.from(blockedSet) } }
+            : {}),
+        },
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: { createdAt: "desc" },
+        include: {
+          targetUser: {
+            include: {
+              connectProfile: true,
+              profile: {
+                select: {
+                  username: true,
+                  displayName: true,
+                  avatarUrl: true,
+                  bio: true,
+                  headline: true,
+                  location: true,
+                  verificationStatus: true,
+                  subscriptionTier: true,
+                  disciplines: {
+                    include: { discipline: true },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      let nextCursor: string | undefined;
+      if (swipes.length > limit) {
+        const next = swipes.pop();
+        nextCursor = next?.id;
+      }
+
+      const items = swipes
+        .filter((s) => s.targetUser.connectProfile)
+        .map((s) => ({
+          id: s.targetUser.connectProfile!.id,
+          userId: s.targetUserId,
+          headline: s.targetUser.connectProfile!.headline,
+          location: s.targetUser.connectProfile!.location,
+          mediaSlots: s.targetUser.connectProfile!.mediaSlots,
+          user: {
+            profile: s.targetUser.profile,
+          },
+          swipeType: s.type,
+          swipedAt: s.createdAt,
+        }));
+
+      return { items, nextCursor };
+    }),
 });

@@ -7,9 +7,24 @@
     "build": "prisma generate --schema=../../packages/database/prisma/schema.prisma && next build",
     "start": "next start -p 3001",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "cap:sync": "cap sync ios",
+    "cap:open": "cap open ios",
+    "cap:build": "cap sync ios && cap open ios",
+    "cap:dev": "CAPACITOR_DEV=true cap sync ios && CAPACITOR_DEV=true cap open ios"
   },
   "dependencies": {
+    "@capacitor/app": "^8.0.1",
+    "@capacitor/browser": "^8.0.1",
+    "@capacitor/camera": "^8.0.1",
+    "@capacitor/core": "^8.1.0",
+    "@capacitor/geolocation": "^8.1.0",
+    "@capacitor/haptics": "^8.0.1",
+    "@capacitor/ios": "^8.1.0",
+    "@capacitor/keyboard": "^8.0.1",
+    "@capacitor/push-notifications": "^8.0.1",
+    "@capacitor/splash-screen": "^8.0.1",
+    "@capacitor/status-bar": "^8.0.1",
     "@ekko/api": "workspace:*",
     "@ekko/config": "workspace:*",
     "@ekko/database": "workspace:*",
@@ -45,17 +60,18 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.1.0",
     "@ekko/eslint-config": "workspace:*",
     "@ekko/tailwind-config": "workspace:*",
     "@ekko/typescript-config": "workspace:*",
     "@prisma/client": "^5.11.0",
-    "prisma": "^5.11.0",
     "@types/node": "^20.11.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "autoprefixer": "^10.4.18",
     "eslint": "^8.57.0",
     "postcss": "^8.4.35",
+    "prisma": "^5.11.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.0"
   }

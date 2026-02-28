@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { TRPCProvider } from "@/lib/trpc/provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ServiceWorkerRegister } from "@/components/sw-register";
+import { NativeBridgeProvider } from "@/components/native-bridge-provider";
 
 import "./globals.css";
 
@@ -106,7 +107,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TRPCProvider>
-            {children}
+            <NativeBridgeProvider>
+              {children}
+            </NativeBridgeProvider>
             <Toaster position="bottom-center" richColors />
             <ServiceWorkerRegister />
           </TRPCProvider>

@@ -51,7 +51,14 @@ export function FeedPage() {
               alt="EKKO"
               width={28}
               height={28}
-              className="h-7 w-7 object-contain"
+              className="h-7 w-7 object-contain dark:hidden"
+            />
+            <Image
+              src="/logo-dark.png"
+              alt="EKKO"
+              width={28}
+              height={28}
+              className="h-7 w-7 object-contain hidden dark:block"
             />
           </div>
           {/* Spacer to balance the avatar on mobile */}

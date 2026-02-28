@@ -123,46 +123,34 @@ export default function SettingsPage() {
   };
 
   const handleUseMyLocation = async () => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation not supported by your browser");
-      return;
-    }
-
     setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`
-          );
-          const data = await res.json();
-          const city =
-            data.address?.city ||
-            data.address?.town ||
-            data.address?.village ||
-            data.address?.county ||
-            "";
+    try {
+      const { getCurrentPosition } = await import("@/lib/geolocation");
+      const { latitude, longitude } = await getCurrentPosition();
 
-          await updateProfile.mutateAsync({
-            location: city,
-            latitude,
-            longitude,
-          });
-          await utils.connectProfile.getCurrent.invalidate();
-          updateFilter("city", city);
-          toast.success(`Location set to ${city}`);
-        } catch {
-          toast.error("Failed to get location name");
-        }
-        setLocating(false);
-      },
-      () => {
-        toast.error("Location access denied");
-        setLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`
+      );
+      const data = await res.json();
+      const city =
+        data.address?.city ||
+        data.address?.town ||
+        data.address?.village ||
+        data.address?.county ||
+        "";
+
+      await updateProfile.mutateAsync({
+        location: city,
+        latitude,
+        longitude,
+      });
+      await utils.connectProfile.getCurrent.invalidate();
+      updateFilter("city", city);
+      toast.success(`Location set to ${city}`);
+    } catch {
+      toast.error("Failed to get location");
+    }
+    setLocating(false);
   };
 
   const handleUnblock = async (userId: string) => {
@@ -519,6 +507,22 @@ export default function SettingsPage() {
 
             <Separator />
 
+            <Link
+              href="/privacy"
+              className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <span className="text-sm">Privacy Policy</span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </Link>
+
+            <Link
+              href="/terms"
+              className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <span className="text-sm">Terms of Service</span>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </Link>
+
             <a
               href={
                 process.env.NEXT_PUBLIC_EKKO_URL || "http://localhost:3000"
@@ -541,6 +545,25 @@ export default function SettingsPage() {
                 Log out
               </button>
             )}
+
+            <Separator />
+
+            <button
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Are you sure you want to delete your account? This action cannot be undone."
+                  )
+                ) {
+                  toast.info(
+                    "To delete your account, please email privacy@ekkoconnect.app"
+                  );
+                }
+              }}
+              className="w-full text-left p-2 -mx-2 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-muted/50 transition-colors"
+            >
+              Delete Account
+            </button>
           </div>
         </div>
       </div>

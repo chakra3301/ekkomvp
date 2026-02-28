@@ -1,9 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface InstagramPreviewProps {
   handle: string;
+}
+
+interface IgData {
+  profilePicUrl: string | null;
+  posts: { imageUrl: string }[];
 }
 
 function IgIcon({ className }: { className?: string }) {
@@ -18,6 +24,22 @@ function IgIcon({ className }: { className?: string }) {
 
 export function InstagramPreview({ handle }: InstagramPreviewProps) {
   const profileUrl = `https://instagram.com/${handle}`;
+  const [igData, setIgData] = useState<IgData | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/instagram/${encodeURIComponent(handle)}`)
+      .then((res) => res.json())
+      .then((data: IgData) => {
+        if (!cancelled) setIgData(data);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [handle]);
+
+  const postImages = igData?.posts?.map((p) => p.imageUrl) || [];
 
   return (
     <a
@@ -29,8 +51,18 @@ export function InstagramPreview({ handle }: InstagramPreviewProps) {
       {/* Profile header */}
       <div className="flex items-center gap-3 p-3">
         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 p-[2px] shrink-0">
-          <div className="h-full w-full rounded-full bg-card flex items-center justify-center">
-            <IgIcon className="h-4 w-4 text-muted-foreground" />
+          <div className="h-full w-full rounded-full bg-card overflow-hidden">
+            {igData?.profilePicUrl ? (
+              <img
+                src={igData.profilePicUrl}
+                alt={handle}
+                className="h-full w-full rounded-full object-cover"
+              />
+            ) : (
+              <div className="h-full w-full rounded-full flex items-center justify-center">
+                <IgIcon className="h-4 w-4 text-muted-foreground" />
+              </div>
+            )}
           </div>
         </div>
         <div className="flex-1 min-w-0">
@@ -42,14 +74,24 @@ export function InstagramPreview({ handle }: InstagramPreviewProps) {
         </div>
       </div>
 
-      {/* Post grid (3 placeholders) */}
+      {/* Post grid */}
       <div className="grid grid-cols-3 gap-[2px] px-3 pb-3">
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="aspect-square rounded bg-muted/60 flex items-center justify-center"
+            className="relative aspect-square rounded overflow-hidden bg-muted/60"
           >
-            <IgIcon className="h-4 w-4 text-muted-foreground/30" />
+            {postImages[i] ? (
+              <img
+                src={postImages[i]}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center">
+                <IgIcon className="h-4 w-4 text-muted-foreground/30" />
+              </div>
+            )}
           </div>
         ))}
       </div>

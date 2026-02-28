@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { LayoutGrid, Layers, Loader2 } from "lucide-react";
+import { LayoutGrid, Layers, Loader2, History } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -11,6 +11,7 @@ import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 import { SwipeCardStack } from "@/components/connect/swipe-card-stack";
 import { BrowseGrid } from "@/components/connect/browse-grid";
+import { HistoryGrid } from "@/components/connect/history-grid";
 
 const FILTER_KEY = "ekko-connect-filters";
 
@@ -31,7 +32,7 @@ function loadFilters(): DiscoveryFilters | null {
 }
 
 export default function DiscoverPage() {
-  const [viewMode, setViewMode] = useState<"stack" | "grid">("stack");
+  const [viewMode, setViewMode] = useState<"stack" | "grid" | "history">("stack");
   const [filters, setFilters] = useState<DiscoveryFilters | null>(null);
   const { user } = useProfile();
 
@@ -67,6 +68,13 @@ export default function DiscoverPage() {
     trpc.connectDiscover.getDiscoveryQueue.useQuery(
       { limit: 10, filters: queryFilters as any },
       { enabled: !!connectProfile }
+    );
+
+  // History view data
+  const { data: historyData, isLoading: historyLoading } =
+    trpc.connectDiscover.getSwipeHistory.useQuery(
+      { limit: 20 },
+      { enabled: !!connectProfile && viewMode === "history" }
     );
 
   const swipeMutation = trpc.connectMatch.swipe.useMutation();
@@ -129,34 +137,55 @@ export default function DiscoverPage() {
   const profiles = discoveryQueue || [];
 
   return (
-    <div className="relative">
+    <div>
       {/* View mode toggle */}
-      <div className="absolute top-2 right-4 z-10 flex gap-1 p-1 glass-card">
-        <button
-          onClick={() => setViewMode("stack")}
-          className={cn(
-            "p-2 rounded-lg transition-colors",
-            viewMode === "stack"
-              ? "bg-primary/20 text-primary"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          <Layers className="h-4 w-4" />
-        </button>
-        <button
-          onClick={() => setViewMode("grid")}
-          className={cn(
-            "p-2 rounded-lg transition-colors",
-            viewMode === "grid"
-              ? "bg-primary/20 text-primary"
-              : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          <LayoutGrid className="h-4 w-4" />
-        </button>
+      <div className="flex justify-end px-4 py-2">
+        <div className="flex gap-1 p-1 glass-card">
+          <button
+            onClick={() => setViewMode("stack")}
+            className={cn(
+              "p-2 rounded-lg transition-colors",
+              viewMode === "stack"
+                ? "bg-primary/20 text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Layers className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setViewMode("grid")}
+            className={cn(
+              "p-2 rounded-lg transition-colors",
+              viewMode === "grid"
+                ? "bg-primary/20 text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => setViewMode("history")}
+            className={cn(
+              "p-2 rounded-lg transition-colors",
+              viewMode === "history"
+                ? "bg-primary/20 text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <History className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
-      {queueLoading ? (
+      {viewMode === "history" ? (
+        historyLoading ? (
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <HistoryGrid profiles={(historyData?.items || []) as any} />
+        )
+      ) : queueLoading ? (
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>

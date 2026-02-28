@@ -5,6 +5,8 @@ import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-mo
 import { Heart, X, MoreHorizontal, ShieldAlert, Flag } from "lucide-react";
 import { toast } from "sonner";
 
+import { Capacitor } from "@capacitor/core";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc/client";
 import { ConnectProfileCard } from "./connect-profile-card";
@@ -67,8 +69,10 @@ function SwipeCard({
     (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
       const threshold = 100;
       if (info.offset.x > threshold || info.velocity.x > 500) {
+        if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Medium });
         onSwipe("LIKE");
       } else if (info.offset.x < -threshold || info.velocity.x < -500) {
+        if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Light });
         onSwipe("PASS");
       }
     },

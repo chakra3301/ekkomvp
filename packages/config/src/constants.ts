@@ -234,6 +234,7 @@ export const CONNECT_LIMITS = {
   MESSAGES_PAGE_SIZE: 30,
   MATCHES_PAGE_SIZE: 20,
   LIKES_PAGE_SIZE: 20,
+  HISTORY_PAGE_SIZE: 20,
   // Daily like limits by Connect tier
   DAILY_LIKES_FREE: 10,
   DAILY_LIKES_INFINITE: 999999, // effectively unlimited

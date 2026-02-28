@@ -30,10 +30,10 @@ export default function MainLayout({
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-lg min-h-screen flex flex-col">
-        {/* Top Header */}
-        <header className="sticky top-0 z-20 glass border-b border-white/20 dark:border-white/10">
+    <div className="h-[100dvh] bg-background text-foreground flex flex-col">
+      <div className="mx-auto max-w-lg w-full flex flex-col h-full">
+        {/* Top Header — safe-area aware for native iOS */}
+        <header className="flex-shrink-0 z-20 glass-bar native-safe-top">
           <div className="flex items-center justify-between px-4 py-3">
             <Image src="/logo.png" alt="EKKO Connect" width={32} height={32} />
             <Link href="/settings" className="p-2 rounded-lg hover:bg-white/20 dark:hover:bg-white/10 transition-colors">
@@ -42,13 +42,13 @@ export default function MainLayout({
           </div>
         </header>
 
-        {/* Main Content */}
-        <main className="flex-1 pb-16">
+        {/* Main Content — scrollable area between header and nav */}
+        <main className="flex-1 overflow-y-auto">
           {children}
         </main>
 
-        {/* Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-white/20 dark:border-white/10">
+        {/* Bottom Navigation — safe-area aware for native iOS */}
+        <nav className="flex-shrink-0 z-50 glass-bar native-safe-bottom">
           <div className="mx-auto max-w-lg flex items-center justify-around h-14">
             {navItems.map((item) => {
               const isActive = pathname === item.href ||

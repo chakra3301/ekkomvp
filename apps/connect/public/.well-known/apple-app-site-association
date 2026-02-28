@@ -1,0 +1,20 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "X429L5AGXB.app.ekkoconnect.connect",
+        "paths": [
+          "/discover",
+          "/matches/*",
+          "/profile/*",
+          "/likes",
+          "/settings"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["X429L5AGXB.app.ekkoconnect.connect"]
+  }
+}

@@ -27,13 +27,22 @@ export default async function OnboardingLayout({
       <header className="border-b border-border bg-background">
         <div className="container mx-auto flex h-16 items-center px-4">
           <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo.png"
-              alt="EKKO"
-              width={32}
-              height={32}
-              className="h-8 w-8 object-contain"
-            />
+            <>
+              <Image
+                src="/logo.png"
+                alt="EKKO"
+                width={32}
+                height={32}
+                className="h-8 w-8 object-contain dark:hidden"
+              />
+              <Image
+                src="/logo-dark.png"
+                alt="EKKO"
+                width={32}
+                height={32}
+                className="h-8 w-8 object-contain hidden dark:block"
+              />
+            </>
             <span className="text-xl font-heading font-bold text-foreground">
               EKKO
             </span>

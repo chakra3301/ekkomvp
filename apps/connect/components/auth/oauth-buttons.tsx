@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { Capacitor } from "@capacitor/core";
+import { Browser } from "@capacitor/browser";
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -23,16 +25,42 @@ export function OAuthButtons({ redirectTo }: OAuthButtonsProps) {
     );
     if (redirectTo) callbackUrl.searchParams.set("next", redirectTo);
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: callbackUrl.toString(),
-      },
-    });
+    if (Capacitor.isNativePlatform()) {
+      // On native iOS, Google blocks WKWebView OAuth.
+      // Use skipBrowserRedirect to get the URL, then open in
+      // SFSafariViewController via Capacitor Browser plugin.
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: callbackUrl.toString(),
+          skipBrowserRedirect: true,
+        },
+      });
 
-    if (error) {
-      console.error("OAuth error:", error);
+      if (error || !data.url) {
+        console.error("OAuth error:", error);
+        setIsLoading(null);
+        return;
+      }
+
+      // Open in SFSafariViewController (allowed by Google/Apple)
+      await Browser.open({ url: data.url });
+      // The redirect will hit /api/auth/callback in the WebView via
+      // the native-bridge appUrlOpen listener — browser closes automatically
       setIsLoading(null);
+    } else {
+      // Standard web flow — redirect in the same window
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: callbackUrl.toString(),
+        },
+      });
+
+      if (error) {
+        console.error("OAuth error:", error);
+        setIsLoading(null);
+      }
     }
   };
 

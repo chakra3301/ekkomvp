@@ -97,7 +97,7 @@ export default function MatchesPage() {
             <Link
               key={match.id}
               href={`/matches/${match.id}`}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors border-b border-border/60"
             >
               <Avatar className="h-14 w-14">
                 <AvatarImage

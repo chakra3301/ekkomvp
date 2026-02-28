@@ -94,13 +94,22 @@ export function LeftSidebar() {
           href="/feed"
           className="flex items-center justify-center xl:justify-start gap-2 xl:px-4 py-3 rounded-lg hover:bg-muted transition-colors"
         >
-          <Image
-            src="/logo.png"
-            alt="EKKO"
-            width={32}
-            height={32}
-            className="h-8 w-8 object-contain flex-shrink-0"
-          />
+          <>
+            <Image
+              src="/logo.png"
+              alt="EKKO"
+              width={32}
+              height={32}
+              className="h-8 w-8 object-contain flex-shrink-0 dark:hidden"
+            />
+            <Image
+              src="/logo-dark.png"
+              alt="EKKO"
+              width={32}
+              height={32}
+              className="h-8 w-8 object-contain flex-shrink-0 hidden dark:block"
+            />
+          </>
           <span className="hidden xl:inline text-xl font-heading font-bold text-foreground">
             EKKO
           </span>

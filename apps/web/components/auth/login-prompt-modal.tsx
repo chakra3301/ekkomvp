@@ -27,13 +27,22 @@ export function LoginPromptModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm">
         <DialogHeader className="items-center">
-          <Image
-            src="/logo.png"
-            alt="EKKO"
-            width={48}
-            height={48}
-            className="h-12 w-12 object-contain mb-2"
-          />
+          <>
+            <Image
+              src="/logo.png"
+              alt="EKKO"
+              width={48}
+              height={48}
+              className="h-12 w-12 object-contain mb-2 dark:hidden"
+            />
+            <Image
+              src="/logo-dark.png"
+              alt="EKKO"
+              width={48}
+              height={48}
+              className="h-12 w-12 object-contain mb-2 hidden dark:block"
+            />
+          </>
           <DialogTitle className="text-xl font-bold text-center">
             Join EKKO
           </DialogTitle>
