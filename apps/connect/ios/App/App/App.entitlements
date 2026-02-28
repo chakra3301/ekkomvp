@@ -6,10 +6,7 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:connect.ekkoconnect.app
-applinks:connect.ekkoconnect.app
-applinks:connect.ekkoconnect.app
-applinks:connect.ekkoconnect.app</string>
+		<string>applinks:ekkoconnect.app</string>
 	</array>
 </dict>
 </plist>

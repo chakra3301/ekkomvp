@@ -33,7 +33,7 @@ export default function MainLayout({
     <div className="h-[100dvh] bg-background text-foreground flex flex-col">
       <div className="mx-auto max-w-lg w-full flex flex-col h-full">
         {/* Top Header — safe-area aware for native iOS */}
-        <header className="flex-shrink-0 z-20 glass-bar native-safe-top">
+        <header className="flex-shrink-0 z-20 glass-bar safe-top">
           <div className="flex items-center justify-between px-4 py-3">
             <Image src="/logo.png" alt="EKKO Connect" width={32} height={32} />
             <Link href="/settings" className="p-2 rounded-lg hover:bg-white/20 dark:hover:bg-white/10 transition-colors">
@@ -48,7 +48,7 @@ export default function MainLayout({
         </main>
 
         {/* Bottom Navigation — safe-area aware for native iOS */}
-        <nav className="flex-shrink-0 z-50 glass-bar native-safe-bottom">
+        <nav className="flex-shrink-0 z-50 glass-bar safe-bottom">
           <div className="mx-auto max-w-lg flex items-center justify-around h-14">
             {navItems.map((item) => {
               const isActive = pathname === item.href ||

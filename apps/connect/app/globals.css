@@ -299,12 +299,22 @@
     transform: scale(0.98);
   }
 
-  /* Native iOS safe-area padding — only applies inside Capacitor */
-  .native-app .native-safe-top {
-    padding-top: max(env(safe-area-inset-top, 0px), 48px);
+  /* Safe-area padding for iOS status bar & home indicator */
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
-  .native-app .native-safe-bottom {
-    padding-bottom: max(env(safe-area-inset-bottom, 0px), 2px);
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+}
+
+/* Prevent iOS elastic overscroll on the outer shell */
+html, body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }

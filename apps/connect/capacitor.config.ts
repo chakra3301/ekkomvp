@@ -9,11 +9,13 @@ const config: CapacitorConfig = {
   server: {
     // In dev mode, point to local Next.js dev server
     // In production, load the deployed URL
-    url: isDev ? "http://localhost:3001" : "https://connect.ekkoconnect.app",
+    url: isDev ? "http://localhost:3001" : "https://ekkoconnect.app",
     cleartext: isDev, // Allow HTTP in dev mode
     allowNavigation: [
-      "connect.ekkoconnect.app",
+      "ekkoconnect.app",
+      "*.ekkoconnect.app",
       "*.supabase.co",
+      "*.googleapis.com",
       "accounts.google.com",
       "appleid.apple.com",
     ],
