@@ -320,8 +320,12 @@
   }
 }
 
-/* Prevent iOS elastic overscroll */
+/* Prevent iOS elastic overscroll & fill viewport */
 html, body {
   overflow: hidden;
   overscroll-behavior: none;
+  background-color: hsl(var(--background));
+  height: 100%;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }

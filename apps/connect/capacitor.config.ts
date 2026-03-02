@@ -23,7 +23,7 @@ const config: CapacitorConfig = {
   ios: {
     contentInset: "never",
     allowsLinkPreview: true,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#0f0f0f",
     preferredContentMode: "mobile",
     scheme: "ekkoconnect",
   },
@@ -34,7 +34,7 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchAutoHide: true,
       launchShowDuration: 2000,
-      backgroundColor: "#f5f5f5",
+      backgroundColor: "#0f0f0f",
       showSpinner: false,
       splashFullScreen: true,
       splashImmersive: true,
