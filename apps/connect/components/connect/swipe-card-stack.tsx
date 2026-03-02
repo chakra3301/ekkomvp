@@ -473,21 +473,6 @@ export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
         </AnimatePresence>
       </div>
 
-      {/* Action buttons — overlapping bottom of card */}
-      <div className="absolute bottom-6 left-0 right-0 z-20 flex items-center justify-center gap-6">
-        <button
-          onClick={() => handleSwipe("PASS")}
-          className="w-14 h-14 rounded-full btn-liquid-glass flex items-center justify-center hover:border-red-400/50 transition-all press-effect shadow-lg"
-        >
-          <X className="h-7 w-7 text-red-500" />
-        </button>
-        <button
-          onClick={() => handleSwipe("LIKE")}
-          className="w-16 h-16 rounded-full btn-liquid-glass flex items-center justify-center hover:border-primary/50 transition-all press-effect shadow-lg"
-        >
-          <Heart className="h-8 w-8 text-primary" />
-        </button>
-      </div>
 
       {/* Report dialog */}
       {reportTarget && (
