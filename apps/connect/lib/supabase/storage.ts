@@ -57,6 +57,17 @@ export async function uploadConnectModel(
   return uploadFile("portfolio", path, file);
 }
 
+export async function uploadChatImage(
+  userId: string,
+  matchId: string,
+  file: File
+): Promise<string> {
+  const ext = file.name.split(".").pop();
+  const timestamp = Date.now();
+  const path = `connect/chat/${matchId}/${userId}-${timestamp}.${ext}`;
+  return uploadFile("portfolio", path, file);
+}
+
 // URL-based media type detection
 export function isVideoUrl(url: string): boolean {
   return /\.(mp4|webm|mov)(\?|$)/i.test(url) || url.includes("/video-");

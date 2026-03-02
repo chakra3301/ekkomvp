@@ -11,12 +11,17 @@ import {
   UserX,
   ShieldAlert,
   Flag,
+  Check,
+  CheckCheck,
+  ImagePlus,
 } from "lucide-react";
+import Image from "next/image";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { useProfile, useRealtimeChat } from "@/hooks";
 import { trpc } from "@/lib/trpc/client";
+import { uploadChatImage } from "@/lib/supabase/storage";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,7 +50,9 @@ export default function ChatPage({
   const [message, setMessage] = useState("");
   const [reportOpen, setReportOpen] = useState(false);
   const [profileSheetOpen, setProfileSheetOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: match, isLoading: matchLoading } =
     trpc.connectMatch.getMatch.useQuery(params.matchId, {
@@ -66,11 +73,9 @@ export default function ChatPage({
   const blockUser = trpc.block.block.useMutation();
   const utils = trpc.useUtils();
 
-  // Real-time messages + typing indicators
-  const { isOtherTyping, newMessageSignal, sendTyping } = useRealtimeChat(
-    params.matchId,
-    user?.id
-  );
+  // Real-time messages + typing indicators + read receipts
+  const { isOtherTyping, newMessageSignal, readSignal, sendTyping, sendRead } =
+    useRealtimeChat(params.matchId, user?.id);
 
   // Refetch messages when realtime signals a new message
   useEffect(() => {
@@ -79,12 +84,20 @@ export default function ChatPage({
     }
   }, [newMessageSignal, params.matchId, utils]);
 
-  // Mark messages as read
+  // Mark messages as read + broadcast read receipt
   useEffect(() => {
     if (messagesData?.messages?.length) {
       markAsRead.mutate({ matchId: params.matchId });
+      sendRead();
     }
-  }, [messagesData?.messages?.length, params.matchId]);
+  }, [messagesData?.messages?.length, params.matchId, sendRead]);
+
+  // Refetch messages when other user reads (to update checkmarks)
+  useEffect(() => {
+    if (readSignal > 0) {
+      utils.connectChat.getMessages.invalidate({ matchId: params.matchId });
+    }
+  }, [readSignal, params.matchId, utils]);
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -126,6 +139,37 @@ export default function ChatPage({
       });
     } catch {
       toast.error("Failed to send message");
+    }
+  };
+
+  const handleImagePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    e.target.value = "";
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const imageUrl = await uploadChatImage(user.id, params.matchId, file);
+      await sendMessage.mutateAsync({
+        matchId: params.matchId,
+        imageUrl,
+      });
+      await utils.connectChat.getMessages.invalidate({
+        matchId: params.matchId,
+      });
+    } catch {
+      toast.error("Failed to send image");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -230,23 +274,52 @@ export default function ChatPage({
             >
               <div
                 className={cn(
-                  "max-w-[75%] px-4 py-2 rounded-2xl text-sm",
+                  "max-w-[75%] rounded-2xl text-sm overflow-hidden",
+                  msg.imageUrl ? "" : "px-4 py-2",
                   isMine
                     ? "chat-bubble-sent text-primary-foreground rounded-br-md"
                     : "btn-liquid-glass rounded-bl-md"
                 )}
               >
-                <p>{msg.content}</p>
-                <p
+                {msg.imageUrl && (
+                  <div className="relative w-48 aspect-[4/3]">
+                    <Image
+                      src={msg.imageUrl}
+                      alt="Shared photo"
+                      fill
+                      sizes="192px"
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+                {msg.content && !msg.imageUrl && (
+                  <p>{msg.content}</p>
+                )}
+                <div
                   className={cn(
-                    "text-[10px] mt-1",
-                    isMine
-                      ? "text-primary-foreground/60"
-                      : "text-muted-foreground"
+                    "flex items-center gap-1",
+                    msg.imageUrl ? "px-3 py-1.5" : "mt-1",
+                    isMine ? "justify-end" : ""
                   )}
                 >
-                  {formatRelativeTime(msg.createdAt)}
-                </p>
+                  <span
+                    className={cn(
+                      "text-[10px]",
+                      isMine
+                        ? "text-primary-foreground/60"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {formatRelativeTime(msg.createdAt)}
+                  </span>
+                  {isMine && (
+                    msg.readAt ? (
+                      <CheckCheck className="h-3 w-3 text-sky-300" />
+                    ) : (
+                      <Check className="h-3 w-3 text-primary-foreground/50" />
+                    )
+                  )}
+                </div>
               </div>
             </div>
           );
@@ -268,6 +341,24 @@ export default function ChatPage({
 
       {/* Message Input */}
       <div className="flex-shrink-0 flex items-center gap-2 px-4 py-3 glass-bar">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImagePick}
+        />
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground"
+        >
+          {isUploading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <ImagePlus className="h-5 w-5" />
+          )}
+        </button>
         <Input
           value={message}
           onChange={(e) => {

@@ -10,6 +10,7 @@ export function useRealtimeChat(
 ) {
   const [isOtherTyping, setIsOtherTyping] = useState(false);
   const [newMessageSignal, setNewMessageSignal] = useState(0);
+  const [readSignal, setReadSignal] = useState(0);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastTypingSentRef = useRef(0);
@@ -48,6 +49,13 @@ export function useRealtimeChat(
       }
     });
 
+    // Listen for read receipt signals
+    channel.on("broadcast", { event: "read" }, (payload) => {
+      if (payload.payload?.userId !== userId) {
+        setReadSignal((prev) => prev + 1);
+      }
+    });
+
     channel.subscribe();
     channelRef.current = channel;
 
@@ -72,5 +80,16 @@ export function useRealtimeChat(
     });
   }, [userId]);
 
-  return { isOtherTyping, newMessageSignal, sendTyping };
+  // Broadcast read receipt
+  const sendRead = useCallback(() => {
+    if (!channelRef.current || !userId) return;
+
+    channelRef.current.send({
+      type: "broadcast",
+      event: "read",
+      payload: { userId },
+    });
+  }, [userId]);
+
+  return { isOtherTyping, newMessageSignal, readSignal, sendTyping, sendRead };
 }

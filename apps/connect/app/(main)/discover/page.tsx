@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { LayoutGrid, Layers, Loader2, History } from "lucide-react";
 import { toast } from "sonner";
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { SwipeCardStack } from "@/components/connect/swipe-card-stack";
 import { BrowseGrid } from "@/components/connect/browse-grid";
 import { HistoryGrid } from "@/components/connect/history-grid";
+import { MatchCelebration } from "@/components/connect/match-celebration";
 
 const FILTER_KEY = "ekko-connect-filters";
 
@@ -34,6 +35,12 @@ function loadFilters(): DiscoveryFilters | null {
 export default function DiscoverPage() {
   const [viewMode, setViewMode] = useState<"stack" | "grid" | "history">("stack");
   const [filters, setFilters] = useState<DiscoveryFilters | null>(null);
+  const [matchData, setMatchData] = useState<{
+    matchId: string;
+    displayName: string;
+    avatarUrl?: string | null;
+    featuredImage?: string | null;
+  } | null>(null);
   const { user } = useProfile();
 
   useEffect(() => {
@@ -77,21 +84,41 @@ export default function DiscoverPage() {
       { enabled: !!connectProfile && viewMode === "history" }
     );
 
+  const utils = trpc.useUtils();
   const swipeMutation = trpc.connectMatch.swipe.useMutation();
+  const undoMutation = trpc.connectMatch.undoLastSwipe.useMutation();
+  const [canUndo, setCanUndo] = useState(false);
+  const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleSwipe = async (targetUserId: string, type: "LIKE" | "PASS") => {
+  const handleSwipe = async (targetUserId: string, type: "LIKE" | "PASS", matchNote?: string) => {
     try {
       const result = await swipeMutation.mutateAsync({
         targetUserId,
         type,
+        matchNote,
       });
 
-      if (result.matched) {
-        toast.success("It's a Match! You can now chat.", {
-          action: {
-            label: "View",
-            onClick: () => (window.location.href = "/matches"),
-          },
+      // Enable undo for 30 seconds after swipe
+      if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+      setCanUndo(true);
+      undoTimerRef.current = setTimeout(() => setCanUndo(false), 30_000);
+
+      if (result.matched && result.matchId) {
+        // Find the matched profile from the discovery queue
+        const matchedProfile = profiles.find(
+          (p: any) => p.userId === targetUserId
+        );
+        const mediaSlots = (matchedProfile?.mediaSlots || []) as any[];
+        const firstPhoto = mediaSlots.find(
+          (s: any) => s.mediaType === "PHOTO"
+        );
+
+        setMatchData({
+          matchId: result.matchId,
+          displayName:
+            matchedProfile?.user?.profile?.displayName || "Your Match",
+          avatarUrl: matchedProfile?.user?.profile?.avatarUrl,
+          featuredImage: firstPhoto?.url,
         });
       }
     } catch (error: unknown) {
@@ -100,6 +127,20 @@ export default function DiscoverPage() {
       if (message.includes("Daily like limit")) {
         toast.error(message);
       }
+    }
+  };
+
+  const handleUndo = async () => {
+    try {
+      await undoMutation.mutateAsync();
+      setCanUndo(false);
+      if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+      // Refetch discovery queue to get the profile back
+      utils.connectDiscover.getDiscoveryQueue.invalidate();
+      toast.success("Swipe undone");
+    } catch {
+      toast.error("Couldn't undo — too late");
+      setCanUndo(false);
     }
   };
 
@@ -138,6 +179,16 @@ export default function DiscoverPage() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      {/* Match celebration overlay */}
+      <MatchCelebration
+        matchId={matchData?.matchId || ""}
+        displayName={matchData?.displayName || ""}
+        avatarUrl={matchData?.avatarUrl}
+        featuredImage={matchData?.featuredImage}
+        open={!!matchData}
+        onClose={() => setMatchData(null)}
+      />
+
       {/* View mode toggle — pinned sub-header */}
       <div className="flex-shrink-0 flex justify-end px-4 py-2">
         <div className="flex gap-1 p-1 glass-card">
@@ -195,7 +246,12 @@ export default function DiscoverPage() {
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : viewMode === "stack" ? (
-          <SwipeCardStack profiles={profiles as any} onSwipe={handleSwipe} />
+          <SwipeCardStack
+            profiles={profiles as any}
+            onSwipe={handleSwipe}
+            onUndo={handleUndo}
+            canUndo={canUndo && !undoMutation.isPending}
+          />
         ) : (
           <BrowseGrid
             profiles={profiles as any}

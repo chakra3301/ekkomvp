@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
-import { Heart, X, MoreHorizontal, ShieldAlert, Flag, MapPin, ChevronDown, Infinity, Compass } from "lucide-react";
+import { Heart, X, MoreHorizontal, ShieldAlert, Flag, MapPin, ChevronDown, Infinity, Compass, Send, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Capacitor } from "@capacitor/core";
@@ -45,7 +45,9 @@ interface ProfileData {
 
 interface SwipeCardStackProps {
   profiles: ProfileData[];
-  onSwipe: (targetUserId: string, type: "LIKE" | "PASS") => void;
+  onSwipe: (targetUserId: string, type: "LIKE" | "PASS", matchNote?: string) => void;
+  onUndo?: () => void;
+  canUndo?: boolean;
 }
 
 const TEST_PROFILES: ProfileData[] = [
@@ -404,12 +406,15 @@ function SwipeCard({
   );
 }
 
-export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
+export function SwipeCardStack({ profiles, onSwipe, onUndo, canUndo }: SwipeCardStackProps) {
   const activeProfiles = profiles.length > 0 ? profiles : TEST_PROFILES;
   const isTestMode = profiles.length === 0;
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [reportTarget, setReportTarget] = useState<string | null>(null);
+  const [pendingLike, setPendingLike] = useState<string | null>(null);
+  const [likeNote, setLikeNote] = useState("");
+  const noteInputRef = useRef<HTMLInputElement>(null);
 
   const blockUser = trpc.block.block.useMutation();
 
@@ -417,12 +422,32 @@ export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
     (type: "LIKE" | "PASS") => {
       const current = activeProfiles[currentIndex];
       if (!current) return;
+
+      if (type === "LIKE" && !isTestMode) {
+        // Show note prompt for likes
+        setPendingLike(current.userId);
+        setLikeNote("");
+        setCurrentIndex((i) => i + 1);
+        setTimeout(() => noteInputRef.current?.focus(), 300);
+        return;
+      }
+
       if (!isTestMode) {
         onSwipe(current.userId, type);
       }
       setCurrentIndex((i) => i + 1);
     },
     [activeProfiles, currentIndex, onSwipe, isTestMode]
+  );
+
+  const submitLike = useCallback(
+    (note?: string) => {
+      if (!pendingLike) return;
+      onSwipe(pendingLike, "LIKE", note?.trim() || undefined);
+      setPendingLike(null);
+      setLikeNote("");
+    },
+    [pendingLike, onSwipe]
   );
 
   const handleBlock = useCallback(
@@ -460,6 +485,21 @@ export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
 
   return (
     <div className="relative h-full overflow-hidden">
+      {/* Undo button */}
+      {canUndo && onUndo && (
+        <div className="absolute top-3 left-4 z-20">
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={onUndo}
+            className="p-2.5 rounded-full glass-card shadow-lg"
+          >
+            <Undo2 className="h-4 w-4 text-muted-foreground" />
+          </motion.button>
+        </div>
+      )}
+
       {/* Card stack — fills entire area */}
       <div className="absolute inset-0 mx-4 my-2">
         <AnimatePresence>
@@ -476,6 +516,55 @@ export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
         </AnimatePresence>
       </div>
 
+
+      {/* Like note prompt */}
+      <AnimatePresence>
+        {pendingLike && (
+          <motion.div
+            className="absolute inset-x-0 bottom-0 z-30 mx-4 mb-4"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
+            <div className="glass-card p-4 rounded-2xl">
+              <div className="flex items-center gap-2 mb-3">
+                <Heart className="h-4 w-4 text-primary fill-primary" />
+                <p className="text-sm font-semibold">Add a note?</p>
+                <span className="text-xs text-muted-foreground ml-auto">Optional</span>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  ref={noteInputRef}
+                  value={likeNote}
+                  onChange={(e) => setLikeNote(e.target.value)}
+                  placeholder="Say something nice..."
+                  maxLength={200}
+                  className="flex-1 px-3 py-2 text-sm rounded-xl bg-background/50 border border-border/50 outline-none focus:border-primary/50 transition-colors"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      submitLike(likeNote);
+                    }
+                  }}
+                />
+                <button
+                  onClick={() => submitLike(likeNote)}
+                  className="p-2 rounded-xl bg-primary text-primary-foreground"
+                >
+                  <Send className="h-4 w-4" />
+                </button>
+              </div>
+              <button
+                onClick={() => submitLike()}
+                className="w-full mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
+              >
+                Skip
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Report dialog */}
       {reportTarget && (

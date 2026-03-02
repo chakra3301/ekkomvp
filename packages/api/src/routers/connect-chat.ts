@@ -63,11 +63,16 @@ export const connectChatRouter = router({
     .input(
       z.object({
         matchId: z.string().uuid(),
-        content: z.string().min(1).max(CONNECT_LIMITS.MESSAGE_MAX),
+        content: z.string().max(CONNECT_LIMITS.MESSAGE_MAX).default(""),
+        imageUrl: z.string().url().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { matchId, content } = input;
+      const { matchId, content, imageUrl } = input;
+
+      if (!content && !imageUrl) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Message must have content or an image" });
+      }
 
       // Verify user is in this match and it's active
       const match = await prisma.connectMatch.findUnique({
@@ -92,7 +97,8 @@ export const connectChatRouter = router({
         data: {
           matchId,
           senderId: ctx.user.id,
-          content,
+          content: content || (imageUrl ? "📷 Photo" : ""),
+          imageUrl,
         },
         include: {
           sender: {

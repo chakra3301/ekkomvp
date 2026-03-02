@@ -276,6 +276,47 @@ export const connectMatchRouter = router({
       return match;
     }),
 
+  undoLastSwipe: protectedProcedure.mutation(async ({ ctx }) => {
+    const userId = ctx.user.id;
+
+    // Find the most recent swipe (within the last 30 seconds)
+    const thirtySecondsAgo = new Date(Date.now() - 30_000);
+
+    const lastSwipe = await prisma.connectSwipe.findFirst({
+      where: {
+        userId,
+        createdAt: { gte: thirtySecondsAgo },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!lastSwipe) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "No recent swipe to undo",
+      });
+    }
+
+    // Delete the swipe
+    await prisma.connectSwipe.delete({
+      where: { id: lastSwipe.id },
+    });
+
+    // If it was a LIKE, decrement likes received counter
+    if (lastSwipe.type === "LIKE") {
+      await prisma.connectProfile.updateMany({
+        where: { userId: lastSwipe.targetUserId },
+        data: { likesReceivedCount: { decrement: 1 } },
+      });
+    }
+
+    return {
+      success: true,
+      undoneTargetUserId: lastSwipe.targetUserId,
+      undoneType: lastSwipe.type,
+    };
+  }),
+
   unmatch: protectedProcedure
     .input(z.string().uuid())
     .mutation(async ({ ctx, input: matchId }) => {
