@@ -136,9 +136,9 @@ export default function ChatPage({
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-7rem)]">
+    <div className="flex flex-col h-full">
       {/* Chat Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+      <div className="flex-shrink-0 flex items-center gap-3 px-4 py-3 border-b border-border">
         <Link href="/matches" className="p-1">
           <ArrowLeft className="h-5 w-5" />
         </Link>
@@ -224,7 +224,7 @@ export default function ChatPage({
       </div>
 
       {/* Message Input */}
-      <div className="flex items-center gap-2 px-4 py-3 border-t border-border">
+      <div className="flex-shrink-0 flex items-center gap-2 px-4 py-3 border-t border-border">
         <Input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
