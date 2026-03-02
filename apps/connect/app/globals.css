@@ -299,6 +299,17 @@
     transform: scale(0.98);
   }
 
+  /* Sent chat bubble — glass with primary tint */
+  .chat-bubble-sent {
+    background: hsl(var(--primary) / 0.85);
+    backdrop-filter: blur(60px) saturate(180%);
+    -webkit-backdrop-filter: blur(60px) saturate(180%);
+    border: 1px solid hsl(var(--primary) / 0.5);
+    box-shadow:
+      0 8px 24px hsl(var(--primary) / 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+
   /* Safe-area padding for iOS status bar & home indicator */
   .safe-top {
     padding-top: env(safe-area-inset-top, 0px);
