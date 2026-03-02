@@ -32,10 +32,10 @@ export default function MainLayout({
   return (
     <div className="fixed inset-0 bg-background text-foreground flex flex-col">
       <div className="mx-auto max-w-lg w-full flex flex-col h-full">
-        {/* Top Header — safe-area aware for native iOS */}
+        {/* Top Header — 44px standard iOS nav bar + safe area */}
         <header className="flex-shrink-0 z-20 glass-bar safe-top">
-          <div className="flex items-center justify-between px-4 py-3">
-            <Image src="/logo.png" alt="EKKO Connect" width={32} height={32} className="dark:brightness-0 dark:invert" />
+          <div className="flex items-center justify-between px-4 h-[44px]">
+            <Image src="/logo.png" alt="EKKO Connect" width={28} height={28} className="dark:brightness-0 dark:invert" />
             <Link href="/settings" className="p-2 rounded-lg hover:bg-white/20 dark:hover:bg-white/10 transition-colors">
               <Settings className="h-5 w-5 text-muted-foreground" />
             </Link>
@@ -47,9 +47,9 @@ export default function MainLayout({
           {children}
         </main>
 
-        {/* Bottom Navigation — safe-area aware for native iOS */}
-        <nav className="flex-shrink-0 z-50 glass-bar safe-bottom">
-          <div className="mx-auto max-w-lg flex items-center justify-around h-14">
+        {/* Bottom Tab Bar — 49px standard iOS tab bar + safe area spacer */}
+        <nav className="flex-shrink-0 z-50 glass-bar">
+          <div className="mx-auto max-w-lg flex items-center justify-around h-[49px]">
             {navItems.map((item) => {
               const isActive = pathname === item.href ||
                 pathname?.startsWith(item.href);
@@ -77,6 +77,8 @@ export default function MainLayout({
               );
             })}
           </div>
+          {/* Safe area spacer — glass-bar background extends through */}
+          <div className="safe-bottom" />
         </nav>
       </div>
     </div>
