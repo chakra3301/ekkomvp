@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc/client";
 import { ConnectProfileCard } from "./connect-profile-card";
 import { ReportDialog } from "./report-dialog";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -188,7 +187,7 @@ function SwipeCard({
 
   return (
     <motion.div
-      className="absolute inset-0 flex items-center justify-center"
+      className="absolute inset-0"
       style={{ x, rotate, zIndex: isTop ? 10 : 0 }}
       drag={isTop && !isExpanded ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
@@ -243,16 +242,13 @@ function SwipeCard({
       {/* 3D perspective container */}
       <div
         ref={cardRef}
-        className={cn(
-          "w-full transition-all duration-300",
-          isExpanded ? "h-full" : "h-full"
-        )}
+        className="w-full h-full"
         style={{ perspective: "1000px" }}
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
       >
         <motion.div
-          className="relative w-full h-full rounded-3xl overflow-hidden"
+          className="relative w-full h-full rounded-2xl overflow-hidden"
           animate={{
             rotateX: isExpanded ? 0 : rotation.x,
             rotateY: isExpanded ? 0 : rotation.y,
@@ -273,7 +269,7 @@ function SwipeCard({
           {/* Shine overlay — collapsed only */}
           {!isExpanded && (
             <motion.div
-              className="absolute inset-0 z-10 pointer-events-none rounded-3xl"
+              className="absolute inset-0 z-10 pointer-events-none rounded-2xl"
               animate={{ opacity: isPressed ? 0.4 : 0 }}
               style={{
                 background: `linear-gradient(
@@ -291,7 +287,7 @@ function SwipeCard({
           {/* Glow border — collapsed only */}
           {!isExpanded && (
             <div
-              className="absolute inset-0 z-10 pointer-events-none rounded-3xl transition-opacity duration-300"
+              className="absolute inset-0 z-10 pointer-events-none rounded-2xl transition-opacity duration-300"
               style={{
                 border: `1.5px solid hsl(${accentColor} / ${isPressed ? 0.5 : 0.15})`,
                 boxShadow: isPressed
@@ -304,7 +300,7 @@ function SwipeCard({
           {/* Ambient glow — collapsed only */}
           {!isExpanded && (
             <motion.div
-              className="absolute inset-0 pointer-events-none rounded-3xl"
+              className="absolute inset-0 pointer-events-none rounded-2xl"
               animate={{ opacity: isPressed ? 0.3 : 0.1 }}
               style={{
                 background: `radial-gradient(ellipse at center, hsl(${accentColor} / 0.1) 0%, transparent 70%)`,
@@ -375,7 +371,6 @@ function SwipeCard({
           ) : (
             /* EXPANDED: Full profile */
             <div className="h-full flex flex-col bg-card">
-              {/* Collapse button */}
               <button
                 onClick={handleCardTap}
                 className="flex-shrink-0 flex items-center justify-center py-2 bg-card border-b border-border/50"
@@ -449,7 +444,7 @@ export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
 
   if (visibleProfiles.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] px-4 text-center">
+      <div className="flex items-center justify-center h-full px-4 text-center">
         <div className="glass-card p-8 max-w-sm w-full">
           <h3 className="text-lg font-bold mb-2">No more profiles</h3>
           <p className="text-sm text-muted-foreground">
@@ -461,9 +456,9 @@ export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
   }
 
   return (
-    <div className="relative flex flex-col h-[calc(100vh-10rem)]">
-      {/* Card stack */}
-      <div className="relative flex-1 mx-4">
+    <div className="relative h-full overflow-hidden">
+      {/* Card stack — fills entire area */}
+      <div className="absolute inset-0 mx-4 my-2">
         <AnimatePresence>
           {visibleProfiles.map((profile, i) => (
             <SwipeCard
@@ -478,17 +473,17 @@ export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
         </AnimatePresence>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex items-center justify-center gap-6 py-4">
+      {/* Action buttons — overlapping bottom of card */}
+      <div className="absolute bottom-6 left-0 right-0 z-20 flex items-center justify-center gap-6">
         <button
           onClick={() => handleSwipe("PASS")}
-          className="w-14 h-14 rounded-full btn-liquid-glass flex items-center justify-center hover:border-red-400/50 transition-all press-effect"
+          className="w-14 h-14 rounded-full btn-liquid-glass flex items-center justify-center hover:border-red-400/50 transition-all press-effect shadow-lg"
         >
           <X className="h-7 w-7 text-red-500" />
         </button>
         <button
           onClick={() => handleSwipe("LIKE")}
-          className="w-16 h-16 rounded-full btn-liquid-glass flex items-center justify-center hover:border-primary/50 transition-all press-effect"
+          className="w-16 h-16 rounded-full btn-liquid-glass flex items-center justify-center hover:border-primary/50 transition-all press-effect shadow-lg"
         >
           <Heart className="h-8 w-8 text-primary" />
         </button>

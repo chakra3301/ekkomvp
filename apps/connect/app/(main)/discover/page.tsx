@@ -137,9 +137,9 @@ export default function DiscoverPage() {
   const profiles = discoveryQueue || [];
 
   return (
-    <div>
-      {/* View mode toggle */}
-      <div className="flex justify-end px-4 py-2">
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* View mode toggle — pinned sub-header */}
+      <div className="flex-shrink-0 flex justify-end px-4 py-2">
         <div className="flex gap-1 p-1 glass-card">
           <button
             onClick={() => setViewMode("stack")}
@@ -177,28 +177,34 @@ export default function DiscoverPage() {
         </div>
       </div>
 
-      {viewMode === "history" ? (
-        historyLoading ? (
+      {/* Content area */}
+      <div className={cn(
+        "flex-1 min-h-0",
+        viewMode === "stack" ? "overflow-hidden" : "overflow-y-auto"
+      )}>
+        {viewMode === "history" ? (
+          historyLoading ? (
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <HistoryGrid profiles={(historyData?.items || []) as any} />
+          )
+        ) : queueLoading ? (
           <div className="flex items-center justify-center min-h-[60vh]">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
+        ) : viewMode === "stack" ? (
+          <SwipeCardStack profiles={profiles as any} onSwipe={handleSwipe} />
         ) : (
-          <HistoryGrid profiles={(historyData?.items || []) as any} />
-        )
-      ) : queueLoading ? (
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </div>
-      ) : viewMode === "stack" ? (
-        <SwipeCardStack profiles={profiles as any} onSwipe={handleSwipe} />
-      ) : (
-        <BrowseGrid
-          profiles={profiles as any}
-          onSelect={(profile) => {
-            handleSwipe(profile.userId, "LIKE");
-          }}
-        />
-      )}
+          <BrowseGrid
+            profiles={profiles as any}
+            onSelect={(profile) => {
+              handleSwipe(profile.userId, "LIKE");
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }
