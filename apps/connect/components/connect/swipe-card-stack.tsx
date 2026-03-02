@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
-import { Heart, X, MoreHorizontal, ShieldAlert, Flag, MapPin, ChevronDown, Infinity } from "lucide-react";
+import { Heart, X, MoreHorizontal, ShieldAlert, Flag, MapPin, ChevronDown, Infinity, Compass } from "lucide-react";
 import { toast } from "sonner";
 
 import { Capacitor } from "@capacitor/core";
@@ -444,11 +444,14 @@ export function SwipeCardStack({ profiles, onSwipe }: SwipeCardStackProps) {
 
   if (visibleProfiles.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full px-4 text-center">
+      <div className="flex items-center justify-center h-full px-6 text-center">
         <div className="glass-card p-8 max-w-sm w-full">
-          <h3 className="text-lg font-bold mb-2">No more profiles</h3>
-          <p className="text-sm text-muted-foreground">
-            Check back later for new creatives in your area.
+          <div className="mx-auto mb-5 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+            <Compass className="h-8 w-8 text-primary" />
+          </div>
+          <h3 className="text-lg font-bold font-heading mb-2">You&apos;ve seen everyone</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            No new creatives right now. Try expanding your filters in Settings or check back soon.
           </p>
         </div>
       </div>

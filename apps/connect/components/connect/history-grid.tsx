@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { MapPin, Heart, X } from "lucide-react";
+import { MapPin, Heart, X, History } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import type { MediaSlot } from "./media-slot-grid";
@@ -30,10 +30,16 @@ interface HistoryGridProps {
 export function HistoryGrid({ profiles }: HistoryGridProps) {
   if (profiles.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[40vh] px-4 text-center">
-        <p className="text-muted-foreground">
-          No previously seen profiles yet. Start swiping to build your history!
-        </p>
+      <div className="flex items-center justify-center min-h-[40vh] px-6 text-center">
+        <div className="glass-card p-8 max-w-sm w-full">
+          <div className="mx-auto mb-5 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+            <History className="h-8 w-8 text-primary" />
+          </div>
+          <h3 className="text-lg font-bold font-heading mb-2">No history yet</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Profiles you&apos;ve swiped on will appear here so you can look back.
+          </p>
+        </div>
       </div>
     );
   }

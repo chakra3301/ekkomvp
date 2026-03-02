@@ -15,7 +15,7 @@ import {
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
-import { useProfile } from "@/hooks";
+import { useProfile, useRealtimeChat } from "@/hooks";
 import { trpc } from "@/lib/trpc/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -26,8 +26,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { getInitials, formatRelativeTime } from "@/lib/utils";
 import { ReportDialog } from "@/components/connect/report-dialog";
+import { ConnectProfileCard } from "@/components/connect/connect-profile-card";
 
 export default function ChatPage({
   params,
@@ -38,6 +44,7 @@ export default function ChatPage({
   const { user } = useProfile();
   const [message, setMessage] = useState("");
   const [reportOpen, setReportOpen] = useState(false);
+  const [profileSheetOpen, setProfileSheetOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: match, isLoading: matchLoading } =
@@ -50,7 +57,6 @@ export default function ChatPage({
       { matchId: params.matchId, limit: 50 },
       {
         enabled: !!user,
-        refetchInterval: 5000,
       }
     );
 
@@ -59,6 +65,19 @@ export default function ChatPage({
   const unmatch = trpc.connectMatch.unmatch.useMutation();
   const blockUser = trpc.block.block.useMutation();
   const utils = trpc.useUtils();
+
+  // Real-time messages + typing indicators
+  const { isOtherTyping, newMessageSignal, sendTyping } = useRealtimeChat(
+    params.matchId,
+    user?.id
+  );
+
+  // Refetch messages when realtime signals a new message
+  useEffect(() => {
+    if (newMessageSignal > 0) {
+      utils.connectChat.getMessages.invalidate({ matchId: params.matchId });
+    }
+  }, [newMessageSignal, params.matchId, utils]);
 
   // Mark messages as read
   useEffect(() => {
@@ -142,15 +161,21 @@ export default function ChatPage({
         <Link href="/matches" className="p-1">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={otherUser.profile?.avatarUrl || undefined} />
-          <AvatarFallback className="bg-primary text-primary-foreground">
-            {getInitials(displayName)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold truncate">{displayName}</p>
-        </div>
+        <button
+          onClick={() => setProfileSheetOpen(true)}
+          className="flex items-center gap-3 flex-1 min-w-0"
+        >
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={otherUser.profile?.avatarUrl || undefined} />
+            <AvatarFallback className="bg-primary text-primary-foreground">
+              {getInitials(displayName)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 text-left">
+            <p className="font-semibold truncate">{displayName}</p>
+            <p className="text-[10px] text-muted-foreground">Tap to view profile</p>
+          </div>
+        </button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="p-2 rounded-lg hover:bg-muted transition-colors">
@@ -183,8 +208,14 @@ export default function ChatPage({
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
         {messages.length === 0 && (
-          <div className="text-center text-muted-foreground text-sm py-8">
-            Say hello to your match!
+          <div className="flex flex-col items-center justify-center py-16 text-center px-4">
+            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+              <span className="text-2xl">👋</span>
+            </div>
+            <p className="font-semibold mb-1">You matched with {displayName}!</p>
+            <p className="text-sm text-muted-foreground">
+              Break the ice — say something about their profile.
+            </p>
           </div>
         )}
         {messages.map((msg) => {
@@ -220,6 +251,18 @@ export default function ChatPage({
             </div>
           );
         })}
+        {/* Typing indicator */}
+        {isOtherTyping && (
+          <div className="flex justify-start">
+            <div className="btn-liquid-glass rounded-2xl rounded-bl-md px-4 py-2">
+              <div className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:0ms]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:150ms]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/60 animate-bounce [animation-delay:300ms]" />
+              </div>
+            </div>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -227,7 +270,10 @@ export default function ChatPage({
       <div className="flex-shrink-0 flex items-center gap-2 px-4 py-3 glass-bar">
         <Input
           value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          onChange={(e) => {
+            setMessage(e.target.value);
+            sendTyping();
+          }}
           placeholder="Type a message..."
           className="flex-1"
           onKeyDown={(e) => {
@@ -252,6 +298,30 @@ export default function ChatPage({
         open={reportOpen}
         onOpenChange={setReportOpen}
       />
+
+      {/* Profile Sheet */}
+      <Sheet open={profileSheetOpen} onOpenChange={setProfileSheetOpen}>
+        <SheetContent side="bottom" className="h-[85vh] p-0 overflow-y-auto rounded-t-3xl">
+          <SheetTitle className="sr-only">{displayName}&apos;s Profile</SheetTitle>
+          {otherUser.connectProfile && (
+            <ConnectProfileCard
+              displayName={displayName}
+              avatarUrl={otherUser.profile?.avatarUrl}
+              headline={otherUser.connectProfile.headline}
+              location={otherUser.connectProfile.location}
+              lookingFor={otherUser.connectProfile.lookingFor}
+              bio={otherUser.connectProfile.bio}
+              mediaSlots={(otherUser.connectProfile.mediaSlots as any[]) || []}
+              prompts={(otherUser.connectProfile.prompts as any[]) || []}
+              instagramHandle={otherUser.connectProfile.instagramHandle}
+              twitterHandle={otherUser.connectProfile.twitterHandle}
+              websiteUrl={otherUser.connectProfile.websiteUrl}
+              connectTier={otherUser.connectProfile.connectTier}
+              className="rounded-none"
+            />
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

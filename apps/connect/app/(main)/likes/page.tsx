@@ -72,13 +72,14 @@ export default function LikesPage() {
 
   if (likes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
         <div className="glass-card p-8 max-w-sm w-full">
-          <Heart className="h-12 w-12 text-primary mx-auto mb-4" />
-          <h2 className="text-xl font-bold font-heading mb-2">Likes</h2>
-          <p className="text-muted-foreground">
-            People who liked your profile will appear here. Start swiping to
-            get noticed!
+          <div className="mx-auto mb-5 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+            <Heart className="h-8 w-8 text-primary" />
+          </div>
+          <h2 className="text-xl font-bold font-heading mb-2">No likes yet</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            When someone swipes right on your profile, they&apos;ll show up here. A strong profile with great photos gets more attention.
           </p>
         </div>
       </div>

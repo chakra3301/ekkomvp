@@ -32,14 +32,21 @@ export default function MatchesPage() {
 
   if (matches.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-6 text-center">
         <div className="glass-card p-8 max-w-sm w-full">
-          <MessageCircle className="h-12 w-12 text-primary mx-auto mb-4" />
-          <h2 className="text-xl font-bold font-heading mb-2">Matches</h2>
-          <p className="text-muted-foreground">
-            Your matches and conversations will appear here. Keep swiping to
-            find your creative match!
+          <div className="mx-auto mb-5 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+            <MessageCircle className="h-8 w-8 text-primary" />
+          </div>
+          <h2 className="text-xl font-bold font-heading mb-2">No matches yet</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            When you and another creative both swipe right, you&apos;ll match and can start chatting here.
           </p>
+          <Link
+            href="/discover"
+            className="inline-block mt-5 text-sm font-medium text-primary hover:underline"
+          >
+            Start discovering
+          </Link>
         </div>
       </div>
     );
