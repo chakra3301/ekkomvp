@@ -125,6 +125,17 @@ export default function ChatPage({
   const displayName = otherUser.profile?.displayName || "User";
   const messages = [...(messagesData?.messages || [])].reverse();
 
+  // Best avatar: first media slot photo, then avatarUrl
+  const otherMediaSlots = ((otherUser as any).connectProfile?.mediaSlots || []) as {
+    url: string;
+    mediaType: string;
+    sortOrder: number;
+  }[];
+  const otherFirstPhoto = otherMediaSlots
+    .filter((s) => s.mediaType === "PHOTO")
+    .sort((a, b) => a.sortOrder - b.sortOrder)[0];
+  const otherAvatarUrl = otherFirstPhoto?.url || otherUser.profile?.avatarUrl || undefined;
+
   const handleSend = async () => {
     if (!message.trim()) return;
 
@@ -210,7 +221,7 @@ export default function ChatPage({
           className="flex items-center gap-3 flex-1 min-w-0"
         >
           <Avatar className="h-10 w-10">
-            <AvatarImage src={otherUser.profile?.avatarUrl || undefined} />
+            <AvatarImage src={otherAvatarUrl} />
             <AvatarFallback className="bg-primary text-primary-foreground">
               {getInitials(displayName)}
             </AvatarFallback>

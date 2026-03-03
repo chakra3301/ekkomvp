@@ -8,6 +8,26 @@ import { trpc } from "@/lib/trpc/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials, formatRelativeTime } from "@/lib/utils";
 
+/** Get the best avatar URL — first media slot photo, then avatarUrl */
+function getAvatarUrl(otherUser: {
+  profile?: { avatarUrl: string | null } | null;
+  connectProfile?: { mediaSlots: unknown } | null;
+}): string | undefined {
+  // Try first media slot photo
+  const slots = (otherUser.connectProfile?.mediaSlots || []) as {
+    url: string;
+    mediaType: string;
+    sortOrder: number;
+  }[];
+  const firstPhoto = slots
+    .filter((s) => s.mediaType === "PHOTO")
+    .sort((a, b) => a.sortOrder - b.sortOrder)[0];
+  if (firstPhoto?.url) return firstPhoto.url;
+
+  // Fall back to avatarUrl
+  return otherUser.profile?.avatarUrl || undefined;
+}
+
 export default function MatchesPage() {
   const { user } = useProfile();
 
@@ -73,7 +93,7 @@ export default function MatchesPage() {
                   <div className="relative">
                     <Avatar className="h-16 w-16 ring-2 ring-primary/30">
                       <AvatarImage
-                        src={match.otherUser.profile?.avatarUrl || undefined}
+                        src={getAvatarUrl(match.otherUser)}
                       />
                       <AvatarFallback className="bg-primary text-primary-foreground">
                         {getInitials(displayName)}
@@ -108,7 +128,7 @@ export default function MatchesPage() {
             >
               <Avatar className="h-14 w-14">
                 <AvatarImage
-                  src={match.otherUser.profile?.avatarUrl || undefined}
+                  src={getAvatarUrl(match.otherUser)}
                 />
                 <AvatarFallback className="bg-primary text-primary-foreground">
                   {getInitials(displayName)}

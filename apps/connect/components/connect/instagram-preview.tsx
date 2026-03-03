@@ -25,6 +25,7 @@ function IgIcon({ className }: { className?: string }) {
 export function InstagramPreview({ handle }: InstagramPreviewProps) {
   const profileUrl = `https://instagram.com/${handle}`;
   const [igData, setIgData] = useState<IgData | null>(null);
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     let cancelled = false;
@@ -40,6 +41,10 @@ export function InstagramPreview({ handle }: InstagramPreviewProps) {
   }, [handle]);
 
   const postImages = igData?.posts?.map((p) => p.imageUrl) || [];
+
+  const handleImageError = (index: number) => {
+    setFailedImages((prev) => new Set(prev).add(index));
+  };
 
   return (
     <a
@@ -81,11 +86,13 @@ export function InstagramPreview({ handle }: InstagramPreviewProps) {
             key={i}
             className="relative aspect-square rounded overflow-hidden bg-muted/60"
           >
-            {postImages[i] ? (
+            {postImages[i] && !failedImages.has(i) ? (
               <img
                 src={postImages[i]}
                 alt=""
                 className="w-full h-full object-cover"
+                crossOrigin="anonymous"
+                onError={() => handleImageError(i)}
               />
             ) : (
               <div className="h-full w-full flex items-center justify-center">

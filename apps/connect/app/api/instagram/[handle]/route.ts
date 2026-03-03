@@ -20,12 +20,15 @@ export async function GET(
     const res = await fetch(url, {
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
         "X-IG-App-ID": "936619743392459",
+        "X-Requested-With": "XMLHttpRequest",
+        "Accept": "application/json",
+        "Accept-Language": "en-US,en;q=0.9",
         "Sec-Fetch-Dest": "empty",
         "Sec-Fetch-Mode": "cors",
         "Sec-Fetch-Site": "same-origin",
-        "Referer": "https://www.instagram.com/",
+        "Referer": `https://www.instagram.com/${handle}/`,
       },
       cache: "no-store",
     });
@@ -54,7 +57,7 @@ export async function GET(
       });
 
     const result = { profilePicUrl, posts };
-    cache.set(handle, { data: result, expires: Date.now() + 3600000 });
+    cache.set(handle, { data: result, expires: Date.now() + 900000 }); // 15min TTL
 
     return NextResponse.json(result);
   } catch {

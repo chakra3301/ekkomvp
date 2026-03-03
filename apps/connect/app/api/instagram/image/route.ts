@@ -21,9 +21,11 @@ export async function GET(request: NextRequest) {
     const res = await fetch(url, {
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
         "Referer": "https://www.instagram.com/",
+        "Accept": "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
       },
+      redirect: "follow",
       cache: "no-store",
     });
 
@@ -37,7 +39,8 @@ export async function GET(request: NextRequest) {
     return new NextResponse(buffer, {
       headers: {
         "Content-Type": contentType,
-        "Cache-Control": "public, max-age=3600, s-maxage=3600",
+        "Cache-Control": "public, max-age=900, s-maxage=900",
+        "Access-Control-Allow-Origin": "*",
       },
     });
   } catch {
