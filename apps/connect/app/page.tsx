@@ -31,7 +31,7 @@ export default function LandingPage() {
               src="/sky.png"
               alt=""
               fill
-              className="object-cover blur-sm scale-105"
+              className="object-cover blur-[2px] scale-[1.02]"
               priority
             />
             <div className="absolute inset-0 bg-black/20" />
