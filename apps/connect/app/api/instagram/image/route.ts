@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   // Only allow Instagram CDN URLs
   try {
     const parsed = new URL(url);
-    if (!parsed.hostname.endsWith("cdninstagram.com") && !parsed.hostname.endsWith("instagram.com")) {
+    if (!parsed.hostname.endsWith("cdninstagram.com") && !parsed.hostname.endsWith("instagram.com") && !parsed.hostname.endsWith("fbcdn.net")) {
       return new NextResponse("Invalid domain", { status: 403 });
     }
   } catch {

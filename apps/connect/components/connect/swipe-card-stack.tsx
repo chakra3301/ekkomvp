@@ -62,7 +62,10 @@ const TEST_PROFILES: ProfileData[] = [
     twitterHandle: null,
     websiteUrl: null,
     connectTier: null,
-    mediaSlots: [],
+    mediaSlots: [
+      { url: "/lost angels bw.png", mediaType: "PHOTO", sortOrder: 0 },
+      { url: "/lost angels collage.png", mediaType: "PHOTO", sortOrder: 1 },
+    ],
     prompts: [{ question: "A project I'm proud of", answer: "Built an immersive audiovisual installation for Art Basel that combined live-coded music with reactive projections." }],
     user: {
       profile: {
@@ -83,7 +86,9 @@ const TEST_PROFILES: ProfileData[] = [
     twitterHandle: null,
     websiteUrl: null,
     connectTier: null,
-    mediaSlots: [],
+    mediaSlots: [
+      { url: "/rider.png", mediaType: "PHOTO", sortOrder: 0 },
+    ],
     prompts: [{ question: "What inspires me", answer: "Golden hour, Wong Kar-wai films, and the way strangers move through cities." }],
     user: {
       profile: {
@@ -104,7 +109,9 @@ const TEST_PROFILES: ProfileData[] = [
     twitterHandle: null,
     websiteUrl: null,
     connectTier: "INFINITE",
-    mediaSlots: [],
+    mediaSlots: [
+      { url: "/fd.png", mediaType: "PHOTO", sortOrder: 0 },
+    ],
     prompts: [{ question: "My creative superpower", answer: "Turning abstract concepts into tangible 3D experiences that make people stop scrolling." }],
     user: {
       profile: {

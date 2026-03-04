@@ -57,11 +57,12 @@ export function InstagramPreview({ handle }: InstagramPreviewProps) {
       <div className="flex items-center gap-3 p-3">
         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 p-[2px] shrink-0">
           <div className="h-full w-full rounded-full bg-card overflow-hidden">
-            {igData?.profilePicUrl ? (
+            {igData?.profilePicUrl && !failedImages.has(-1) ? (
               <img
                 src={igData.profilePicUrl}
                 alt={handle}
                 className="h-full w-full rounded-full object-cover"
+                onError={() => handleImageError(-1)}
               />
             ) : (
               <div className="h-full w-full rounded-full flex items-center justify-center">
@@ -91,7 +92,6 @@ export function InstagramPreview({ handle }: InstagramPreviewProps) {
                 src={postImages[i]}
                 alt=""
                 className="w-full h-full object-cover"
-                crossOrigin="anonymous"
                 onError={() => handleImageError(i)}
               />
             ) : (
