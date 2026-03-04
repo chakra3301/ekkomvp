@@ -445,7 +445,7 @@ function SwipeCard({
               />
 
               {/* Action buttons at bottom of profile */}
-              <div className="flex items-center justify-center gap-6 py-8 px-4">
+              <div className="flex items-center justify-center gap-6 pt-8 pb-36 px-4">
                 <button
                   onClick={() => { setIsExpanded(false); onSwipe("PASS"); }}
                   className="h-14 w-14 rounded-full btn-liquid-glass flex items-center justify-center shadow-lg"
