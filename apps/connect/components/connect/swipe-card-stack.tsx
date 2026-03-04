@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
-import { Heart, X, MoreHorizontal, ShieldAlert, Flag, MapPin, ChevronDown, Infinity, Compass, Send, Undo2 } from "lucide-react";
+import { Heart, X, MoreHorizontal, ShieldAlert, Flag, MapPin, ArrowLeft, Infinity, Compass, Send, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Capacitor } from "@capacitor/core";
@@ -378,37 +378,91 @@ function SwipeCard({
               </div>
             </div>
           ) : (
-            /* EXPANDED: Full profile */
-            <div className="h-full flex flex-col bg-card">
-              <button
-                onClick={handleCardTap}
-                className="flex-shrink-0 flex items-center justify-center py-2 bg-card border-b border-border/50"
-              >
-                <ChevronDown className="h-5 w-5 text-muted-foreground" />
-              </button>
-              <div className="flex-1 overflow-y-auto">
-                <ConnectProfileCard
-                  displayName={displayName}
-                  avatarUrl={profile.user.profile?.avatarUrl}
-                  headline={profile.headline}
-                  location={profile.location}
-                  lookingFor={profile.lookingFor}
-                  bio={profile.bio}
-                  mediaSlots={mediaSlots}
-                  prompts={prompts}
-                  disciplines={profile.user.profile?.disciplines?.map((d) => ({
-                    name: d.discipline.name,
-                  }))}
-                  instagramHandle={profile.instagramHandle}
-                  twitterHandle={profile.twitterHandle}
-                  websiteUrl={profile.websiteUrl}
-                  connectTier={profile.connectTier}
+            /* EXPANDED: just keep hero visible underneath */
+            <div className="relative w-full h-full">
+              {featuredSlot ? (
+                <Image
+                  src={featuredSlot.url}
+                  alt={displayName}
+                  fill
+                  sizes="(max-width: 512px) 100vw, 512px"
+                  className="object-cover"
                 />
-              </div>
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-primary/10 to-background flex items-center justify-center">
+                  <span className="text-6xl font-bold text-primary/20">
+                    {displayName.charAt(0)}
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </motion.div>
       </div>
+
+      {/* FULL-SCREEN PROFILE OVERLAY */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            className="fixed inset-0 z-50 bg-background"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          >
+            {/* Back button header */}
+            <div className="sticky top-0 z-10 glass-bar safe-top">
+              <div className="flex items-center h-[44px] px-4">
+                <button
+                  onClick={handleCardTap}
+                  className="flex items-center gap-1.5 text-primary"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                  <span className="text-sm font-medium">Back</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Scrollable profile */}
+            <div className="overflow-y-auto" style={{ height: "calc(100vh - 44px - env(safe-area-inset-top))" }}>
+              <ConnectProfileCard
+                displayName={displayName}
+                avatarUrl={profile.user.profile?.avatarUrl}
+                headline={profile.headline}
+                location={profile.location}
+                lookingFor={profile.lookingFor}
+                bio={profile.bio}
+                mediaSlots={mediaSlots}
+                prompts={prompts}
+                disciplines={profile.user.profile?.disciplines?.map((d) => ({
+                  name: d.discipline.name,
+                }))}
+                instagramHandle={profile.instagramHandle}
+                twitterHandle={profile.twitterHandle}
+                websiteUrl={profile.websiteUrl}
+                connectTier={profile.connectTier}
+                className="rounded-none"
+              />
+
+              {/* Action buttons at bottom of profile */}
+              <div className="flex items-center justify-center gap-6 py-8 px-4">
+                <button
+                  onClick={() => { setIsExpanded(false); onSwipe("PASS"); }}
+                  className="h-14 w-14 rounded-full btn-liquid-glass flex items-center justify-center shadow-lg"
+                >
+                  <X className="h-6 w-6 text-red-500" />
+                </button>
+                <button
+                  onClick={() => { setIsExpanded(false); onSwipe("LIKE"); }}
+                  className="h-16 w-16 rounded-full bg-primary flex items-center justify-center shadow-lg"
+                >
+                  <Heart className="h-7 w-7 text-primary-foreground" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
