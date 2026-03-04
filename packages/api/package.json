@@ -15,11 +15,13 @@
     "@ekko/config": "workspace:*",
     "@ekko/database": "workspace:*",
     "@trpc/server": "^11.0.0-rc.342",
+    "apn": "^2.2.0",
     "superjson": "^2.2.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@ekko/typescript-config": "workspace:*",
+    "@types/apn": "^2.1.6",
     "@types/node": "^20.11.0",
     "typescript": "^5.4.0"
   }

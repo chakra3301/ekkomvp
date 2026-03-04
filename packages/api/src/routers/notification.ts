@@ -62,4 +62,22 @@ export const notificationRouter = router({
     });
     return { count };
   }),
+
+  savePushToken: protectedProcedure
+    .input(
+      z.object({
+        token: z.string(),
+        platform: z.enum(["ios", "web"]),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await prisma.user.update({
+        where: { id: ctx.user.id },
+        data: {
+          pushToken: input.token,
+          pushPlatform: input.platform,
+        },
+      });
+      return { success: true };
+    }),
 });

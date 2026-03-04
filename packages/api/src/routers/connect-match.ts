@@ -4,6 +4,7 @@ import { prisma } from "@ekko/database";
 import { CONNECT_LIMITS } from "@ekko/config";
 
 import { router, protectedProcedure } from "../trpc";
+import { sendPushToUser } from "../lib/push";
 
 export const connectMatchRouter = router({
   swipe: protectedProcedure
@@ -93,6 +94,13 @@ export const connectMatchRouter = router({
           },
         });
 
+        // Push notification
+        sendPushToUser(input.targetUserId, {
+          title: "Ekko Connect",
+          body: "Someone liked your profile ❤️",
+          url: "/likes",
+        }).catch(() => {});
+
         // Check if target has already liked us
         const reverseSwipe = await prisma.connectSwipe.findUnique({
           where: {
@@ -142,6 +150,23 @@ export const connectMatchRouter = router({
               },
             ],
           });
+
+          // Push notifications for match — look up both names
+          const [actorProfile, targetProfile] = await Promise.all([
+            prisma.profile.findUnique({ where: { userId }, select: { displayName: true } }),
+            prisma.profile.findUnique({ where: { userId: input.targetUserId }, select: { displayName: true } }),
+          ]);
+          const matchUrl = `/matches/${match.id}`;
+          sendPushToUser(input.targetUserId, {
+            title: "It's a Match! 🎉",
+            body: `You and ${actorProfile?.displayName || "someone"} both liked each other`,
+            url: matchUrl,
+          }).catch(() => {});
+          sendPushToUser(userId, {
+            title: "It's a Match! 🎉",
+            body: `You and ${targetProfile?.displayName || "someone"} both liked each other`,
+            url: matchUrl,
+          }).catch(() => {});
 
           return { matched: true, matchId: match.id };
         }

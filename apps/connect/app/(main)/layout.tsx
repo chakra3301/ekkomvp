@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Compass, Heart, MessageCircle, User, Settings } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { useProfile } from "@/hooks";
+import { useProfile, usePushToken } from "@/hooks";
 import { trpc } from "@/lib/trpc/client";
 
 const navItems = [
@@ -22,7 +22,8 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { profile } = useProfile();
+  const { profile, user } = useProfile();
+  usePushToken(user?.id);
 
   const { data: unreadCount } = trpc.connectChat.getUnreadCount.useQuery(
     undefined,

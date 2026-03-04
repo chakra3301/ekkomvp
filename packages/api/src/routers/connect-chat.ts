@@ -4,6 +4,7 @@ import { prisma } from "@ekko/database";
 import { CONNECT_LIMITS } from "@ekko/config";
 
 import { router, protectedProcedure } from "../trpc";
+import { sendPushToUser } from "../lib/push";
 
 export const connectChatRouter = router({
   getMessages: protectedProcedure
@@ -131,6 +132,17 @@ export const connectChatRouter = router({
           entityType: "CONNECT_MATCH",
         },
       });
+
+      // Push notification
+      const senderName = message.sender.profile?.displayName || "Someone";
+      const preview = imageUrl
+        ? "📷 Photo"
+        : (content || "").slice(0, 50) + ((content || "").length > 50 ? "…" : "");
+      sendPushToUser(receiverId, {
+        title: senderName,
+        body: preview,
+        url: `/matches/${matchId}`,
+      }).catch(() => {});
 
       return message;
     }),

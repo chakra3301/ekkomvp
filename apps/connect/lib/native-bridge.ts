@@ -57,7 +57,8 @@ async function setupPushNotifications() {
 
   PushNotifications.addListener("registration", (token) => {
     console.log("[Native] Push token:", token.value);
-    // TODO: Send token to server via tRPC mutation
+    localStorage.setItem("ekko-push-token", token.value);
+    window.dispatchEvent(new Event("ekko-push-token"));
   });
 
   PushNotifications.addListener("pushNotificationReceived", (notification) => {
