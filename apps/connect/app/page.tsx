@@ -65,7 +65,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center h-11 rounded-xl btn-liquid-glass font-medium text-sm text-white"
+                className="inline-flex items-center justify-center h-11 rounded-xl btn-liquid-glass font-medium text-sm text-black"
               >
                 I already have an account
               </Link>
