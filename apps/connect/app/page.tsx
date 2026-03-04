@@ -31,20 +31,9 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-lg">
-        {/* Header */}
-        <header className="relative z-10 flex items-center justify-between px-4 py-3">
-          <Image src="/logo.png" alt="EKKO Connect" width={32} height={32} />
-          <Link
-            href="/login"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            Sign In
-          </Link>
-        </header>
-
         {/* Hero with sky background */}
-        <section className="relative px-4 pt-4 pb-8 text-center overflow-hidden">
-          <div className="absolute inset-0 -top-14">
+        <section className="relative px-4 pt-8 pb-8 text-center overflow-hidden">
+          <div className="absolute inset-0">
             <Image
               src="/sky.png"
               alt=""
@@ -67,7 +56,7 @@ export default function LandingPage() {
               <span className="text-primary" style={{ textShadow: "0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.15)" }}>Creative Match</span>
             </h2>
 
-            <p className="text-sm leading-relaxed mb-6 max-w-xs mx-auto text-foreground/80" style={{ textShadow: "0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5)" }}>
+            <p className="text-sm leading-relaxed mb-6 max-w-xs mx-auto text-white" style={{ textShadow: "0 0 10px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3)" }}>
               Discover collaborators, clients, and creatives who share your
               passion. Swipe, match, and create together.
             </p>
