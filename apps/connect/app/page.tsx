@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, Users, Sparkles, ArrowRight, Palette, Music, Camera, Pen } from "lucide-react";
+import { Heart, Users, Sparkles, ArrowRight } from "lucide-react";
 
 const steps = [
   {
@@ -20,28 +20,22 @@ const steps = [
   },
 ];
 
-const disciplines = [
-  { icon: Camera, label: "Photography" },
-  { icon: Palette, label: "Design" },
-  { icon: Music, label: "Music" },
-  { icon: Pen, label: "Writing" },
-];
-
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-lg">
-        {/* Hero with sky background */}
+        {/* Hero with blurred sky background */}
         <section className="relative px-4 pt-8 pb-8 text-center overflow-hidden">
           <div className="absolute inset-0">
             <Image
               src="/sky.png"
               alt=""
               fill
-              className="object-cover"
+              className="object-cover blur-md scale-110"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background" />
+            <div className="absolute inset-0 bg-black/20" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
           </div>
 
           <div className="relative z-10">
@@ -50,13 +44,13 @@ export default function LandingPage() {
               For Creatives, By Creatives
             </div>
 
-            <h2 className="text-3xl font-bold font-heading leading-tight mb-3" style={{ textShadow: "0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.15)" }}>
+            <h2 className="text-3xl font-bold font-heading leading-tight mb-3 text-white" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
               Find Your
               <br />
-              <span className="text-primary" style={{ textShadow: "0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.15)" }}>Creative Match</span>
+              <span className="text-primary" style={{ textShadow: "0 0 20px rgba(255,255,255,0.6), 0 2px 8px rgba(0,0,0,0.3)" }}>Creative Match</span>
             </h2>
 
-            <p className="text-sm leading-relaxed mb-6 max-w-xs mx-auto text-white" style={{ textShadow: "0 0 10px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3)" }}>
+            <p className="text-sm leading-relaxed mb-6 max-w-xs mx-auto text-white/90" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}>
               Discover collaborators, clients, and creatives who share your
               passion. Swipe, match, and create together.
             </p>
@@ -71,7 +65,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center h-11 rounded-xl btn-liquid-glass font-medium text-sm"
+                className="inline-flex items-center justify-center h-11 rounded-xl btn-liquid-glass font-medium text-sm text-white"
               >
                 I already have an account
               </Link>
@@ -79,25 +73,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Disciplines */}
-        <section className="px-4 pb-6">
-          <div className="flex items-center justify-center gap-2">
-            {disciplines.map((d) => (
-              <div
-                key={d.label}
-                className="glass-card flex flex-col items-center gap-1 px-3 py-2.5 flex-1"
-              >
-                <d.icon className="h-5 w-5 text-primary" />
-                <span className="text-[10px] font-medium text-muted-foreground">
-                  {d.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* How It Works */}
-        <section className="px-4 pb-8">
+        <section className="px-4 py-8">
           <h3 className="text-base font-bold font-heading text-center mb-4">
             How It Works
           </h3>
@@ -121,55 +98,6 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-        </section>
-
-        {/* Features */}
-        <section className="px-4 pb-8">
-          <div className="glass-card p-5 text-center">
-            <h3 className="text-base font-bold font-heading mb-3">
-              Why EKKO Connect?
-            </h3>
-            <div className="grid grid-cols-2 gap-3 text-left">
-              <div>
-                <p className="text-sm font-semibold mb-0.5">Rich Profiles</p>
-                <p className="text-xs text-muted-foreground">
-                  Photos, video, audio & 3D
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold mb-0.5">Smart Matching</p>
-                <p className="text-xs text-muted-foreground">
-                  Filtered by discipline & goals
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold mb-0.5">Real Conversations</p>
-                <p className="text-xs text-muted-foreground">
-                  Chat with your matches
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold mb-0.5">Built for Creatives</p>
-                <p className="text-xs text-muted-foreground">
-                  Not dating — creating
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="px-4 pb-8 text-center">
-          <p className="text-muted-foreground text-sm mb-3">
-            Ready to find your creative match?
-          </p>
-          <Link
-            href="/register"
-            className="inline-flex items-center justify-center gap-2 h-11 px-8 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity shadow-lg"
-          >
-            Join EKKO Connect
-            <ArrowRight className="h-4 w-4" />
-          </Link>
         </section>
 
         {/* Footer */}
