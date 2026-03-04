@@ -18,6 +18,20 @@ export async function initNativeBridge() {
   Keyboard.setAccessoryBarVisible({ isVisible: true });
   Keyboard.setScroll({ isDisabled: false });
 
+  // Track keyboard height for CSS-based layout adjustments
+  Keyboard.addListener("keyboardWillShow", (info) => {
+    document.documentElement.style.setProperty(
+      "--keyboard-height",
+      `${info.keyboardHeight}px`
+    );
+    document.documentElement.classList.add("keyboard-open");
+  });
+
+  Keyboard.addListener("keyboardWillHide", () => {
+    document.documentElement.style.setProperty("--keyboard-height", "0px");
+    document.documentElement.classList.remove("keyboard-open");
+  });
+
   App.addListener("appStateChange", ({ isActive }) => {
     if (isActive) {
       console.log("[Native] App resumed");

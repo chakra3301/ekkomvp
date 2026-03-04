@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    --keyboard-height: 0px;
     --background: 0 0% 96%;
     --foreground: 0 0% 10%;
 

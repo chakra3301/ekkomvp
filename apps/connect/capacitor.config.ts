@@ -28,6 +28,9 @@ const config: CapacitorConfig = {
     scheme: "ekkoconnect",
   },
   plugins: {
+    Keyboard: {
+      resize: "none",
+    },
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"],
     },

@@ -210,7 +210,13 @@ export default function ChatPage({
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div
+      className="flex flex-col h-full"
+      style={{
+        paddingBottom:
+          "max(0px, calc(var(--keyboard-height, 0px) - 49px - env(safe-area-inset-bottom, 0px)))",
+      }}
+    >
       {/* Chat Header */}
       <div className="flex-shrink-0 flex items-center gap-3 px-4 py-3 glass-bar">
         <Link href="/matches" className="p-1">

@@ -562,7 +562,7 @@ export function SwipeCardStack({ profiles, onSwipe, onUndo, canUndo }: SwipeCard
       )}
 
       {/* Card stack — fills entire area */}
-      <div className="absolute inset-0 mx-4 my-2">
+      <div className="absolute inset-0 mx-4">
         <AnimatePresence>
           {visibleProfiles.map((profile, i) => (
             <SwipeCard
@@ -582,7 +582,11 @@ export function SwipeCardStack({ profiles, onSwipe, onUndo, canUndo }: SwipeCard
       <AnimatePresence>
         {pendingLike && (
           <motion.div
-            className="absolute inset-x-0 bottom-0 z-30 mx-4 mb-4"
+            className="absolute inset-x-0 z-30 mx-4 mb-4"
+            style={{
+              bottom:
+                "max(0px, calc(var(--keyboard-height, 0px) - 49px - env(safe-area-inset-bottom, 0px)))",
+            }}
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
