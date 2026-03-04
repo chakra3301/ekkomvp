@@ -25,13 +25,13 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-lg">
         {/* Hero with blurred sky background */}
-        <section className="relative px-4 pt-8 pb-8 text-center overflow-hidden">
+        <section className="relative px-4 pt-16 pb-8 text-center overflow-hidden">
           <div className="absolute inset-0">
             <Image
               src="/sky.png"
               alt=""
               fill
-              className="object-cover blur-md scale-110"
+              className="object-cover blur-sm scale-105"
               priority
             />
             <div className="absolute inset-0 bg-black/20" />
