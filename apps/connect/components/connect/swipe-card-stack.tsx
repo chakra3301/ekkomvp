@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
-import { Heart, X, MoreHorizontal, ShieldAlert, Flag, MapPin, ArrowLeft, Infinity, Compass, Send, Undo2 } from "lucide-react";
+import { Heart, X, MoreHorizontal, ShieldAlert, Flag, MapPin, Infinity, Compass, Send, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Capacitor } from "@capacitor/core";
@@ -409,22 +409,24 @@ function SwipeCard({
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.6 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 120 || info.velocity.y > 400) {
+                setIsExpanded(false);
+              }
+            }}
           >
-            {/* Back button header */}
-            <div className="sticky top-0 z-10 glass-bar safe-top">
-              <div className="flex items-center h-[44px] px-4">
-                <button
-                  onClick={handleCardTap}
-                  className="flex items-center gap-1.5 text-primary"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                  <span className="text-sm font-medium">Back</span>
-                </button>
+            {/* Drag handle */}
+            <div className="safe-top">
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
               </div>
             </div>
 
             {/* Scrollable profile */}
-            <div className="overflow-y-auto" style={{ height: "calc(100vh - 44px - env(safe-area-inset-top))" }}>
+            <div className="overflow-y-auto" style={{ height: "calc(100vh - 28px - env(safe-area-inset-top))" }}>
               <ConnectProfileCard
                 displayName={displayName}
                 avatarUrl={profile.user.profile?.avatarUrl}
