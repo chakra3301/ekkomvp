@@ -61,13 +61,13 @@ export default function LandingPage() {
               For Creatives, By Creatives
             </div>
 
-            <h2 className="text-4xl font-bold font-heading leading-tight mb-4 drop-shadow-lg">
+            <h2 className="text-4xl font-bold font-heading leading-tight mb-4" style={{ textShadow: "0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.15)" }}>
               Find Your
               <br />
-              <span className="text-primary">Creative Match</span>
+              <span className="text-primary" style={{ textShadow: "0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.15)" }}>Creative Match</span>
             </h2>
 
-            <p className="text-muted-foreground text-base leading-relaxed mb-8 max-w-xs mx-auto drop-shadow">
+            <p className="text-base leading-relaxed mb-8 max-w-xs mx-auto text-foreground/80" style={{ textShadow: "0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.5)" }}>
               Discover collaborators, clients, and creatives who share your
               passion. Swipe, match, and create together.
             </p>
