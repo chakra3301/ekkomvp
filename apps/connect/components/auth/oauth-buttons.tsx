@@ -7,6 +7,7 @@ import { Browser } from "@capacitor/browser";
 
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
+import { AppleSignIn } from "@/lib/plugins/apple-sign-in";
 
 interface OAuthButtonsProps {
   redirectTo?: string;
@@ -15,53 +16,94 @@ interface OAuthButtonsProps {
 export function OAuthButtons({ redirectTo }: OAuthButtonsProps) {
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
-  const handleOAuthSignIn = async (provider: "google" | "apple") => {
-    setIsLoading(provider);
-    const supabase = createClient();
+  /** Native Apple Sign In — uses ASAuthorizationController (stays in-app) */
+  const handleNativeAppleSignIn = async () => {
+    setIsLoading("apple");
+    try {
+      const credential = await AppleSignIn.signIn();
+      const supabase = createClient();
 
-    const callbackUrl = new URL(
-      "/api/auth/callback",
-      window.location.origin
-    );
-    if (redirectTo) callbackUrl.searchParams.set("next", redirectTo);
-
-    if (Capacitor.isNativePlatform()) {
-      // On native iOS, Google blocks WKWebView OAuth.
-      // Use skipBrowserRedirect to get the URL, then open in
-      // SFSafariViewController via Capacitor Browser plugin.
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: callbackUrl.toString(),
-          skipBrowserRedirect: true,
-        },
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: "apple",
+        token: credential.identityToken,
       });
 
-      if (error || !data.url) {
-        console.error("OAuth error:", error);
+      if (error) {
+        console.error("Apple signInWithIdToken error:", error);
         setIsLoading(null);
         return;
       }
 
-      // Open in SFSafariViewController (allowed by Google/Apple)
-      await Browser.open({ url: data.url });
-      // The redirect will hit /api/auth/callback in the WebView via
-      // the native-bridge appUrlOpen listener — browser closes automatically
-      setIsLoading(null);
-    } else {
-      // Standard web flow — redirect in the same window
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: callbackUrl.toString(),
-        },
-      });
-
-      if (error) {
-        console.error("OAuth error:", error);
-        setIsLoading(null);
+      // Ensure DB user exists and get redirect destination
+      const res = await fetch("/api/auth/ensure-user", { method: "POST" });
+      if (res.ok) {
+        const { redirect } = await res.json();
+        window.location.href = redirect;
+      } else {
+        window.location.href = redirectTo || "/discover";
       }
+    } catch (e) {
+      console.error("Native Apple Sign In error:", e);
+      setIsLoading(null);
     }
+  };
+
+  /** Google OAuth via SFSafariViewController with native-redirect relay */
+  const handleNativeGoogleSignIn = async () => {
+    setIsLoading("google");
+    const supabase = createClient();
+
+    // Redirect to native-redirect which relays the code back to the app
+    // via custom URL scheme, then the WebView exchanges it.
+    const callbackUrl = new URL(
+      "/api/auth/native-redirect",
+      window.location.origin
+    );
+    if (redirectTo) callbackUrl.searchParams.set("next", redirectTo);
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: callbackUrl.toString(),
+        skipBrowserRedirect: true,
+      },
+    });
+
+    if (error || !data.url) {
+      console.error("Google OAuth error:", error);
+      setIsLoading(null);
+      return;
+    }
+
+    await Browser.open({ url: data.url });
+    setIsLoading(null);
+  };
+
+  /** Standard web OAuth flow (both providers) */
+  const handleWebOAuthSignIn = async (provider: "google" | "apple") => {
+    setIsLoading(provider);
+    const supabase = createClient();
+
+    const callbackUrl = new URL("/api/auth/callback", window.location.origin);
+    if (redirectTo) callbackUrl.searchParams.set("next", redirectTo);
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: callbackUrl.toString() },
+    });
+
+    if (error) {
+      console.error("OAuth error:", error);
+      setIsLoading(null);
+    }
+  };
+
+  const handleSignIn = (provider: "google" | "apple") => {
+    if (Capacitor.isNativePlatform()) {
+      if (provider === "apple") return handleNativeAppleSignIn();
+      return handleNativeGoogleSignIn();
+    }
+    return handleWebOAuthSignIn(provider);
   };
 
   return (
@@ -70,7 +112,7 @@ export function OAuthButtons({ redirectTo }: OAuthButtonsProps) {
         variant="outline"
         type="button"
         disabled={isLoading !== null}
-        onClick={() => handleOAuthSignIn("google")}
+        onClick={() => handleSignIn("google")}
         className="w-full h-11"
       >
         {isLoading === "google" ? (
@@ -101,7 +143,7 @@ export function OAuthButtons({ redirectTo }: OAuthButtonsProps) {
         variant="outline"
         type="button"
         disabled={isLoading !== null}
-        onClick={() => handleOAuthSignIn("apple")}
+        onClick={() => handleSignIn("apple")}
         className="w-full h-11"
       >
         {isLoading === "apple" ? (

@@ -39,8 +39,29 @@ export async function initNativeBridge() {
   });
 
   App.addListener("appUrlOpen", async ({ url }) => {
-    // Handle OAuth callback — close the SFSafariViewController and
-    // navigate to the callback URL in the WebView
+    // Handle native OAuth callback — the auth code arrives via custom URL
+    // scheme after being forwarded by /api/auth/native-redirect.
+    // Navigate the WebView to /api/auth/callback so the PKCE verifier
+    // cookie is available for the code exchange.
+    if (url.startsWith("ekkoconnect://auth-callback")) {
+      await Browser.close();
+      try {
+        const parsed = new URL(url);
+        const code = parsed.searchParams.get("code");
+        const next = parsed.searchParams.get("next") || "/discover";
+        if (code) {
+          window.location.href = `/api/auth/callback?code=${encodeURIComponent(code)}&next=${encodeURIComponent(next)}`;
+        } else {
+          window.location.href = "/login?error=missing_code";
+        }
+      } catch (e) {
+        console.error("[Native] Error handling auth callback:", e);
+        window.location.href = "/login?error=native_auth_error";
+      }
+      return;
+    }
+
+    // Handle web-style OAuth callback (Universal Link fallback)
     if (url.includes("/api/auth/callback")) {
       await Browser.close();
       const parsed = new URL(url);
