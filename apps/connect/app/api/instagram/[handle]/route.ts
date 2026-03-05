@@ -4,7 +4,7 @@ import { prisma } from "@ekko/database";
 // In-memory cache to avoid hammering Instagram
 const cache = new Map<string, { data: unknown; expires: number }>();
 
-const EMPTY = { profilePicUrl: null, posts: [] };
+const EMPTY: { profilePicUrl: string | null; posts: { imageUrl: string }[] } = { profilePicUrl: null, posts: [] };
 
 /** Refresh a long-lived token if it expires within 7 days */
 async function refreshTokenIfNeeded(
