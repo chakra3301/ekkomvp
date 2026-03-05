@@ -1,70 +1,80 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@ekko/database";
 
 // In-memory cache to avoid hammering Instagram
 const cache = new Map<string, { data: unknown; expires: number }>();
 
-const HEADERS = {
-  "User-Agent":
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
-  "Accept-Language": "en-US,en;q=0.9",
-  "Referer": "https://www.instagram.com/",
-};
-
 const EMPTY = { profilePicUrl: null, posts: [] };
 
-/** Fallback: scrape the public profile page HTML for og:image */
-async function scrapeProfilePage(handle: string) {
+/** Refresh a long-lived token if it expires within 7 days */
+async function refreshTokenIfNeeded(
+  profileId: string,
+  token: string,
+  expiry: Date
+) {
+  const sevenDays = 7 * 24 * 60 * 60 * 1000;
+  if (expiry.getTime() - Date.now() > sevenDays) return token;
+
   try {
-    const res = await fetch(`https://www.instagram.com/${handle}/`, {
-      headers: {
-        ...HEADERS,
-        Accept:
-          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    const res = await fetch(
+      `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${token}`
+    );
+    if (!res.ok) return token;
+
+    const data = await res.json();
+    const newExpiry = new Date(Date.now() + data.expires_in * 1000);
+
+    await prisma.connectProfile.update({
+      where: { id: profileId },
+      data: {
+        instagramAccessToken: data.access_token,
+        instagramTokenExpiry: newExpiry,
       },
-      redirect: "follow",
-      cache: "no-store",
     });
 
-    if (!res.ok) return EMPTY;
+    return data.access_token as string;
+  } catch {
+    return token;
+  }
+}
 
-    const html = await res.text();
+/** Fetch Instagram data using the official Graph API with a stored token */
+async function fetchWithToken(profileId: string, token: string, expiry: Date) {
+  const accessToken = await refreshTokenIfNeeded(profileId, token, expiry);
 
-    // Extract og:image (usually the profile picture)
-    const ogMatch = html.match(
-      /<meta\s+property="og:image"\s+content="([^"]+)"/
-    );
-    const profilePicUrl = ogMatch?.[1]
-      ? `/api/instagram/image?url=${encodeURIComponent(ogMatch[1])}`
-      : null;
+  // Fetch profile info
+  const profileRes = await fetch(
+    `https://graph.instagram.com/me?fields=username,profile_picture_url&access_token=${accessToken}`
+  );
 
-    // Try to extract post images from embedded JSON
-    const posts: { imageUrl: string }[] = [];
-    const sharedDataMatch = html.match(
-      /window\._sharedData\s*=\s*({.+?});<\/script>/
-    );
-    if (sharedDataMatch) {
-      try {
-        const shared = JSON.parse(sharedDataMatch[1]);
-        const edges =
-          shared?.entry_data?.ProfilePage?.[0]?.graphql?.user
-            ?.edge_owner_to_timeline_media?.edges || [];
-        edges.slice(0, 3).forEach((edge: any) => {
-          const raw = edge?.node?.thumbnail_src || edge?.node?.display_url;
-          if (raw) {
-            posts.push({
-              imageUrl: `/api/instagram/image?url=${encodeURIComponent(raw)}`,
-            });
-          }
+  let profilePicUrl: string | null = null;
+  if (profileRes.ok) {
+    const profileData = await profileRes.json();
+    if (profileData.profile_picture_url) {
+      profilePicUrl = `/api/instagram/image?url=${encodeURIComponent(profileData.profile_picture_url)}`;
+    }
+  }
+
+  // Fetch recent media
+  const mediaRes = await fetch(
+    `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url&limit=3&access_token=${accessToken}`
+  );
+
+  const posts: { imageUrl: string }[] = [];
+  if (mediaRes.ok) {
+    const mediaData = await mediaRes.json();
+    for (const item of mediaData.data || []) {
+      const url =
+        item.media_type === "VIDEO" ? item.thumbnail_url : item.media_url;
+      if (url) {
+        posts.push({
+          imageUrl: `/api/instagram/image?url=${encodeURIComponent(url)}`,
         });
-      } catch {
-        // JSON parse failed — just use og:image
       }
     }
-
-    return { profilePicUrl, posts };
-  } catch {
-    return EMPTY;
   }
+
+  return { profilePicUrl, posts };
 }
 
 export async function GET(
@@ -81,56 +91,77 @@ export async function GET(
 
   let result = EMPTY;
 
-  // Attempt 1: Instagram internal API
+  // Attempt 1: Use stored OAuth token (official Graph API)
   try {
-    const url = `https://www.instagram.com/api/v1/users/web_profile_info/?username=${encodeURIComponent(handle)}`;
-    const res = await fetch(url, {
-      headers: {
-        ...HEADERS,
-        "X-IG-App-ID": "936619743392459",
-        "X-Requested-With": "XMLHttpRequest",
-        Accept: "application/json",
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-origin",
-        Referer: `https://www.instagram.com/${handle}/`,
+    const profile = await prisma.connectProfile.findFirst({
+      where: { instagramHandle: handle },
+      select: {
+        id: true,
+        instagramAccessToken: true,
+        instagramTokenExpiry: true,
       },
-      cache: "no-store",
     });
 
-    if (res.ok) {
-      const json = await res.json();
-      const user = json?.data?.user;
-
-      if (user) {
-        const rawPic =
-          user.profile_pic_url_hd || user.profile_pic_url || null;
-        const profilePicUrl = rawPic
-          ? `/api/instagram/image?url=${encodeURIComponent(rawPic)}`
-          : null;
-
-        const posts = (user.edge_owner_to_timeline_media?.edges || [])
-          .slice(0, 3)
-          .map((edge: Record<string, Record<string, string>>) => {
-            const raw = edge.node.thumbnail_src || edge.node.display_url;
-            return {
-              imageUrl: `/api/instagram/image?url=${encodeURIComponent(raw)}`,
-            };
-          });
-
-        result = { profilePicUrl, posts };
-      }
+    if (
+      profile?.instagramAccessToken &&
+      profile?.instagramTokenExpiry &&
+      profile.instagramTokenExpiry > new Date()
+    ) {
+      result = await fetchWithToken(
+        profile.id,
+        profile.instagramAccessToken,
+        profile.instagramTokenExpiry
+      );
     }
   } catch {
-    // API failed — fall through to fallback
+    // Token fetch failed — fall through
   }
 
-  // Attempt 2: HTML scraping fallback if API returned no data
+  // Attempt 2: Scraping fallback (unreliable from cloud IPs)
   if (!result.profilePicUrl && result.posts.length === 0) {
-    result = await scrapeProfilePage(handle);
+    try {
+      const url = `https://www.instagram.com/api/v1/users/web_profile_info/?username=${encodeURIComponent(handle)}`;
+      const res = await fetch(url, {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+          "X-IG-App-ID": "936619743392459",
+          "X-Requested-With": "XMLHttpRequest",
+          Accept: "application/json",
+          "Accept-Language": "en-US,en;q=0.9",
+          Referer: `https://www.instagram.com/${handle}/`,
+        },
+        cache: "no-store",
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        const user = json?.data?.user;
+        if (user) {
+          const rawPic =
+            user.profile_pic_url_hd || user.profile_pic_url || null;
+          const profilePicUrl = rawPic
+            ? `/api/instagram/image?url=${encodeURIComponent(rawPic)}`
+            : null;
+
+          const posts = (user.edge_owner_to_timeline_media?.edges || [])
+            .slice(0, 3)
+            .map((edge: Record<string, Record<string, string>>) => {
+              const raw = edge.node.thumbnail_src || edge.node.display_url;
+              return {
+                imageUrl: `/api/instagram/image?url=${encodeURIComponent(raw)}`,
+              };
+            });
+
+          result = { profilePicUrl, posts };
+        }
+      }
+    } catch {
+      // Scraping failed too
+    }
   }
 
-  // Cache even empty results to avoid hammering Instagram
+  // Cache results (15 min)
   cache.set(handle, { data: result, expires: Date.now() + 900_000 });
 
   return NextResponse.json(result);

@@ -980,6 +980,11 @@ model ConnectProfile {
   linkedinHandle  String? @map("linkedin_handle") @db.VarChar(100)
   websiteUrl      String? @map("website_url") @db.VarChar(500)
 
+  // Instagram OAuth (Graph API)
+  instagramAccessToken String?   @map("instagram_access_token")
+  instagramTokenExpiry DateTime? @map("instagram_token_expiry")
+  instagramUserId      String?   @map("instagram_user_id") @db.VarChar(100)
+
   // Discovery fields
   disciplineIds String[] @map("discipline_ids") @db.Uuid
   location      String?  @db.VarChar(200)

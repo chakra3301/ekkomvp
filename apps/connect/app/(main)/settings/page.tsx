@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
   Settings,
@@ -20,6 +20,9 @@ import {
   ChevronRight,
   ShieldAlert,
   X,
+  Instagram,
+  Check,
+  Unlink,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -68,6 +71,7 @@ function saveFilters(filters: DiscoveryFilters) {
 
 export default function SettingsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, profile: mainProfile } = useProfile();
   const { theme, setTheme } = useTheme();
 
@@ -83,6 +87,7 @@ export default function SettingsPage() {
   const toggleActive = trpc.connectProfile.toggleActive.useMutation();
   const updateProfile = trpc.connectProfile.update.useMutation();
   const unblockUser = trpc.block.unblock.useMutation();
+  const disconnectIg = trpc.connectProfile.disconnectInstagram.useMutation();
   const utils = trpc.useUtils();
 
   const [filters, setFilters] = useState<DiscoveryFilters>(DEFAULT_FILTERS);
@@ -92,6 +97,19 @@ export default function SettingsPage() {
   useEffect(() => {
     setFilters(loadFilters());
   }, []);
+
+  // Handle Instagram OAuth callback result
+  useEffect(() => {
+    const igStatus = searchParams.get("ig");
+    if (igStatus === "connected") {
+      toast.success("Instagram connected!");
+      utils.connectProfile.getCurrent.invalidate();
+      router.replace("/settings", { scroll: false });
+    } else if (igStatus === "error") {
+      toast.error("Failed to connect Instagram");
+      router.replace("/settings", { scroll: false });
+    }
+  }, [searchParams, router, utils]);
 
   const updateFilter = <K extends keyof DiscoveryFilters>(
     key: K,
@@ -162,6 +180,18 @@ export default function SettingsPage() {
       toast.error("Failed to unblock");
     }
   };
+
+  const handleDisconnectInstagram = async () => {
+    try {
+      await disconnectIg.mutateAsync();
+      await utils.connectProfile.getCurrent.invalidate();
+      toast.success("Instagram disconnected");
+    } catch {
+      toast.error("Failed to disconnect");
+    }
+  };
+
+  const igConnected = !!connectProfile?.instagramAccessToken;
 
   const hasLocation =
     connectProfile?.latitude != null && connectProfile?.longitude != null;
@@ -237,6 +267,59 @@ export default function SettingsPage() {
                 onCheckedChange={handleToggleActive}
                 disabled={toggleActive.isPending}
               />
+            </div>
+          )}
+        </div>
+
+        {/* ============ INSTAGRAM ============ */}
+        <div className="glass-card p-4">
+          <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">
+            Instagram
+          </h3>
+
+          {igConnected ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-2 -mx-2">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center">
+                    <Instagram className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium flex items-center gap-1.5">
+                      @{connectProfile?.instagramHandle}
+                      <Check className="h-3.5 w-3.5 text-green-500" />
+                    </p>
+                    <p className="text-xs text-muted-foreground">Connected</p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleDisconnectInstagram}
+                  disabled={disconnectIg.isPending}
+                  className="text-xs text-muted-foreground"
+                >
+                  <Unlink className="h-3.5 w-3.5 mr-1" />
+                  Disconnect
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground px-2">
+                Your profile pic and recent posts are shown on your Connect card.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Connect your Instagram to show your profile picture and recent
+                posts on your card.
+              </p>
+              <a
+                href="/api/auth/instagram"
+                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+              >
+                <Instagram className="h-4 w-4" />
+                Connect Instagram
+              </a>
             </div>
           )}
         </div>

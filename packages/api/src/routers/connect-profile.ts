@@ -213,6 +213,19 @@ export const connectProfileRouter = router({
       return profile;
     }),
 
+  disconnectInstagram: protectedProcedure.mutation(async ({ ctx }) => {
+    await prisma.connectProfile.update({
+      where: { userId: ctx.user.id },
+      data: {
+        instagramAccessToken: null,
+        instagramTokenExpiry: null,
+        instagramUserId: null,
+        instagramHandle: null,
+      },
+    });
+    return { success: true };
+  }),
+
   toggleActive: protectedProcedure.mutation(async ({ ctx }) => {
     const profile = await prisma.connectProfile.findUnique({
       where: { userId: ctx.user.id },
