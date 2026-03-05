@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Compass, Heart, MessageCircle, User, Settings } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -16,14 +17,36 @@ const navItems = [
   { href: "/profile", label: "Profile", icon: User },
 ];
 
+/** Routes where we don't enforce profile completion */
+const SETUP_ROUTES = ["/profile/setup", "/complete-profile", "/settings"];
+
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { profile, user } = useProfile();
+  const router = useRouter();
+  const { profile, user, isLoading: isProfileLoading } = useProfile();
   usePushToken(user?.id);
+
+  // Check if the user has a ConnectProfile — redirect to setup if not
+  const { data: connectProfile, isLoading: isConnectLoading } =
+    trpc.connectProfile.getCurrent.useQuery(undefined, {
+      enabled: !!user,
+      staleTime: 1000 * 60 * 5,
+    });
+
+  const isOnSetupRoute = SETUP_ROUTES.some(
+    (r) => pathname === r || pathname?.startsWith(r + "/")
+  );
+
+  useEffect(() => {
+    if (isProfileLoading || isConnectLoading || !user) return;
+    if (!connectProfile && !isOnSetupRoute) {
+      router.replace("/profile/setup");
+    }
+  }, [connectProfile, isConnectLoading, isProfileLoading, user, isOnSetupRoute, router]);
 
   const { data: unreadCount } = trpc.connectChat.getUnreadCount.useQuery(
     undefined,
