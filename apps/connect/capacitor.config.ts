@@ -29,7 +29,8 @@ const config: CapacitorConfig = {
   },
   plugins: {
     Keyboard: {
-      resize: "none",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      resize: "none" as any,
     },
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"],
