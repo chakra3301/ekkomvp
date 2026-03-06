@@ -25,11 +25,39 @@ export async function initNativeBridge() {
       `${info.keyboardHeight}px`
     );
     document.documentElement.classList.add("keyboard-open");
+
+    // Scroll the focused input into view after layout settles
+    setTimeout(() => {
+      const el = document.activeElement;
+      if (
+        el instanceof HTMLInputElement ||
+        el instanceof HTMLTextAreaElement ||
+        el instanceof HTMLSelectElement
+      ) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 100);
   });
 
   Keyboard.addListener("keyboardWillHide", () => {
     document.documentElement.style.setProperty("--keyboard-height", "0px");
     document.documentElement.classList.remove("keyboard-open");
+  });
+
+  // Also scroll into view when switching between inputs while keyboard is open
+  document.addEventListener("focusin", (e) => {
+    const el = e.target;
+    if (
+      el instanceof HTMLInputElement ||
+      el instanceof HTMLTextAreaElement ||
+      el instanceof HTMLSelectElement
+    ) {
+      setTimeout(() => {
+        if (document.documentElement.classList.contains("keyboard-open")) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 150);
+    }
   });
 
   App.addListener("appStateChange", ({ isActive }) => {

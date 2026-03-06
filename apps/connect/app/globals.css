@@ -330,3 +330,11 @@ html, body {
   min-height: 100vh;
   min-height: -webkit-fill-available;
 }
+
+/* When keyboard is open, add bottom padding to scrollable areas so
+   content can scroll above the keyboard. Applied globally via the
+   .keyboard-open class set by native-bridge.ts. */
+html.keyboard-open main,
+html.keyboard-open [data-keyboard-aware] {
+  padding-bottom: var(--keyboard-height, 0px);
+}
