@@ -23,6 +23,7 @@ import {
   Instagram,
   Check,
   Unlink,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -67,6 +68,93 @@ function saveFilters(filters: DiscoveryFilters) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(filters));
   } catch {}
+}
+
+function DeleteAccountSection() {
+  const router = useRouter();
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (confirmText !== "DELETE") return;
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/auth/delete-account", { method: "POST" });
+      if (!res.ok) throw new Error("Failed to delete account");
+
+      // Sign out locally
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push("/login");
+    } catch {
+      toast.error("Failed to delete account. Please try again.");
+      setDeleting(false);
+    }
+  };
+
+  if (!showConfirm) {
+    return (
+      <button
+        onClick={() => setShowConfirm(true)}
+        className="w-full text-left p-2 -mx-2 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-muted/50 transition-colors"
+      >
+        Delete Account
+      </button>
+    );
+  }
+
+  return (
+    <div className="p-3 -mx-2 rounded-lg border border-destructive/30 bg-destructive/5 space-y-3">
+      <div className="flex items-start gap-2">
+        <Trash2 className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+        <div>
+          <p className="text-sm font-medium text-destructive">Delete your account?</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            This will permanently delete your profile, matches, messages, and all data. This cannot be undone.
+          </p>
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="delete-confirm" className="text-xs text-muted-foreground">
+          Type <span className="font-mono font-semibold text-foreground">DELETE</span> to confirm
+        </Label>
+        <Input
+          id="delete-confirm"
+          value={confirmText}
+          onChange={(e) => setConfirmText(e.target.value)}
+          placeholder="DELETE"
+          className="h-9 text-sm"
+          autoComplete="off"
+        />
+      </div>
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => { setShowConfirm(false); setConfirmText(""); }}
+          disabled={deleting}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={handleDelete}
+          disabled={confirmText !== "DELETE" || deleting}
+        >
+          {deleting ? (
+            <>
+              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+              Deleting...
+            </>
+          ) : (
+            "Delete Account"
+          )}
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 export default function SettingsPage() {
@@ -631,22 +719,7 @@ export default function SettingsPage() {
 
             <Separator />
 
-            <button
-              onClick={() => {
-                if (
-                  window.confirm(
-                    "Are you sure you want to delete your account? This action cannot be undone."
-                  )
-                ) {
-                  toast.info(
-                    "To delete your account, please email privacy@ekkoconnect.app"
-                  );
-                }
-              }}
-              className="w-full text-left p-2 -mx-2 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-muted/50 transition-colors"
-            >
-              Delete Account
-            </button>
+            <DeleteAccountSection />
           </div>
         </div>
       </div>

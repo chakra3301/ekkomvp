@@ -12,13 +12,15 @@ import { Label } from "@/components/ui/label";
 
 export default function CompleteProfilePage() {
   const router = useRouter();
-  const [fullName, setFullName] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const completeInfo = trpc.auth.completeUserInfo.useMutation();
+  const updateProfile = trpc.profile.update.useMutation();
 
   // Pre-populate name from OAuth provider metadata
   useEffect(() => {
@@ -28,16 +30,34 @@ export default function CompleteProfilePage() {
         data: { user },
       } = await supabase.auth.getUser();
       if (user?.user_metadata?.full_name) {
-        setFullName(user.user_metadata.full_name);
+        setDisplayName(user.user_metadata.full_name);
       }
     };
     loadUserMetadata();
   }, []);
 
+  // Auto-generate username from display name
+  useEffect(() => {
+    if (displayName && !username) {
+      const generated = displayName
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, "")
+        .slice(0, 20);
+      if (generated.length >= 3) {
+        setUsername(generated);
+      }
+    }
+  }, [displayName, username]);
+
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (!fullName.trim() || fullName.trim().length < 2) {
-      errs.fullName = "Name must be at least 2 characters";
+    if (!displayName.trim() || displayName.trim().length < 2) {
+      errs.displayName = "Name must be at least 2 characters";
+    }
+    if (!username.trim() || username.trim().length < 3) {
+      errs.username = "Username must be at least 3 characters";
+    } else if (!/^[a-zA-Z0-9_]+$/.test(username.trim())) {
+      errs.username = "Only letters, numbers, and underscores";
     }
     if (!dateOfBirth) {
       errs.dateOfBirth = "Date of birth is required";
@@ -64,26 +84,39 @@ export default function CompleteProfilePage() {
 
     setLoading(true);
     try {
+      // 1. Update User record with DOB + phone
       await completeInfo.mutateAsync({
-        fullName: fullName.trim(),
+        fullName: displayName.trim(),
         phone: phone.trim() || undefined,
         dateOfBirth,
       });
 
-      // Store full name in Supabase metadata for profile setup to use
+      // 2. Create Profile record with username + display name (upsert)
+      await updateProfile.mutateAsync({
+        displayName: displayName.trim(),
+        username: username.trim().toLowerCase(),
+      });
+
+      // 3. Store in Supabase metadata
       const supabase = createClient();
       await supabase.auth.updateUser({
         data: {
-          full_name: fullName.trim(),
+          full_name: displayName.trim(),
           phone: phone.trim() || undefined,
           date_of_birth: dateOfBirth,
         },
       });
 
-      toast.success("Info saved!");
+      toast.success("Profile created!");
       router.push("/profile/setup");
-    } catch {
-      toast.error("Something went wrong. Please try again.");
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Something went wrong";
+      if (message.toLowerCase().includes("username")) {
+        setErrors((prev) => ({ ...prev, username: "Username is already taken" }));
+      } else {
+        toast.error(message);
+      }
       setLoading(false);
     }
   };
@@ -96,22 +129,45 @@ export default function CompleteProfilePage() {
             <span className="text-primary">EKKO</span> Connect
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Just a few more details to get started
+            Set up your profile to get started
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name</Label>
+            <Label htmlFor="displayName">Display Name</Label>
             <Input
-              id="fullName"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              id="displayName"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Your name"
               required
             />
-            {errors.fullName && (
-              <p className="text-xs text-destructive">{errors.fullName}</p>
+            {errors.displayName && (
+              <p className="text-xs text-destructive">{errors.displayName}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="username">Username</Label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                @
+              </span>
+              <Input
+                id="username"
+                value={username}
+                onChange={(e) =>
+                  setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))
+                }
+                placeholder="username"
+                className="pl-7"
+                maxLength={30}
+                required
+              />
+            </div>
+            {errors.username && (
+              <p className="text-xs text-destructive">{errors.username}</p>
             )}
           </div>
 
