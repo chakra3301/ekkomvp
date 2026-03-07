@@ -8,12 +8,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
+
         // Create the Capacitor window and view controller
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = CAPBridgeViewController()
         window?.makeKeyAndVisible()
-        
+
         return true
     }
 
@@ -50,6 +50,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Feel free to add additional processing here, but if you want the App API to support
         // tracking app url opens, make sure to keep this call
         return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
-    }
+    }   
 
 }
