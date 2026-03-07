@@ -212,6 +212,7 @@ export default function ChatPage({
   return (
     <div
       className="flex flex-col h-full"
+      data-keyboard-managed
       style={{
         paddingBottom:
           "max(0px, calc(var(--keyboard-height, 0px) - 49px - env(safe-area-inset-bottom, 0px)))",

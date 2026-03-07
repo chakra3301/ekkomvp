@@ -26,7 +26,9 @@ export async function initNativeBridge() {
     );
     document.documentElement.classList.add("keyboard-open");
 
-    // Scroll the focused input into view after layout settles
+    // Scroll the focused input into view after layout settles.
+    // Skip if the input is inside a container that manages its own keyboard
+    // offset (e.g. chat pages with paddingBottom: var(--keyboard-height)).
     setTimeout(() => {
       const el = document.activeElement;
       if (
@@ -34,7 +36,9 @@ export async function initNativeBridge() {
         el instanceof HTMLTextAreaElement ||
         el instanceof HTMLSelectElement
       ) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (!el.closest("[data-keyboard-managed]")) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
       }
     }, 100);
   });
@@ -53,7 +57,10 @@ export async function initNativeBridge() {
       el instanceof HTMLSelectElement
     ) {
       setTimeout(() => {
-        if (document.documentElement.classList.contains("keyboard-open")) {
+        if (
+          document.documentElement.classList.contains("keyboard-open") &&
+          !el.closest("[data-keyboard-managed]")
+        ) {
           el.scrollIntoView({ behavior: "smooth", block: "center" });
         }
       }, 150);
