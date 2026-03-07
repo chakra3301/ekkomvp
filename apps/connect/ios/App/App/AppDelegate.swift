@@ -11,7 +11,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Create the Capacitor window and view controller
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = CAPBridgeViewController()
+        window?.rootViewController = MyBridgeViewController()
         window?.makeKeyAndVisible()
 
         return true

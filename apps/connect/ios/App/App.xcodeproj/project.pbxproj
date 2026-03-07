@@ -13,6 +13,7 @@
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
 		A1B2C3D41000000000000001 /* AppleSignInPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D41000000000000002 /* AppleSignInPlugin.swift */; };
 		A1B2C3D41000000000000003 /* AppleSignInPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D41000000000000004 /* AppleSignInPlugin.m */; };
+		A1B2C3D41000000000000005 /* MyBridgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D41000000000000006 /* MyBridgeViewController.swift */; };
 		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
@@ -33,6 +34,7 @@
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
 		A1B2C3D41000000000000002 /* AppleSignInPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSignInPlugin.swift; sourceTree = "<group>"; };
 		A1B2C3D41000000000000004 /* AppleSignInPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppleSignInPlugin.m; sourceTree = "<group>"; };
+		A1B2C3D41000000000000006 /* MyBridgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyBridgeViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				A1B2C3D41000000000000002 /* AppleSignInPlugin.swift */,
 				A1B2C3D41000000000000004 /* AppleSignInPlugin.m */,
+				A1B2C3D41000000000000006 /* MyBridgeViewController.swift */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
@@ -166,6 +169,7 @@
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				A1B2C3D41000000000000001 /* AppleSignInPlugin.swift in Sources */,
 				A1B2C3D41000000000000003 /* AppleSignInPlugin.m in Sources */,
+				A1B2C3D41000000000000005 /* MyBridgeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

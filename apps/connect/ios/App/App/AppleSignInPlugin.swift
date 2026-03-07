@@ -1,8 +1,13 @@
 import Capacitor
 import AuthenticationServices
 
-@objc(AppleSignInPlugin)
-public class AppleSignInPlugin: CAPPlugin, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+@objc public class AppleSignInPlugin: CAPPlugin, CAPBridgedPlugin, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+
+    public let identifier = "AppleSignIn"
+    public let jsName = "AppleSignIn"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "signIn", returnType: CAPPluginReturnPromise)
+    ]
 
     var savedCall: CAPPluginCall?
 
