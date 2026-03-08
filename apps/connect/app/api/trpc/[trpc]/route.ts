@@ -1,6 +1,6 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { appRouter, createContext } from "@ekko/api";
-import { prisma } from "@ekko/database";
+import { prisma, UserRole } from "@ekko/database";
 import { createClient } from "@/lib/supabase/server";
 
 const handler = async (req: Request) => {
@@ -14,6 +14,23 @@ const handler = async (req: Request) => {
     dbUser = await prisma.user.findUnique({
       where: { id: supabaseUser.id },
     });
+
+    // Auto-create DB user if Supabase auth user exists but DB record doesn't
+    if (!dbUser) {
+      const metadata = supabaseUser.user_metadata || {};
+      dbUser = await prisma.user.create({
+        data: {
+          id: supabaseUser.id,
+          email: supabaseUser.email!,
+          role: UserRole.CREATIVE,
+          emailVerified: !!supabaseUser.email_confirmed_at,
+          phone: metadata.phone || null,
+          dateOfBirth: metadata.date_of_birth
+            ? new Date(metadata.date_of_birth)
+            : null,
+        },
+      });
+    }
   }
 
   return fetchRequestHandler({
