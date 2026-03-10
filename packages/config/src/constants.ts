@@ -195,7 +195,7 @@ export const SUBSCRIPTION_TIERS = {
     analytics: true,
     verifiedBadge: true,
     customAccent: true,
-    price: "$9.99/mo",
+    price: "$7.99/mo",
   },
   BUSINESS: {
     name: "Business",
@@ -267,7 +267,7 @@ export const CONNECT_TIERS = {
     seeWhoLikes: true,
     globalSearch: true,
     topOfStack: true,
-    price: "$9.99/mo",
+    price: "$7.99/mo",
   },
 } as const;
 

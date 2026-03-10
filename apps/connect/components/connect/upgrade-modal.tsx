@@ -163,7 +163,7 @@ export function UpgradeModal({
           {/* Subscription details — required by Apple */}
           <div>
             <p className="text-2xl font-bold font-heading">
-              $9.99
+              $7.99
               <span className="text-sm font-normal text-muted-foreground">
                 /month
               </span>
