@@ -30,6 +30,17 @@ export const blockRouter = router({
         },
       });
 
+      // Auto-create a report so admins are notified of the block
+      await prisma.report.create({
+        data: {
+          reporterId: ctx.user.id,
+          targetType: "USER",
+          targetId: blockedId,
+          reason: "HARASSMENT",
+          description: "Auto-generated: user was blocked",
+        },
+      });
+
       return { blocked: true };
     }),
 

@@ -35,6 +35,7 @@ export default function RegisterPage() {
   const [dobYear, setDobYear] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const daysInMonth = getDaysInMonth(
@@ -74,6 +75,10 @@ export default function RegisterPage() {
 
     if (password.length < 8) {
       errs.password = "Password must be at least 8 characters";
+    }
+
+    if (!agreedToTerms) {
+      errs.terms = "You must agree to the Terms of Service";
     }
 
     setErrors(errs);
@@ -317,10 +322,36 @@ export default function RegisterPage() {
             )}
           </div>
 
+          {/* Terms agreement */}
+          <div className="space-y-1.5">
+            <label className="flex items-start gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-input accent-primary"
+              />
+              <span className="text-xs text-muted-foreground leading-relaxed">
+                I agree to the{" "}
+                <Link href="/terms" className="text-primary hover:underline" target="_blank">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="text-primary hover:underline" target="_blank">
+                  Privacy Policy
+                </Link>
+                . I understand there is zero tolerance for objectionable content or abusive behavior.
+              </span>
+            </label>
+            {errors.terms && (
+              <p className="text-xs text-destructive">{errors.terms}</p>
+            )}
+          </div>
+
           <Button
             type="submit"
             className="w-full h-12 text-base rounded-full"
-            disabled={loading}
+            disabled={loading || !agreedToTerms}
           >
             {loading ? "Creating account..." : "Next"}
           </Button>

@@ -4,6 +4,7 @@ import { prisma } from "@ekko/database";
 import { CONNECT_LIMITS, CONNECT_TIERS } from "@ekko/config";
 
 import { router, protectedProcedure } from "../trpc";
+import { assertCleanContent } from "../lib/content-filter";
 
 const mediaSlotSchema = z.object({
   url: z.string().url(),
@@ -107,6 +108,10 @@ export const connectProfileRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      assertCleanContent(input.headline);
+      assertCleanContent(input.bio);
+      assertCleanContent(input.lookingFor);
+
       // Check if profile already exists
       const existing = await prisma.connectProfile.findUnique({
         where: { userId: ctx.user.id },
@@ -177,6 +182,10 @@ export const connectProfileRouter = router({
         });
       }
 
+      assertCleanContent(input.headline);
+      assertCleanContent(input.bio);
+      assertCleanContent(input.lookingFor);
+
       // Validate media slots against tier limit
       if (input.mediaSlots) {
         const maxSlots =
@@ -245,4 +254,27 @@ export const connectProfileRouter = router({
 
     return { isActive: updated.isActive };
   }),
+
+  // Called by the client after a successful IAP to sync tier
+  upgradeTier: protectedProcedure
+    .input(z.enum(["FREE", "INFINITE"]))
+    .mutation(async ({ ctx, input: tier }) => {
+      const profile = await prisma.connectProfile.findUnique({
+        where: { userId: ctx.user.id },
+      });
+
+      if (!profile) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Connect profile not found.",
+        });
+      }
+
+      const updated = await prisma.connectProfile.update({
+        where: { userId: ctx.user.id },
+        data: { connectTier: tier },
+      });
+
+      return { connectTier: updated.connectTier };
+    }),
 });

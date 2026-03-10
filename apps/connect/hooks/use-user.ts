@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
+import { Capacitor } from "@capacitor/core";
 import { createClient } from "@/lib/supabase/client";
+import { identifyUser } from "@/lib/purchases";
 
 interface UseUserReturn {
   user: User | null;
@@ -29,6 +31,9 @@ export function useUser(): UseUserReturn {
           setError(error);
         } else {
           setUser(user);
+          if (user && Capacitor.isNativePlatform()) {
+            identifyUser(user.id).catch(() => {});
+          }
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Failed to get user"));

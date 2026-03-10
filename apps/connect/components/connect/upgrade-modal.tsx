@@ -1,7 +1,20 @@
 "use client";
 
-import { Check, Infinity, Sparkles, Eye, Globe, Zap } from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Check,
+  Infinity,
+  Sparkles,
+  Eye,
+  Globe,
+  Zap,
+  Loader2,
+  RotateCcw,
+} from "lucide-react";
+import { toast } from "sonner";
 
+import { Capacitor } from "@capacitor/core";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +22,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { trpc } from "@/lib/trpc/client";
+import { purchaseInfinite, restorePurchases } from "@/lib/purchases";
 
 interface UpgradeModalProps {
   open: boolean;
@@ -38,6 +52,59 @@ export function UpgradeModal({
   onOpenChange,
   trigger,
 }: UpgradeModalProps) {
+  const [purchasing, setPurchasing] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+  const upgradeTier = trpc.connectProfile.upgradeTier.useMutation();
+  const utils = trpc.useUtils();
+  const isNative = Capacitor.isNativePlatform();
+
+  const handlePurchase = async () => {
+    if (!isNative) {
+      toast.info("Subscriptions are available in the iOS app");
+      return;
+    }
+
+    setPurchasing(true);
+    try {
+      const result = await purchaseInfinite();
+
+      if (result.success) {
+        // Sync tier to backend
+        await upgradeTier.mutateAsync("INFINITE");
+        await utils.connectProfile.getCurrent.invalidate();
+        toast.success("Welcome to Infinite!");
+        onOpenChange(false);
+      } else if (result.error === "cancelled") {
+        // User cancelled — do nothing
+      } else {
+        toast.error(result.error || "Purchase failed");
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    setRestoring(true);
+    try {
+      const restored = await restorePurchases();
+      if (restored) {
+        await upgradeTier.mutateAsync("INFINITE");
+        await utils.connectProfile.getCurrent.invalidate();
+        toast.success("Subscription restored!");
+        onOpenChange(false);
+      } else {
+        toast.info("No active subscription found");
+      }
+    } catch {
+      toast.error("Failed to restore purchases");
+    } finally {
+      setRestoring(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -93,25 +160,73 @@ export function UpgradeModal({
         </div>
 
         <div className="text-center mt-4 space-y-3">
-          <p className="text-2xl font-bold font-heading">
-            $9.99<span className="text-sm font-normal text-muted-foreground">/mo</span>
-          </p>
+          {/* Subscription details — required by Apple */}
+          <div>
+            <p className="text-2xl font-bold font-heading">
+              $9.99
+              <span className="text-sm font-normal text-muted-foreground">
+                /month
+              </span>
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              EKKO Connect Infinite — auto-renewable monthly subscription.
+              {"\n"}Payment will be charged to your Apple ID account at
+              confirmation. Subscription automatically renews unless cancelled at
+              least 24 hours before the end of the current period.
+            </p>
+          </div>
+
           <Button
             className="w-full h-12 text-base rounded-full"
-            onClick={() => {
-              // TODO: Integrate payment
-              onOpenChange(false);
-            }}
+            onClick={handlePurchase}
+            disabled={purchasing || restoring}
           >
-            <Infinity className="h-4 w-4 mr-2" />
-            Go Infinite
+            {purchasing ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <Infinity className="h-4 w-4 mr-2" />
+                {isNative ? "Subscribe" : "Available on iOS"}
+              </>
+            )}
           </Button>
+
+          {/* Restore purchases — required by Apple */}
+          {isNative && (
+            <button
+              onClick={handleRestore}
+              disabled={restoring || purchasing}
+              className="text-xs text-muted-foreground hover:text-foreground flex items-center justify-center gap-1 mx-auto"
+            >
+              {restoring ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <RotateCcw className="h-3 w-3" />
+              )}
+              Restore Purchases
+            </button>
+          )}
+
           <button
             onClick={() => onOpenChange(false)}
             className="text-xs text-muted-foreground hover:text-foreground"
           >
             Maybe later
           </button>
+
+          {/* Terms + Privacy links — required by Apple */}
+          <div className="flex items-center justify-center gap-3 text-[10px] text-muted-foreground">
+            <Link href="/terms" className="hover:underline">
+              Terms of Use
+            </Link>
+            <span>·</span>
+            <Link href="/privacy" className="hover:underline">
+              Privacy Policy
+            </Link>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

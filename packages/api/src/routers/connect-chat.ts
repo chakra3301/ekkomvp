@@ -5,6 +5,7 @@ import { CONNECT_LIMITS } from "@ekko/config";
 
 import { router, protectedProcedure } from "../trpc";
 import { sendPushToUser } from "../lib/push";
+import { assertCleanContent } from "../lib/content-filter";
 
 export const connectChatRouter = router({
   getMessages: protectedProcedure
@@ -74,6 +75,8 @@ export const connectChatRouter = router({
       if (!content && !imageUrl) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Message must have content or an image" });
       }
+
+      assertCleanContent(content);
 
       // Verify user is in this match and it's active
       const match = await prisma.connectMatch.findUnique({

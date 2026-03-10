@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
   Settings,
-  ExternalLink,
   Eye,
   EyeOff,
   MapPin,
@@ -36,7 +35,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Capacitor } from "@capacitor/core";
 import { UpgradeModal } from "@/components/connect/upgrade-modal";
+import { restorePurchases } from "@/lib/purchases";
 import { cn, getInitials } from "@/lib/utils";
 
 const STORAGE_KEY = "ekko-connect-filters";
@@ -452,20 +453,50 @@ export default function SettingsPage() {
           </div>
 
           {!isInfinite && (
-            <button
-              onClick={() => setUpgradeOpen(true)}
-              className="w-full mt-2 p-3 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 text-left hover:from-primary/15 hover:to-primary/10 transition-colors"
+            <>
+              <button
+                onClick={() => setUpgradeOpen(true)}
+                className="w-full mt-2 p-3 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 text-left hover:from-primary/15 hover:to-primary/10 transition-colors"
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <Infinity className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-semibold text-primary">
+                    Go Infinite
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Unlimited likes, see who likes you, global search, and more.
+                </p>
+              </button>
+
+              {Capacitor.isNativePlatform() && (
+                <button
+                  onClick={async () => {
+                    const restored = await restorePurchases();
+                    if (restored) {
+                      await utils.connectProfile.getCurrent.invalidate();
+                      toast.success("Subscription restored!");
+                    } else {
+                      toast.info("No active subscription found");
+                    }
+                  }}
+                  className="w-full mt-2 text-xs text-muted-foreground hover:text-foreground text-center py-2"
+                >
+                  Restore Purchases
+                </button>
+              )}
+            </>
+          )}
+
+          {isInfinite && Capacitor.isNativePlatform() && (
+            <a
+              href="https://apps.apple.com/account/subscriptions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block mt-2 text-xs text-muted-foreground hover:text-foreground text-center py-2"
             >
-              <div className="flex items-center gap-2 mb-1">
-                <Infinity className="h-4 w-4 text-primary" />
-                <span className="text-sm font-semibold text-primary">
-                  Go Infinite
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Unlimited likes, see who likes you, global search, and more.
-              </p>
-            </button>
+              Manage Subscription
+            </a>
           )}
         </div>
 
@@ -693,18 +724,6 @@ export default function SettingsPage() {
               <span className="text-sm">Terms of Service</span>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </Link>
-
-            <a
-              href={
-                process.env.NEXT_PUBLIC_EKKO_URL || "http://localhost:3000"
-              }
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              <span className="text-sm">Open EKKO</span>
-              <ExternalLink className="h-4 w-4 text-muted-foreground" />
-            </a>
 
             <Separator />
 
