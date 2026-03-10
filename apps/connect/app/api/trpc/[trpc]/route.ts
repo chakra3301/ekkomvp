@@ -10,20 +10,23 @@ const handler = async (req: Request) => {
 
     // Try cookie-based auth first (standard SSR flow)
     const supabase = createClient();
-    const { data: cookieAuth } = await supabase.auth.getUser();
+    const { data: cookieAuth, error: cookieError } = await supabase.auth.getUser();
     supabaseUser = cookieAuth.user;
+    console.log("[tRPC handler] Cookie auth:", !!supabaseUser, "error:", cookieError?.message || "none");
 
     // Fallback: read Bearer token from Authorization header (native iOS)
     if (!supabaseUser) {
       const authHeader = req.headers.get("Authorization");
+      console.log("[tRPC handler] Auth header present:", !!authHeader, authHeader ? authHeader.slice(0, 20) + "..." : "none");
       if (authHeader?.startsWith("Bearer ")) {
         const token = authHeader.slice(7);
         const supabaseAdmin = createAdminClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         );
-        const { data: tokenAuth } = await supabaseAdmin.auth.getUser(token);
+        const { data: tokenAuth, error: tokenError } = await supabaseAdmin.auth.getUser(token);
         supabaseUser = tokenAuth.user;
+        console.log("[tRPC handler] Token auth:", !!supabaseUser, "error:", tokenError?.message || "none");
       }
     }
 
