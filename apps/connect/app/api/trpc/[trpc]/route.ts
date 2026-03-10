@@ -38,27 +38,40 @@ const handler = async (req: Request) => {
         metadata.email ||
         `${supabaseUser.id}@placeholder.local`;
 
-      // Upsert to handle race conditions with concurrent requests
-      try {
-        dbUser = await prisma.user.upsert({
-          where: { id: supabaseUser.id },
-          update: {},
-          create: {
-            id: supabaseUser.id,
-            email,
-            role: UserRole.CREATIVE,
-            emailVerified: !!supabaseUser.email_confirmed_at,
-            phone: metadata.phone || null,
-            dateOfBirth: metadata.date_of_birth
-              ? new Date(metadata.date_of_birth)
-              : null,
-          },
-        });
-      } catch (e) {
-        console.error("[tRPC handler] User upsert failed:", e);
+      // 1. Try to find by Supabase ID first
+      dbUser = await prisma.user.findUnique({
+        where: { id: supabaseUser.id },
+      });
+
+      // 2. If not found, try by email (handles re-registration or different OAuth provider)
+      if (!dbUser) {
         dbUser = await prisma.user.findUnique({
-          where: { id: supabaseUser.id },
+          where: { email },
         });
+      }
+
+      // 3. If still not found, create new user
+      if (!dbUser) {
+        try {
+          dbUser = await prisma.user.create({
+            data: {
+              id: supabaseUser.id,
+              email,
+              role: UserRole.CREATIVE,
+              emailVerified: !!supabaseUser.email_confirmed_at,
+              phone: metadata.phone || null,
+              dateOfBirth: metadata.date_of_birth
+                ? new Date(metadata.date_of_birth)
+                : null,
+            },
+          });
+        } catch (e) {
+          console.error("[tRPC handler] User create failed:", e);
+          // Last resort: try email lookup again (race condition)
+          dbUser = await prisma.user.findUnique({
+            where: { email },
+          });
+        }
       }
     }
 
