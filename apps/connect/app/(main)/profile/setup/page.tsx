@@ -115,6 +115,8 @@ export default function ProfileSetupPage() {
       location: location || undefined,
     };
 
+    console.log("[Profile save] payload:", JSON.stringify(payload, null, 2));
+
     try {
       if (isEditing) {
         await updateProfile.mutateAsync(payload);
