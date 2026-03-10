@@ -7,9 +7,9 @@ import { router, protectedProcedure } from "../trpc";
 import { assertCleanContent } from "../lib/content-filter";
 
 const mediaSlotSchema = z.object({
-  url: z.string().url(),
+  url: z.string().min(1),
   mediaType: z.enum(["PHOTO", "VIDEO", "AUDIO", "MODEL"]),
-  sortOrder: z.number().int().min(0).max(5),
+  sortOrder: z.number().int().min(0).max(11),
 });
 
 const promptSchema = z.object({

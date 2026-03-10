@@ -111,7 +111,7 @@ export default function ProfileSetupPage() {
       prompts,
       instagramHandle: instagramHandle || undefined,
       twitterHandle: twitterHandle || undefined,
-      websiteUrl: websiteUrl || undefined,
+      websiteUrl: websiteUrl.trim() || undefined,
       location: location || undefined,
     };
 
@@ -126,9 +126,9 @@ export default function ProfileSetupPage() {
 
       await utils.connectProfile.getCurrent.invalidate();
       router.push(isEditing ? "/profile" : "/");
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "Failed to save profile";
+    } catch (error: any) {
+      const message = error?.message || "Failed to save profile";
+      console.error("[Profile save error]", JSON.stringify(error, null, 2));
       toast.error(message);
     } finally {
       setIsSubmitting(false);
