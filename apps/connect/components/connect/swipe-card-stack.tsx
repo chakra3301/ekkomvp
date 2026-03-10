@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
 import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 import { Heart, X, MoreHorizontal, ShieldAlert, Flag, MapPin, Infinity, Compass, Send, Undo2 } from "lucide-react";
@@ -123,7 +123,7 @@ const TEST_PROFILES: ProfileData[] = [
   },
 ];
 
-function SwipeCard({
+const SwipeCard = React.memo(function SwipeCard({
   profile,
   onSwipe,
   isTop,
@@ -137,14 +137,28 @@ function SwipeCard({
   onReport: () => void;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isPressed, setIsPressed] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const x = useMotionValue(0);
+  const rotateXVal = useMotionValue(0);
+  const rotateYVal = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
   const likeOpacity = useTransform(x, [0, 100], [0, 1]);
   const passOpacity = useTransform(x, [-100, 0], [1, 0]);
+
+  // Derive shine gradient background from rotateY (no re-renders)
+  const shineBackground = useTransform(rotateYVal, (y) =>
+    `linear-gradient(${105 + y * 3}deg, transparent 30%, rgba(255,255,255,0.2) 45%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.2) 55%, transparent 70%)`
+  );
+
+  // Reset 3D rotation when expanded
+  useEffect(() => {
+    if (isExpanded) {
+      rotateXVal.set(0);
+      rotateYVal.set(0);
+    }
+  }, [isExpanded, rotateXVal, rotateYVal]);
 
   const handleDragEnd = useCallback(
     (_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
@@ -166,21 +180,20 @@ function SwipeCard({
       const rect = cardRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      const rotateY = ((e.clientX - centerX) / (rect.width / 2)) * 10;
-      const rotateX = ((centerY - e.clientY) / (rect.height / 2)) * 10;
-      setRotation({
-        x: Math.max(-10, Math.min(10, rotateX)),
-        y: Math.max(-10, Math.min(10, rotateY)),
-      });
+      const ry = ((e.clientX - centerX) / (rect.width / 2)) * 10;
+      const rx = ((centerY - e.clientY) / (rect.height / 2)) * 10;
+      rotateXVal.set(Math.max(-10, Math.min(10, rx)));
+      rotateYVal.set(Math.max(-10, Math.min(10, ry)));
       if (!isPressed) setIsPressed(true);
     },
-    [isTop, isPressed, isExpanded]
+    [isTop, isPressed, isExpanded, rotateXVal, rotateYVal]
   );
 
   const handlePointerLeave = useCallback(() => {
-    setRotation({ x: 0, y: 0 });
+    rotateXVal.set(0);
+    rotateYVal.set(0);
     setIsPressed(false);
-  }, []);
+  }, [rotateXVal, rotateYVal]);
 
   const handleCardTap = useCallback(() => {
     if (isTop) setIsExpanded((prev) => !prev);
@@ -259,8 +272,6 @@ function SwipeCard({
         <motion.div
           className="relative w-full h-full rounded-2xl overflow-hidden"
           animate={{
-            rotateX: isExpanded ? 0 : rotation.x,
-            rotateY: isExpanded ? 0 : rotation.y,
             scale: isPressed && !isExpanded ? 1.02 : 1,
           }}
           transition={{
@@ -269,6 +280,8 @@ function SwipeCard({
             damping: 20,
           }}
           style={{
+            rotateX: rotateXVal,
+            rotateY: rotateYVal,
             transformStyle: "preserve-3d",
             boxShadow: isPressed && !isExpanded
               ? `0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px hsl(${accentColor} / 0.15)`
@@ -280,16 +293,7 @@ function SwipeCard({
             <motion.div
               className="absolute inset-0 z-10 pointer-events-none rounded-2xl"
               animate={{ opacity: isPressed ? 0.4 : 0 }}
-              style={{
-                background: `linear-gradient(
-                  ${105 + rotation.y * 3}deg,
-                  transparent 30%,
-                  rgba(255, 255, 255, 0.2) 45%,
-                  rgba(255, 255, 255, 0.3) 50%,
-                  rgba(255, 255, 255, 0.2) 55%,
-                  transparent 70%
-                )`,
-              }}
+              style={{ background: shineBackground }}
             />
           )}
 
@@ -331,7 +335,7 @@ function SwipeCard({
                   fill
                   sizes="(max-width: 512px) 100vw, 512px"
                   className="object-cover"
-                  priority
+                  priority={isTop}
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-primary/10 to-background flex items-center justify-center">
@@ -467,7 +471,7 @@ function SwipeCard({
       </AnimatePresence>
     </motion.div>
   );
-}
+});
 
 export function SwipeCardStack({ profiles, onSwipe, onUndo, canUndo }: SwipeCardStackProps) {
   const activeProfiles = profiles.length > 0 ? profiles : TEST_PROFILES;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,6 +39,18 @@ export function MatchCelebration({
 
   const imageUrl = featuredImage || avatarUrl;
 
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 12 }, () => ({
+        left: 15 + Math.random() * 70,
+        top: 20 + Math.random() * 60,
+        yOffset: Math.random() * 80,
+        xOffset: (Math.random() - 0.5) * 40,
+        duration: 2 + Math.random(),
+      })),
+    []
+  );
+
   return (
     <AnimatePresence>
       {open && (
@@ -57,24 +69,24 @@ export function MatchCelebration({
           />
 
           {/* Floating particles */}
-          {Array.from({ length: 12 }).map((_, i) => (
+          {particles.map((p, i) => (
             <motion.div
               key={i}
               className="absolute w-2 h-2 rounded-full"
               style={{
                 background: `hsl(${211 + i * 15}, 100%, ${60 + (i % 3) * 10}%)`,
-                left: `${15 + Math.random() * 70}%`,
-                top: `${20 + Math.random() * 60}%`,
+                left: `${p.left}%`,
+                top: `${p.top}%`,
               }}
               initial={{ opacity: 0, scale: 0 }}
               animate={{
                 opacity: [0, 1, 0],
                 scale: [0, 1.5, 0],
-                y: [0, -60 - Math.random() * 80],
-                x: [(Math.random() - 0.5) * 40],
+                y: [0, -60 - p.yOffset],
+                x: [p.xOffset],
               }}
               transition={{
-                duration: 2 + Math.random(),
+                duration: p.duration,
                 delay: 0.3 + i * 0.1,
                 ease: "easeOut",
               }}

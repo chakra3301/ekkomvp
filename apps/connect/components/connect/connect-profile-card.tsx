@@ -70,6 +70,7 @@ function FullWidthMedia({ slot }: { slot: MediaSlot }) {
           autoPlay
           loop
           playsInline
+          preload="metadata"
         />
         <div className="absolute bottom-2 left-2 bg-black/60 rounded-full p-1">
           <Video className="h-3.5 w-3.5 text-white" />
@@ -116,6 +117,7 @@ function renderHeroMedia(slot: MediaSlot) {
           autoPlay
           loop
           playsInline
+          preload="metadata"
         />
         <div className="absolute bottom-2 left-2 bg-black/60 rounded-full p-1">
           <Video className="h-3.5 w-3.5 text-white" />

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { LayoutGrid, Layers, Loader2, History } from "lucide-react";
 import { toast } from "sonner";
 
@@ -10,9 +11,19 @@ import { useProfile } from "@/hooks";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 import { SwipeCardStack } from "@/components/connect/swipe-card-stack";
-import { BrowseGrid } from "@/components/connect/browse-grid";
-import { HistoryGrid } from "@/components/connect/history-grid";
-import { MatchCelebration } from "@/components/connect/match-celebration";
+
+const BrowseGrid = dynamic(
+  () => import("@/components/connect/browse-grid").then((m) => m.BrowseGrid),
+  { ssr: false }
+);
+const HistoryGrid = dynamic(
+  () => import("@/components/connect/history-grid").then((m) => m.HistoryGrid),
+  { ssr: false }
+);
+const MatchCelebration = dynamic(
+  () => import("@/components/connect/match-celebration").then((m) => m.MatchCelebration),
+  { ssr: false }
+);
 
 const FILTER_KEY = "ekko-connect-filters";
 
@@ -50,6 +61,7 @@ export default function DiscoverPage() {
   const { data: connectProfile, isLoading: profileLoading } =
     trpc.connectProfile.getCurrent.useQuery(undefined, {
       enabled: !!user,
+      staleTime: 1000 * 60 * 5,
     });
 
   // Build query filters from localStorage settings + profile GPS

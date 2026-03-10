@@ -126,7 +126,6 @@ async function setupPushNotifications() {
   await PushNotifications.register();
 
   PushNotifications.addListener("registration", (token) => {
-    console.log("[Native] Push token:", token.value);
     localStorage.setItem("ekko-push-token", token.value);
     window.dispatchEvent(new Event("ekko-push-token"));
   });

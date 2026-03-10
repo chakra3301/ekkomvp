@@ -16,6 +16,7 @@ export default function ConnectProfilePage() {
   const { data: connectProfile, isLoading } =
     trpc.connectProfile.getCurrent.useQuery(undefined, {
       enabled: !!user,
+      staleTime: 1000 * 60 * 5,
     });
   const toggleActive = trpc.connectProfile.toggleActive.useMutation();
   const utils = trpc.useUtils();

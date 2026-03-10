@@ -17,7 +17,7 @@ export default function LikesPage() {
 
   const { data: connectProfile } = trpc.connectProfile.getCurrent.useQuery(
     undefined,
-    { enabled: !!user }
+    { enabled: !!user, staleTime: 1000 * 60 * 5 }
   );
 
   const { data, isLoading } = trpc.connectDiscover.getLikesReceived.useQuery(

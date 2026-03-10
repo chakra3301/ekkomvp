@@ -53,6 +53,8 @@ export default function ChatPage({
   const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const prevMsgCountRef = useRef(0);
+  const hasMarkedReadRef = useRef(false);
 
   const { data: match, isLoading: matchLoading } =
     trpc.connectMatch.getMatch.useQuery(params.matchId, {
@@ -80,13 +82,15 @@ export default function ChatPage({
   // Refetch messages when realtime signals a new message
   useEffect(() => {
     if (newMessageSignal > 0) {
+      hasMarkedReadRef.current = false;
       utils.connectChat.getMessages.invalidate({ matchId: params.matchId });
     }
   }, [newMessageSignal, params.matchId, utils]);
 
-  // Mark messages as read + broadcast read receipt
+  // Mark messages as read + broadcast read receipt (once per batch)
   useEffect(() => {
-    if (messagesData?.messages?.length) {
+    if (messagesData?.messages?.length && !hasMarkedReadRef.current) {
+      hasMarkedReadRef.current = true;
       markAsRead.mutate({ matchId: params.matchId });
       sendRead();
     }
@@ -99,9 +103,13 @@ export default function ChatPage({
     }
   }, [readSignal, params.matchId, utils]);
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom only when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const count = messagesData?.messages?.length || 0;
+    if (count > prevMsgCountRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    prevMsgCountRef.current = count;
   }, [messagesData?.messages]);
 
   if (matchLoading || messagesLoading) {

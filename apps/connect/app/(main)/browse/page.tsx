@@ -7,7 +7,12 @@ import { toast } from "sonner";
 import { useProfile } from "@/hooks";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
-import { BrowseGrid } from "@/components/connect/browse-grid";
+import dynamic from "next/dynamic";
+
+const BrowseGrid = dynamic(
+  () => import("@/components/connect/browse-grid").then((m) => m.BrowseGrid),
+  { ssr: false }
+);
 
 export default function BrowsePage() {
   const { user } = useProfile();
@@ -15,6 +20,7 @@ export default function BrowsePage() {
   const { data: connectProfile, isLoading: profileLoading } =
     trpc.connectProfile.getCurrent.useQuery(undefined, {
       enabled: !!user,
+      staleTime: 1000 * 60 * 5,
     });
 
   const { data: discoveryQueue, isLoading: queueLoading } =

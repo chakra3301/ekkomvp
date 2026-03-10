@@ -53,7 +53,7 @@ export default function ProfileSetupPage() {
   const [websiteUrl, setWebsiteUrl] = useState("");
 
   const { data: existingProfile, isLoading: profileLoading } =
-    trpc.connectProfile.getCurrent.useQuery(undefined, { enabled: !!user });
+    trpc.connectProfile.getCurrent.useQuery(undefined, { enabled: !!user, staleTime: 1000 * 60 * 5 });
 
   const createProfile = trpc.connectProfile.create.useMutation();
   const updateProfile = trpc.connectProfile.update.useMutation();

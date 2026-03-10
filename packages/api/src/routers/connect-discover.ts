@@ -276,19 +276,21 @@ export const connectDiscoverRouter = router({
         include: {
           targetUser: {
             include: {
-              connectProfile: true,
-              profile: {
+              connectProfile: {
                 select: {
-                  username: true,
-                  displayName: true,
-                  avatarUrl: true,
-                  bio: true,
+                  id: true,
+                  userId: true,
                   headline: true,
                   location: true,
-                  verificationStatus: true,
-                  subscriptionTier: true,
+                  mediaSlots: true,
+                },
+              },
+              profile: {
+                select: {
+                  displayName: true,
+                  avatarUrl: true,
                   disciplines: {
-                    include: { discipline: true },
+                    include: { discipline: { select: { name: true } } },
                   },
                 },
               },

@@ -165,7 +165,7 @@ export default function SettingsPage() {
 
   const { data: connectProfile } = trpc.connectProfile.getCurrent.useQuery(
     undefined,
-    { enabled: !!user }
+    { enabled: !!user, staleTime: 1000 * 60 * 5 }
   );
   const { data: blockedUsers } = trpc.block.getBlockedUsers.useQuery(
     undefined,
