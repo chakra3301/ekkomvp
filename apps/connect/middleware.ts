@@ -13,6 +13,14 @@ const protectedRoutes = [
 const authRoutes = ["/login", "/register"];
 
 export async function middleware(request: NextRequest) {
+  // Redirect www to non-www to prevent cookie/session issues
+  const host = request.headers.get("host") || "";
+  if (host.startsWith("www.")) {
+    const url = request.nextUrl.clone();
+    url.host = host.replace("www.", "");
+    return NextResponse.redirect(url, 301);
+  }
+
   const { response, user } = await updateSession(request);
   const { pathname } = request.nextUrl;
 
