@@ -6,6 +6,7 @@ import { httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
 
 import { trpc } from "./client";
+import { createClient } from "@/lib/supabase/client";
 
 function getBaseUrl() {
   if (typeof window !== "undefined") return "";
@@ -32,6 +33,12 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
           transformer: superjson,
+          async headers() {
+            const supabase = createClient();
+            const { data } = await supabase.auth.getSession();
+            const token = data.session?.access_token;
+            return token ? { Authorization: `Bearer ${token}` } : {};
+          },
         }),
       ],
     })

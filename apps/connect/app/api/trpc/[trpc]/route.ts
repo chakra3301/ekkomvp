@@ -2,13 +2,30 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { appRouter, createContext } from "@ekko/api";
 import { prisma, UserRole } from "@ekko/database";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
 
 const handler = async (req: Request) => {
   try {
+    let supabaseUser = null;
+
+    // Try cookie-based auth first (standard SSR flow)
     const supabase = createClient();
-    const {
-      data: { user: supabaseUser },
-    } = await supabase.auth.getUser();
+    const { data: cookieAuth } = await supabase.auth.getUser();
+    supabaseUser = cookieAuth.user;
+
+    // Fallback: read Bearer token from Authorization header (native iOS)
+    if (!supabaseUser) {
+      const authHeader = req.headers.get("Authorization");
+      if (authHeader?.startsWith("Bearer ")) {
+        const token = authHeader.slice(7);
+        const supabaseAdmin = createAdminClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        );
+        const { data: tokenAuth } = await supabaseAdmin.auth.getUser(token);
+        supabaseUser = tokenAuth.user;
+      }
+    }
 
     let dbUser = null;
     if (supabaseUser) {
@@ -36,7 +53,6 @@ const handler = async (req: Request) => {
         });
       } catch (e) {
         console.error("[tRPC handler] User upsert failed:", e);
-        // Fall back to just finding the user
         dbUser = await prisma.user.findUnique({
           where: { id: supabaseUser.id },
         });
