@@ -35,9 +35,8 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
           transformer: superjson,
           async headers() {
             const supabase = createClient();
-            const { data, error } = await supabase.auth.getSession();
+            const { data } = await supabase.auth.getSession();
             const token = data.session?.access_token;
-            console.log("[tRPC headers] session exists:", !!data.session, "error:", error?.message || "none", "token:", token ? token.slice(0, 10) + "..." : "null");
             return token ? { Authorization: `Bearer ${token}` } : {};
           },
         }),

@@ -10,48 +10,38 @@ const handler = async (req: Request) => {
 
     // Try cookie-based auth first (standard SSR flow)
     const supabase = createClient();
-    const { data: cookieAuth, error: cookieError } = await supabase.auth.getUser();
+    const { data: cookieAuth } = await supabase.auth.getUser();
     supabaseUser = cookieAuth.user;
-    console.log("[tRPC handler] Cookie auth:", !!supabaseUser, "error:", cookieError?.message || "none");
 
     // Fallback: read Bearer token from Authorization header (native iOS)
     if (!supabaseUser) {
       const authHeader = req.headers.get("Authorization");
-      console.log("[tRPC handler] Auth header present:", !!authHeader, authHeader ? authHeader.slice(0, 20) + "..." : "none");
       if (authHeader?.startsWith("Bearer ")) {
         const token = authHeader.slice(7);
         const supabaseAdmin = createAdminClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         );
-        const { data: tokenAuth, error: tokenError } = await supabaseAdmin.auth.getUser(token);
+        const { data: tokenAuth } = await supabaseAdmin.auth.getUser(token);
         supabaseUser = tokenAuth.user;
-        console.log("[tRPC handler] Token auth:", !!supabaseUser, "error:", tokenError?.message || "none");
       }
     }
 
     let dbUser = null;
     if (supabaseUser) {
-      const metadata = supabaseUser.user_metadata || {};
-      const email =
-        supabaseUser.email ||
-        metadata.email ||
-        `${supabaseUser.id}@placeholder.local`;
-
-      // 1. Try to find by Supabase ID first
+      // Look up by Supabase ID only — account linking is handled in the auth callback
       dbUser = await prisma.user.findUnique({
         where: { id: supabaseUser.id },
       });
 
-      // 2. If not found, try by email (handles re-registration or different OAuth provider)
+      // Auto-create if the auth callback didn't create the user yet
       if (!dbUser) {
-        dbUser = await prisma.user.findUnique({
-          where: { email },
-        });
-      }
+        const metadata = supabaseUser.user_metadata || {};
+        const email =
+          supabaseUser.email ||
+          metadata.email ||
+          `${supabaseUser.id}@placeholder.local`;
 
-      // 3. If still not found, create new user
-      if (!dbUser) {
         try {
           dbUser = await prisma.user.create({
             data: {
@@ -65,12 +55,10 @@ const handler = async (req: Request) => {
                 : null,
             },
           });
-        } catch (e) {
-          console.error("[tRPC handler] User create failed:", e);
-          // Last resort: try email lookup again (race condition)
-          dbUser = await prisma.user.findUnique({
-            where: { email },
-          });
+        } catch {
+          // Email conflict — user exists with different ID.
+          // They need to go through the auth callback to link accounts.
+          dbUser = null;
         }
       }
     }
