@@ -105,9 +105,6 @@ importers:
       '@radix-ui/react-tabs':
         specifier: ^1.0.4
         version: 1.1.13(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@revenuecat/purchases-capacitor':
-        specifier: ^12.2.2
-        version: 12.2.2(@capacitor/core@8.1.0)
       '@supabase/ssr':
         specifier: ^0.3.0
         version: 0.3.0(@supabase/supabase-js@2.95.1)
@@ -1472,14 +1469,6 @@ packages:
 
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
-
-  '@revenuecat/purchases-capacitor@12.2.2':
-    resolution: {integrity: sha512-3mlrJHw1EPuZi6S36n6a4rni67J5WDfft9dOB8m2aAGRyasjvyvrUslq8m7RHGixdNw4NilLZ8Ewa68LFJ+z/Q==}
-    peerDependencies:
-      '@capacitor/core': '>=8.0.0'
-
-  '@revenuecat/purchases-typescript-internal-esm@17.42.0':
-    resolution: {integrity: sha512-8nzWr0a6iX3hrEUJdjS+ul1q+ec6uROk0CvqLu+i2VvLCrTt0Kp1zKY0IcupT7DMMrfUezGUhCaxSmLJ9irELA==}
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
@@ -4687,13 +4676,6 @@ snapshots:
       '@types/react-dom': 18.3.7(@types/react@18.3.28)
 
   '@radix-ui/rect@1.1.1': {}
-
-  '@revenuecat/purchases-capacitor@12.2.2(@capacitor/core@8.1.0)':
-    dependencies:
-      '@capacitor/core': 8.1.0
-      '@revenuecat/purchases-typescript-internal-esm': 17.42.0
-
-  '@revenuecat/purchases-typescript-internal-esm@17.42.0': {}
 
   '@rtsao/scc@1.1.0': {}
 
