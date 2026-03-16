@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Loader2, Instagram, Globe } from "lucide-react";
+import { Check, Loader2, Globe } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -48,7 +48,6 @@ export default function ProfileSetupPage() {
   const [lookingFor, setLookingFor] = useState("");
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState(profile?.location || "");
-  const [instagramHandle, setInstagramHandle] = useState("");
   const [twitterHandle, setTwitterHandle] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
 
@@ -74,7 +73,6 @@ export default function ProfileSetupPage() {
       setLookingFor(existingProfile.lookingFor || "");
       setBio(existingProfile.bio || "");
       setLocation(existingProfile.location || "");
-      setInstagramHandle(existingProfile.instagramHandle || "");
       setTwitterHandle(existingProfile.twitterHandle || "");
       setWebsiteUrl(existingProfile.websiteUrl || "");
       setInitialized(true);
@@ -109,7 +107,6 @@ export default function ProfileSetupPage() {
       bio: bio || undefined,
       mediaSlots,
       prompts,
-      instagramHandle: instagramHandle || undefined,
       twitterHandle: twitterHandle || undefined,
       websiteUrl: websiteUrl.trim() || undefined,
       location: location || undefined,
@@ -255,21 +252,6 @@ export default function ProfileSetupPage() {
           <div className="pt-2">
             <p className="text-sm font-medium mb-3">Social Links (optional)</p>
             <div className="space-y-3">
-              {/* Instagram */}
-              <div className="flex items-center gap-2">
-                <Instagram className="h-5 w-5 text-muted-foreground shrink-0" />
-                <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                    @
-                  </span>
-                  <Input
-                    value={instagramHandle}
-                    onChange={(e) => setInstagramHandle(e.target.value)}
-                    placeholder="username"
-                    className="pl-7"
-                  />
-                </div>
-              </div>
               {/* X / Twitter */}
               <div className="flex items-center gap-2">
                 <XIcon className="h-5 w-5 text-muted-foreground shrink-0" />
@@ -310,7 +292,6 @@ export default function ProfileSetupPage() {
           bio={bio}
           mediaSlots={mediaSlots}
           prompts={prompts}
-          instagramHandle={instagramHandle}
           twitterHandle={twitterHandle}
           websiteUrl={websiteUrl}
         />

@@ -28,7 +28,6 @@ interface ProfileData {
   lookingFor: string | null;
   bio: string | null;
   location: string | null;
-  instagramHandle: string | null;
   twitterHandle: string | null;
   websiteUrl: string | null;
   connectTier?: string | null;
@@ -58,7 +57,7 @@ const TEST_PROFILES: ProfileData[] = [
     lookingFor: "creative collective",
     bio: "Blending sound design with generative visuals. Looking for collaborators who push boundaries.",
     location: "Los Angeles, CA",
-    instagramHandle: null,
+
     twitterHandle: null,
     websiteUrl: null,
     connectTier: null,
@@ -82,7 +81,7 @@ const TEST_PROFILES: ProfileData[] = [
     lookingFor: "directors & storytellers",
     bio: "Narrative-driven DP with a love for natural light. Let's tell stories that matter.",
     location: "New York, NY",
-    instagramHandle: null,
+
     twitterHandle: null,
     websiteUrl: null,
     connectTier: null,
@@ -105,7 +104,7 @@ const TEST_PROFILES: ProfileData[] = [
     lookingFor: "brands & studios",
     bio: "Creating surreal digital worlds. Specializing in Blender, Unreal Engine, and motion graphics.",
     location: "Austin, TX",
-    instagramHandle: null,
+
     twitterHandle: null,
     websiteUrl: null,
     connectTier: "INFINITE",
@@ -443,7 +442,6 @@ const SwipeCard = React.memo(function SwipeCard({
                 disciplines={profile.user.profile?.disciplines?.map((d) => ({
                   name: d.discipline.name,
                 }))}
-                instagramHandle={profile.instagramHandle}
                 twitterHandle={profile.twitterHandle}
                 websiteUrl={profile.websiteUrl}
                 connectTier={profile.connectTier}

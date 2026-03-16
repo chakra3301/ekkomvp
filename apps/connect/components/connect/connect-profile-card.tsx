@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { isVideoUrl, isAudioUrl, isModelUrl } from "@/lib/supabase/storage";
 import { ModelViewerSlot } from "./model-viewer-slot";
-import { InstagramPreview } from "./instagram-preview";
 import type { MediaSlot } from "./media-slot-grid";
 import type { PromptEntry } from "./prompt-editor";
 
@@ -21,7 +20,6 @@ interface ConnectProfileCardProps {
   mediaSlots: MediaSlot[];
   prompts: PromptEntry[];
   disciplines?: { name: string }[];
-  instagramHandle?: string | null;
   twitterHandle?: string | null;
   websiteUrl?: string | null;
   connectTier?: string | null;
@@ -146,7 +144,6 @@ export function ConnectProfileCard({
   mediaSlots,
   prompts,
   disciplines,
-  instagramHandle,
   twitterHandle,
   websiteUrl,
   connectTier,
@@ -155,7 +152,7 @@ export function ConnectProfileCard({
   const featuredSlot = mediaSlots.find((s) => s.sortOrder === 0);
   const additionalMedia = mediaSlots.filter((s) => s.sortOrder > 0).sort((a, b) => a.sortOrder - b.sortOrder);
   const activePrompts = prompts.filter((p) => p.answer);
-  const hasSocials = instagramHandle || twitterHandle || websiteUrl;
+  const hasSocials = twitterHandle || websiteUrl;
 
   // Interleave media and prompts: media, prompt, media, prompt...
   const interleaved: { type: "media"; slot: MediaSlot }[] | { type: "prompt"; prompt: PromptEntry; index: number }[] = [];
@@ -272,30 +269,9 @@ export function ConnectProfileCard({
         </div>
       )}
 
-      {/* Instagram Preview */}
-      {instagramHandle && (
-        <div className="px-5 pb-5">
-          <InstagramPreview handle={instagramHandle} />
-        </div>
-      )}
-
       {/* Social Links */}
       {hasSocials && (
         <div className="flex items-center justify-center gap-5 px-5 pb-5 pt-2 border-t border-border/50 mx-5">
-          {instagramHandle && (
-            <a
-              href={`https://instagram.com/${instagramHandle}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                <circle cx="12" cy="12" r="5" />
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-              </svg>
-            </a>
-          )}
           {twitterHandle && (
             <a
               href={`https://x.com/${twitterHandle}`}
