@@ -235,8 +235,8 @@ export const CONNECT_LIMITS = {
   MATCHES_PAGE_SIZE: 20,
   LIKES_PAGE_SIZE: 20,
   HISTORY_PAGE_SIZE: 20,
-  // Daily like limits by Connect tier
-  DAILY_LIKES_FREE: 10,
+  // Daily like limits by Connect tier (IAP disabled — everyone gets full access)
+  DAILY_LIKES_FREE: 999999,
   DAILY_LIKES_INFINITE: 999999, // effectively unlimited
   // Media slot limits by Connect tier
   MAX_MEDIA_SLOTS_INFINITE: 12,
@@ -251,11 +251,11 @@ export const CONNECT_LIMITS = {
 export const CONNECT_TIERS = {
   FREE: {
     name: "Free",
-    dailyLikes: 10,
-    maxMediaSlots: 6,
+    dailyLikes: 999999,
+    maxMediaSlots: 12,
     badge: false,
-    seeWhoLikes: false,
-    globalSearch: false,
+    seeWhoLikes: true,
+    globalSearch: true,
     topOfStack: false,
     price: null,
   },

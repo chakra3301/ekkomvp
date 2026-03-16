@@ -10,12 +10,11 @@ import {
   EyeOff,
   MapPin,
   Loader2,
-  User,
   Edit3,
   Moon,
   Sun,
   Monitor,
-  Infinity,
+
   ChevronRight,
   ShieldAlert,
   X,
@@ -35,9 +34,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Capacitor } from "@capacitor/core";
-import { UpgradeModal } from "@/components/connect/upgrade-modal";
-import { restorePurchases } from "@/lib/purchases";
 import { cn, getInitials } from "@/lib/utils";
 
 const STORAGE_KEY = "ekko-connect-filters";
@@ -181,7 +177,6 @@ export default function SettingsPage() {
 
   const [filters, setFilters] = useState<DiscoveryFilters>(DEFAULT_FILTERS);
   const [locating, setLocating] = useState(false);
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
 
   useEffect(() => {
     setFilters(loadFilters());
@@ -284,7 +279,6 @@ export default function SettingsPage() {
 
   const hasLocation =
     connectProfile?.latitude != null && connectProfile?.longitude != null;
-  const isInfinite = connectProfile?.connectTier === "INFINITE";
   const displayName = mainProfile?.displayName || "User";
 
   return (
@@ -413,93 +407,6 @@ export default function SettingsPage() {
           )}
         </div>
 
-        {/* ============ SUBSCRIPTION ============ */}
-        <div className="glass-card p-4">
-          <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">
-            Subscription
-          </h3>
-
-          <div className="flex items-center justify-between p-2 -mx-2">
-            <div className="flex items-center gap-3">
-              {isInfinite ? (
-                <Infinity className="h-4 w-4 text-primary" />
-              ) : (
-                <User className="h-4 w-4 text-muted-foreground" />
-              )}
-              <div>
-                <p className="text-sm font-medium">
-                  {isInfinite ? "Infinite" : "Free"} Plan
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {isInfinite
-                    ? "Unlimited likes, 12 slots, global search"
-                    : "10 likes/day, 6 media slots"}
-                </p>
-              </div>
-            </div>
-            {isInfinite ? (
-              <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full flex items-center gap-1">
-                <Infinity className="h-3 w-3" /> Active
-              </span>
-            ) : (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setUpgradeOpen(true)}
-              >
-                Upgrade
-              </Button>
-            )}
-          </div>
-
-          {!isInfinite && (
-            <>
-              <button
-                onClick={() => setUpgradeOpen(true)}
-                className="w-full mt-2 p-3 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 text-left hover:from-primary/15 hover:to-primary/10 transition-colors"
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <Infinity className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-semibold text-primary">
-                    Go Infinite
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Unlimited likes, see who likes you, global search, and more.
-                </p>
-              </button>
-
-              {Capacitor.isNativePlatform() && (
-                <button
-                  onClick={async () => {
-                    const restored = await restorePurchases();
-                    if (restored) {
-                      await utils.connectProfile.getCurrent.invalidate();
-                      toast.success("Subscription restored!");
-                    } else {
-                      toast.info("No active subscription found");
-                    }
-                  }}
-                  className="w-full mt-2 text-xs text-muted-foreground hover:text-foreground text-center py-2"
-                >
-                  Restore Purchases
-                </button>
-              )}
-            </>
-          )}
-
-          {isInfinite && Capacitor.isNativePlatform() && (
-            <a
-              href="https://apps.apple.com/account/subscriptions"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block mt-2 text-xs text-muted-foreground hover:text-foreground text-center py-2"
-            >
-              Manage Subscription
-            </a>
-          )}
-        </div>
-
         {/* ============ APPEARANCE ============ */}
         <div className="glass-card p-4">
           <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">
@@ -602,15 +509,12 @@ export default function SettingsPage() {
             <div>
               <p className="text-sm font-medium">Global Search</p>
               <p className="text-xs text-muted-foreground">
-                {isInfinite
-                  ? "Find creatives worldwide"
-                  : "Infinite tier only"}
+                Find creatives worldwide
               </p>
             </div>
             <Switch
               checked={filters.globalSearch}
               onCheckedChange={(v) => updateFilter("globalSearch", v)}
-              disabled={!isInfinite}
             />
           </div>
 
@@ -743,7 +647,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <UpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
     </div>
   );
 }

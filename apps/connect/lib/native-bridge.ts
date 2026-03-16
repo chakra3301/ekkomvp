@@ -7,7 +7,6 @@ import { Keyboard } from "@capacitor/keyboard";
 import { App } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { initPurchases } from "./purchases";
 
 export async function initNativeBridge() {
   if (!Capacitor.isNativePlatform()) return;
@@ -112,7 +111,6 @@ export async function initNativeBridge() {
   });
 
   await setupPushNotifications();
-  await initPurchases();
 }
 
 async function setupPushNotifications() {
