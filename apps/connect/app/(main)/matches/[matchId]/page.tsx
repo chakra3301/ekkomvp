@@ -430,6 +430,7 @@ export default function ChatPage({
               bio={otherUser.connectProfile.bio}
               mediaSlots={(otherUser.connectProfile.mediaSlots as any[]) || []}
               prompts={(otherUser.connectProfile.prompts as any[]) || []}
+              instagramHandle={otherUser.connectProfile.instagramHandle}
               twitterHandle={otherUser.connectProfile.twitterHandle}
               websiteUrl={otherUser.connectProfile.websiteUrl}
               connectTier={otherUser.connectProfile.connectTier}

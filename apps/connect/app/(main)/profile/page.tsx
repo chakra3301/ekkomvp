@@ -113,6 +113,7 @@ export default function ConnectProfilePage() {
         mediaSlots={mediaSlots}
         prompts={prompts}
         disciplines={disciplines}
+        instagramHandle={connectProfile.instagramHandle}
         twitterHandle={connectProfile.twitterHandle}
         websiteUrl={connectProfile.websiteUrl}
       />
