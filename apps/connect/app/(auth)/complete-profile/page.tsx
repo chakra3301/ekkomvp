@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 export default function CompleteProfilePage() {
   const router = useRouter();
   const [displayName, setDisplayName] = useState("");
+  const [nameFromProvider, setNameFromProvider] = useState(false);
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -22,7 +23,7 @@ export default function CompleteProfilePage() {
   const completeInfo = trpc.auth.completeUserInfo.useMutation();
   const updateProfile = trpc.profile.update.useMutation();
 
-  // Pre-populate name from OAuth provider metadata
+  // Pre-populate name from OAuth provider metadata (Apple/Google)
   useEffect(() => {
     const loadUserMetadata = async () => {
       const supabase = createClient();
@@ -31,6 +32,7 @@ export default function CompleteProfilePage() {
       } = await supabase.auth.getUser();
       if (user?.user_metadata?.full_name) {
         setDisplayName(user.user_metadata.full_name);
+        setNameFromProvider(true);
       }
     };
     loadUserMetadata();
@@ -51,7 +53,7 @@ export default function CompleteProfilePage() {
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (!displayName.trim() || displayName.trim().length < 2) {
+    if (!nameFromProvider && (!displayName.trim() || displayName.trim().length < 2)) {
       errs.displayName = "Name must be at least 2 characters";
     }
     if (!username.trim() || username.trim().length < 3) {
@@ -134,19 +136,21 @@ export default function CompleteProfilePage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="displayName">Display Name</Label>
-            <Input
-              id="displayName"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Your name"
-              required
-            />
-            {errors.displayName && (
-              <p className="text-xs text-destructive">{errors.displayName}</p>
-            )}
-          </div>
+          {!nameFromProvider && (
+            <div className="space-y-2">
+              <Label htmlFor="displayName">Display Name</Label>
+              <Input
+                id="displayName"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="Your name"
+                required
+              />
+              {errors.displayName && (
+                <p className="text-xs text-destructive">{errors.displayName}</p>
+              )}
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
