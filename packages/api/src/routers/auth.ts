@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { router, publicProcedure, protectedProcedure } from "../trpc";
-import { prisma } from "@ekko/database";
+import { prisma, UserRole } from "@ekko/database";
 
 export const authRouter = router({
   getSession: publicProcedure.query(({ ctx }) => {
@@ -17,17 +17,24 @@ export const authRouter = router({
         fullName: z.string().min(2).max(100),
         phone: z.string().max(20).optional(),
         dateOfBirth: z.string().optional(),
+        role: z.enum(["CREATIVE", "CLIENT"]).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const data: Record<string, unknown> = {
+        phone: input.phone || null,
+        dateOfBirth: input.dateOfBirth
+          ? new Date(input.dateOfBirth)
+          : null,
+      };
+
+      if (input.role) {
+        data.role = input.role as UserRole;
+      }
+
       const updated = await prisma.user.update({
         where: { id: ctx.user.id },
-        data: {
-          phone: input.phone || null,
-          dateOfBirth: input.dateOfBirth
-            ? new Date(input.dateOfBirth)
-            : null,
-        },
+        data,
       });
 
       return updated;

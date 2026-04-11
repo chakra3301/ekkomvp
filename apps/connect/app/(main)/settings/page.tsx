@@ -16,6 +16,7 @@ import {
   Monitor,
   ChevronRight,
   Trash2,
+  User as UserIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -143,6 +144,108 @@ function DeleteAccountSection() {
             "Delete Account"
           )}
         </Button>
+      </div>
+    </div>
+  );
+}
+
+function AccountSettingsSection() {
+  const { profile } = useProfile();
+  const [editingName, setEditingName] = useState(false);
+  const [newDisplayName, setNewDisplayName] = useState("");
+  const [saving, setSaving] = useState(false);
+  const updateProfile = trpc.profile.update.useMutation();
+  const utils = trpc.useUtils();
+
+  const handleEditName = () => {
+    setNewDisplayName(profile?.displayName || "");
+    setEditingName(true);
+  };
+
+  const handleSaveName = async () => {
+    const trimmed = newDisplayName.trim();
+    if (trimmed.length < 2) {
+      toast.error("Name must be at least 2 characters");
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateProfile.mutateAsync({
+        displayName: trimmed,
+        username: profile?.username || "",
+      });
+      await utils.profile.getCurrent.invalidate();
+      toast.success("Display name updated");
+      setEditingName(false);
+    } catch {
+      toast.error("Failed to update name");
+    }
+    setSaving(false);
+  };
+
+  return (
+    <div className="glass-card p-4">
+      <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">
+        Account Settings
+      </h3>
+
+      <div className="space-y-3">
+        {/* Display Name */}
+        <div className="flex items-center justify-between p-2 -mx-2">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <UserIcon className="h-4 w-4 text-muted-foreground shrink-0" />
+            {editingName ? (
+              <div className="flex items-center gap-2 flex-1">
+                <Input
+                  value={newDisplayName}
+                  onChange={(e) => setNewDisplayName(e.target.value)}
+                  placeholder="Display name"
+                  className="h-8 text-sm flex-1"
+                  maxLength={50}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSaveName();
+                    if (e.key === "Escape") setEditingName(false);
+                  }}
+                />
+                <Button
+                  size="sm"
+                  onClick={handleSaveName}
+                  disabled={saving}
+                  className="h-8 text-xs"
+                >
+                  {saving ? "..." : "Save"}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setEditingName(false)}
+                  disabled={saving}
+                  className="h-8 text-xs"
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div>
+                  <p className="text-sm">Display Name</p>
+                  <p className="text-xs text-muted-foreground">
+                    {profile?.displayName || "Not set"}
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
+          {!editingName && (
+            <button
+              onClick={handleEditName}
+              className="text-xs text-primary hover:underline shrink-0"
+            >
+              Edit
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -509,6 +612,9 @@ export default function SettingsPage() {
             </div>
           )}
         </div>
+
+        {/* ============ ACCOUNT SETTINGS ============ */}
+        <AccountSettingsSection />
 
         {/* ============ ACCOUNT ============ */}
         <div className="glass-card p-4">
