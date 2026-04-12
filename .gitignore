@@ -8,6 +8,15 @@ dist
 out
 build
 
+# Xcode / SwiftPM
+apps/connect-ios/.build/
+apps/connect-ios/.swiftpm/
+apps/connect-ios/DerivedData/
+apps/connect-ios/**/xcuserdata/
+apps/connect-ios/EKKOConnect.xcodeproj/project.xcworkspace/xcuserdata/
+apps/connect-ios/EKKOConnect.xcodeproj/xcuserdata/
+*.xcuserstate
+
 # Environment files
 .env
 .env.local
