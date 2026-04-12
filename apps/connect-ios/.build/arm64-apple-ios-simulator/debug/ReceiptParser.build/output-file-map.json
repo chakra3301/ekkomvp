@@ -1,0 +1,152 @@
+{
+  "": {
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/master.swiftdeps"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/BasicTypes/ASN1Container.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1Container.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1Container.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1Container~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1Container.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1Container.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/BasicTypes/ASN1ObjectIdentifier.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ObjectIdentifier.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ObjectIdentifier.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ObjectIdentifier~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ObjectIdentifier.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ObjectIdentifier.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/BasicTypes/AppleReceipt.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/AppleReceipt.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/AppleReceipt.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/AppleReceipt~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/AppleReceipt.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/AppleReceipt.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/BasicTypes/InAppPurchase.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/InAppPurchase.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/InAppPurchase.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/InAppPurchase~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/InAppPurchase.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/InAppPurchase.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/Builders/ASN1ContainerBuilder.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ContainerBuilder.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ContainerBuilder.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ContainerBuilder~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ContainerBuilder.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ContainerBuilder.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/Builders/ASN1ObjectIdentifierBuilder.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ObjectIdentifierBuilder.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ObjectIdentifierBuilder.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ObjectIdentifierBuilder~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ObjectIdentifierBuilder.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ASN1ObjectIdentifierBuilder.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/Builders/AppleReceiptBuilder.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/AppleReceiptBuilder.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/AppleReceiptBuilder.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/AppleReceiptBuilder~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/AppleReceiptBuilder.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/AppleReceiptBuilder.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/Builders/InAppPurchaseBuilder.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/InAppPurchaseBuilder.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/InAppPurchaseBuilder.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/InAppPurchaseBuilder~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/InAppPurchaseBuilder.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/InAppPurchaseBuilder.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/DataConverters/ArraySlice_UInt8+Extensions.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ArraySlice_UInt8+Extensions.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ArraySlice_UInt8+Extensions.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ArraySlice_UInt8+Extensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ArraySlice_UInt8+Extensions.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ArraySlice_UInt8+Extensions.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/DataConverters/Codable+Extensions.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/Codable+Extensions.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/Codable+Extensions.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/Codable+Extensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/Codable+Extensions.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/Codable+Extensions.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/DataConverters/DateFormatter+Extensions.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/DateFormatter+Extensions.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/DateFormatter+Extensions.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/DateFormatter+Extensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/DateFormatter+Extensions.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/DateFormatter+Extensions.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/DataConverters/UInt8+Extensions.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/UInt8+Extensions.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/UInt8+Extensions.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/UInt8+Extensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/UInt8+Extensions.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/UInt8+Extensions.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/Helpers/FileReader.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/FileReader.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/FileReader.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/FileReader~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/FileReader.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/FileReader.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/Helpers/LoggerType.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/LoggerType.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/LoggerType.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/LoggerType~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/LoggerType.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/LoggerType.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/Helpers/ProcessInfo+Extensions.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ProcessInfo+Extensions.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ProcessInfo+Extensions.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ProcessInfo+Extensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ProcessInfo+Extensions.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ProcessInfo+Extensions.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/Helpers/ReceiptParserLogger.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptParserLogger.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptParserLogger.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptParserLogger~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptParserLogger.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptParserLogger.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/Helpers/ReceiptStrings.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptStrings.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptStrings.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptStrings~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptStrings.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptStrings.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/LocalReceiptFetcher.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/LocalReceiptFetcher.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/LocalReceiptFetcher.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/LocalReceiptFetcher~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/LocalReceiptFetcher.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/LocalReceiptFetcher.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/PurchasesReceiptParser.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/PurchasesReceiptParser.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/PurchasesReceiptParser.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/PurchasesReceiptParser~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/PurchasesReceiptParser.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/PurchasesReceiptParser.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/ReceiptParser-only-files/PurchasesReceiptParser+Extensions.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/PurchasesReceiptParser+Extensions.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/PurchasesReceiptParser+Extensions.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/PurchasesReceiptParser+Extensions~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/PurchasesReceiptParser+Extensions.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/PurchasesReceiptParser+Extensions.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/checkouts/purchases-ios-spm/LocalReceiptParsing/ReceiptParsingError.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptParsingError.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptParsingError.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptParsingError~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptParsingError.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/ReceiptParsingError.dia"
+  }
+}

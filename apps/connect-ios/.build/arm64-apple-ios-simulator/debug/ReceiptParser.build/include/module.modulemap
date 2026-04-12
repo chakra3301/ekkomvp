@@ -1,0 +1,3 @@
+module ReceiptParser {
+    header "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/ReceiptParser.build/include/ReceiptParser-Swift.h"
+}

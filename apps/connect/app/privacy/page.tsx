@@ -9,7 +9,7 @@ export default function PrivacyPolicyPage() {
     <div className="max-w-2xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold font-heading mb-8">Privacy Policy</h1>
       <p className="text-sm text-muted-foreground mb-8">
-        Last updated: February 27, 2026
+        Last updated: April 12, 2026
       </p>
 
       <div className="space-y-8 text-sm leading-relaxed">

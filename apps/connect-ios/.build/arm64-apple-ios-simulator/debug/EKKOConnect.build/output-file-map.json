@@ -1,0 +1,313 @@
+{
+  "": {
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/master.swiftdeps"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/App/AppRouter.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppRouter.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppRouter.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppRouter~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppRouter.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppRouter.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/App/AppState.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppState.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppState.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppState~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppState.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppState.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/App/EKKOConnectApp.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/EKKOConnectApp.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/EKKOConnectApp.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/EKKOConnectApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/EKKOConnectApp.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/EKKOConnectApp.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Components/AvatarView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AvatarView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AvatarView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AvatarView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AvatarView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AvatarView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Components/ConnectProfileCard.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectProfileCard.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectProfileCard.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectProfileCard~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectProfileCard.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectProfileCard.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Components/MediaSlotGrid.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MediaSlotGrid.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MediaSlotGrid.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MediaSlotGrid~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MediaSlotGrid.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MediaSlotGrid.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Components/PromptEditor.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PromptEditor.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PromptEditor.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PromptEditor~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PromptEditor.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PromptEditor.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Components/SkeletonView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SkeletonView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SkeletonView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SkeletonView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SkeletonView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SkeletonView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Components/ToastView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ToastView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ToastView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ToastView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ToastView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ToastView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Components/UpgradeModal.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/UpgradeModal.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/UpgradeModal.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/UpgradeModal~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/UpgradeModal.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/UpgradeModal.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Core/Location/LocationManager.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LocationManager.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LocationManager.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LocationManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LocationManager.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LocationManager.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Core/Networking/NetworkError.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/NetworkError.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/NetworkError.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/NetworkError~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/NetworkError.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/NetworkError.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Core/Networking/TRPCClient.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/TRPCClient.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/TRPCClient.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/TRPCClient~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/TRPCClient.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/TRPCClient.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Core/Purchases/PurchaseManager.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PurchaseManager.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PurchaseManager.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PurchaseManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PurchaseManager.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PurchaseManager.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Core/Push/AppDelegate.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppDelegate.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppDelegate.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppDelegate~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppDelegate.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/AppDelegate.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Core/Push/DeepLinkHandler.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DeepLinkHandler.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DeepLinkHandler.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DeepLinkHandler~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DeepLinkHandler.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DeepLinkHandler.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Core/Push/PushManager.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PushManager.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PushManager.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PushManager~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PushManager.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/PushManager.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Core/Realtime/RealtimeService.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/RealtimeService.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/RealtimeService.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/RealtimeService~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/RealtimeService.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/RealtimeService.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Core/Storage/StorageService.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/StorageService.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/StorageService.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/StorageService~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/StorageService.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/StorageService.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Core/Theme/EKKOTheme.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/EKKOTheme.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/EKKOTheme.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/EKKOTheme~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/EKKOTheme.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/EKKOTheme.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Extensions/Date+Relative.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Date+Relative.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Date+Relative.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Date+Relative~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Date+Relative.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Date+Relative.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Extensions/View+Glass.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/View+Glass.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/View+Glass.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/View+Glass~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/View+Glass.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/View+Glass.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Auth/CompleteProfileView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/CompleteProfileView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/CompleteProfileView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/CompleteProfileView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/CompleteProfileView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/CompleteProfileView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Auth/LoginView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LoginView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LoginView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LoginView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LoginView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LoginView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Auth/RegisterView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/RegisterView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/RegisterView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/RegisterView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/RegisterView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/RegisterView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Chat/ChatView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ChatView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ChatView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ChatView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ChatView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ChatView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Discover/DiscoverView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DiscoverView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DiscoverView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DiscoverView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DiscoverView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DiscoverView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Discover/DiscoverViewModel.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DiscoverViewModel.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DiscoverViewModel.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DiscoverViewModel~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DiscoverViewModel.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/DiscoverViewModel.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Discover/LikeNoteSheet.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LikeNoteSheet.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LikeNoteSheet.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LikeNoteSheet~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LikeNoteSheet.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LikeNoteSheet.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Discover/MatchCelebrationOverlay.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MatchCelebrationOverlay.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MatchCelebrationOverlay.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MatchCelebrationOverlay~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MatchCelebrationOverlay.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MatchCelebrationOverlay.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Discover/SwipeCard.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SwipeCard.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SwipeCard.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SwipeCard~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SwipeCard.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SwipeCard.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Likes/LikesView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LikesView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LikesView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LikesView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LikesView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/LikesView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Matches/MatchesView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MatchesView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MatchesView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MatchesView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MatchesView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/MatchesView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Profile/ProfileView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ProfileView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ProfileView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ProfileView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ProfileView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ProfileView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/ProfileSetup/ProfileSetupView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ProfileSetupView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ProfileSetupView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ProfileSetupView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ProfileSetupView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ProfileSetupView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Features/Settings/SettingsView.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SettingsView.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SettingsView.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SettingsView~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SettingsView.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/SettingsView.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Models/ConnectMatch.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectMatch.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectMatch.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectMatch~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectMatch.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectMatch.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Models/ConnectMessage.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectMessage.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectMessage.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectMessage~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectMessage.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectMessage.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Models/ConnectProfile.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectProfile.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectProfile.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectProfile~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectProfile.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectProfile.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Models/ConnectSwipe.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectSwipe.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectSwipe.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectSwipe~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectSwipe.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/ConnectSwipe.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Models/Constants.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Constants.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Constants.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Constants~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Constants.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Constants.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Models/Enums.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Enums.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Enums.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Enums~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Enums.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Enums.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Models/Profile.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Profile.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Profile.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Profile~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Profile.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/Profile.dia"
+  },
+  "/Users/lucaorion/ekkomvp/apps/connect-ios/EKKOConnect/Models/User.swift": {
+    "dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/User.d",
+    "object": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/User.swift.o",
+    "swiftmodule": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/User~partial.swiftmodule",
+    "swift-dependencies": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/User.swiftdeps",
+    "diagnostics": "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-ios-simulator/debug/EKKOConnect.build/User.dia"
+  }
+}

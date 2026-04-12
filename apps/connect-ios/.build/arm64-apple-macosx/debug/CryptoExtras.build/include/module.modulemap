@@ -1,0 +1,3 @@
+module CryptoExtras {
+    header "/Users/lucaorion/ekkomvp/apps/connect-ios/.build/arm64-apple-macosx/debug/CryptoExtras.build/include/CryptoExtras-Swift.h"
+}

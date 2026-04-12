@@ -55,10 +55,41 @@ const handler = async (req: Request) => {
                 : null,
             },
           });
-        } catch {
-          // Email conflict — user exists with different ID.
-          // They need to go through the auth callback to link accounts.
-          dbUser = null;
+          console.log(`[tRPC] Auto-created user ${dbUser.id} (${dbUser.email})`);
+        } catch (e: any) {
+          console.error(`[tRPC] Failed to auto-create user for supabase id ${supabaseUser.id} (${email}):`, e?.message || e);
+
+          // Email conflict: an orphaned Prisma row exists with a stale Supabase ID.
+          // Most common cause: the user was deleted in the Supabase dashboard without
+          // going through the app's delete endpoint, so the Prisma row never cascaded.
+          // Clean up the orphan and its related data, then create fresh.
+          if (e?.code === "P2002") {
+            try {
+              console.log(`[tRPC] Email conflict — deleting orphan DB row for ${email} and all related data`);
+              // Cascade delete via Prisma schema relations
+              await prisma.user.deleteMany({ where: { email } });
+
+              // Now create fresh
+              dbUser = await prisma.user.create({
+                data: {
+                  id: supabaseUser.id,
+                  email,
+                  role: UserRole.CREATIVE,
+                  emailVerified: !!supabaseUser.email_confirmed_at,
+                  phone: metadata.phone || null,
+                  dateOfBirth: metadata.date_of_birth
+                    ? new Date(metadata.date_of_birth)
+                    : null,
+                },
+              });
+              console.log(`[tRPC] Re-created user ${dbUser.id} after clearing orphan`);
+            } catch (cleanupErr: any) {
+              console.error(`[tRPC] Orphan cleanup failed:`, cleanupErr?.message || cleanupErr);
+              dbUser = null;
+            }
+          } else {
+            dbUser = null;
+          }
         }
       }
     }
