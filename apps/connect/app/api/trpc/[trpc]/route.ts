@@ -7,6 +7,8 @@ import { createClient as createAdminClient } from "@supabase/supabase-js";
 const handler = async (req: Request) => {
   try {
     let supabaseUser = null;
+    const url = new URL(req.url);
+    const procedure = url.pathname.split("/api/trpc/")[1]?.split("?")[0] || "unknown";
 
     // Try cookie-based auth first (standard SSR flow)
     const supabase = createClient();
@@ -18,13 +20,30 @@ const handler = async (req: Request) => {
       const authHeader = req.headers.get("Authorization");
       if (authHeader?.startsWith("Bearer ")) {
         const token = authHeader.slice(7);
+
+        // Sanity check env vars on first request
+        if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+          console.error(`[tRPC/${procedure}] Missing env vars: SUPABASE_URL=${!!process.env.NEXT_PUBLIC_SUPABASE_URL} ANON_KEY=${!!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`);
+        }
+
         const supabaseAdmin = createAdminClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         );
-        const { data: tokenAuth } = await supabaseAdmin.auth.getUser(token);
+        const { data: tokenAuth, error: tokenErr } = await supabaseAdmin.auth.getUser(token);
+        if (tokenErr) {
+          console.error(`[tRPC/${procedure}] Bearer token rejected by Supabase: ${tokenErr.message}. Token prefix: ${token.slice(0, 30)}...`);
+        } else if (!tokenAuth.user) {
+          console.error(`[tRPC/${procedure}] Bearer token returned no user. Token prefix: ${token.slice(0, 30)}...`);
+        } else {
+          console.log(`[tRPC/${procedure}] Bearer auth OK for ${tokenAuth.user.email} (${tokenAuth.user.id})`);
+        }
         supabaseUser = tokenAuth.user;
+      } else {
+        console.log(`[tRPC/${procedure}] No cookie auth, no Authorization header`);
       }
+    } else {
+      console.log(`[tRPC/${procedure}] Cookie auth OK for ${supabaseUser.email}`);
     }
 
     let dbUser = null;
