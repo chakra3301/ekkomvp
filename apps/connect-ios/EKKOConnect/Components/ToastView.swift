@@ -1,42 +1,79 @@
 import SwiftUI
 
-/// Lightweight toast notification system.
-struct ToastModifier: ViewModifier {
-    @Binding var message: String?
-    var isError: Bool = false
+/// Global toast overlay rendered at the app root.
+/// Reads `appState.activeToast` and animates in/out; auto-dismisses after 3s.
+struct ToastHost: View {
+    @Environment(AppState.self) private var appState
 
-    func body(content: Content) -> some View {
-        content.overlay(alignment: .top) {
-            if let message {
-                HStack(spacing: 8) {
-                    Image(systemName: isError ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
-                        .foregroundStyle(isError ? EKKOTheme.destructive : .green)
-                    Text(message)
-                        .font(.subheadline)
-                        .lineLimit(2)
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .transition(.move(edge: .top).combined(with: .opacity))
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        withAnimation { self.message = nil }
+    var body: some View {
+        VStack {
+            if let toast = appState.activeToast {
+                toastCard(toast)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            if appState.activeToast?.id == toast.id {
+                                withAnimation(.spring(response: 0.4)) {
+                                    appState.activeToast = nil
+                                }
+                            }
+                        }
                     }
-                }
+            }
+            Spacer()
+        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.75), value: appState.activeToast)
+        .allowsHitTesting(appState.activeToast != nil)
+    }
+
+    @ViewBuilder
+    private func toastCard(_ toast: AppState.Toast) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon(for: toast.kind))
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(color(for: toast.kind))
+            Text(toast.message)
+                .font(.subheadline)
+                .foregroundStyle(.primary)
+                .lineLimit(3)
+            Spacer(minLength: 0)
+            Button {
+                withAnimation { appState.activeToast = nil }
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
             }
         }
-        .animation(.spring(response: 0.3), value: message != nil)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(color(for: toast.kind).opacity(0.3), lineWidth: 0.5)
+        )
+        .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(toast.message)
     }
-}
 
-extension View {
-    func toast(_ message: Binding<String?>, isError: Bool = false) -> some View {
-        modifier(ToastModifier(message: message, isError: isError))
+    private func icon(for kind: AppState.Toast.Kind) -> String {
+        switch kind {
+        case .info: return "info.circle.fill"
+        case .success: return "checkmark.circle.fill"
+        case .error: return "exclamationmark.triangle.fill"
+        }
+    }
+
+    private func color(for kind: AppState.Toast.Kind) -> Color {
+        switch kind {
+        case .info: return EKKOTheme.primary
+        case .success: return .green
+        case .error: return EKKOTheme.destructive
+        }
     }
 }

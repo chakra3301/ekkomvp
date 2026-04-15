@@ -34,7 +34,7 @@
 	</dict>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
+		<string>arm64</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
@@ -59,11 +59,13 @@
 	<string>EKKO Connect needs photo library access to upload images and videos</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>EKKO Connect needs permission to save photos</string>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>ArchesRegular.ttf</string>
+		<string>ArchesRegularItalic.ttf</string>
+	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>instagram</string>

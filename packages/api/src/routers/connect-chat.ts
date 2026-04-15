@@ -157,7 +157,18 @@ export const connectChatRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Mark all unread messages in this match as read
+      // Verify the caller is a participant in this match
+      const match = await prisma.connectMatch.findUnique({
+        where: { id: input.matchId },
+        select: { user1Id: true, user2Id: true },
+      });
+      if (!match) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Match not found" });
+      }
+      if (match.user1Id !== ctx.user.id && match.user2Id !== ctx.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Not your match" });
+      }
+
       await prisma.connectMessage.updateMany({
         where: {
           matchId: input.matchId,
@@ -193,6 +204,31 @@ export const connectChatRouter = router({
     });
 
     return { count };
+  }),
+
+  /// Returns unread message count per match for the current user.
+  getUnreadCountsByMatch: protectedProcedure.query(async ({ ctx }) => {
+    const matches = await prisma.connectMatch.findMany({
+      where: {
+        OR: [{ user1Id: ctx.user.id }, { user2Id: ctx.user.id }],
+        status: "ACTIVE",
+      },
+      select: { id: true },
+    });
+    const matchIds = matches.map((m) => m.id);
+    if (matchIds.length === 0) return [];
+
+    const grouped = await prisma.connectMessage.groupBy({
+      by: ["matchId"],
+      where: {
+        matchId: { in: matchIds },
+        senderId: { not: ctx.user.id },
+        readAt: null,
+      },
+      _count: { _all: true },
+    });
+
+    return grouped.map((g) => ({ matchId: g.matchId, count: g._count._all }));
   }),
 
   bridgeToEkko: protectedProcedure

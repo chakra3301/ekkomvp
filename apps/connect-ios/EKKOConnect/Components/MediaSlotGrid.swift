@@ -12,6 +12,7 @@ struct MediaSlotGrid: View {
     @State private var activeSlotIndex: Int?
     @State private var showFileImporter = false
     @State private var errorMessage: String?
+    @State private var draggingIndex: Int?
 
     @Environment(AppState.self) private var appState
 
@@ -85,6 +86,35 @@ struct MediaSlotGrid: View {
         }
         .frame(width: width, height: height)
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            if draggingIndex == index {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(EKKOTheme.primary, lineWidth: 2)
+            }
+        }
+        .scaleEffect(draggingIndex == index ? 0.96 : 1)
+        .animation(.spring(response: 0.25), value: draggingIndex)
+        .modifier(SlotDragModifier(
+            enabled: slot != nil,
+            index: index,
+            onDragStart: { draggingIndex = index },
+            onDragEnd: { draggingIndex = nil },
+            preview: {
+                Group {
+                    if let slot {
+                        filledContent(slot: slot, index: index)
+                    }
+                }
+                .frame(width: width, height: height)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+        ))
+        .dropDestination(for: String.self) { items, _ in
+            draggingIndex = nil
+            guard let raw = items.first, let from = Int(raw), from != index else { return false }
+            moveSlot(from: from, to: index)
+            return true
+        } isTargeted: { _ in }
     }
 
     // MARK: - Filled
@@ -281,10 +311,55 @@ struct MediaSlotGrid: View {
         uploadingIndex = nil
     }
 
+    // MARK: - Reorder
+
+    private func moveSlot(from: Int, to: Int) {
+        guard from != to else { return }
+        guard let source = slots.first(where: { $0.sortOrder == from }) else { return }
+
+        var updated = slots
+        updated.removeAll { $0.sortOrder == from }
+
+        if let target = slots.first(where: { $0.sortOrder == to }) {
+            // Swap: target takes source's old slot
+            updated.removeAll { $0.sortOrder == to }
+            updated.append(MediaSlot(url: target.url, mediaType: target.mediaType, sortOrder: from))
+        }
+        updated.append(MediaSlot(url: source.url, mediaType: source.mediaType, sortOrder: to))
+        updated.sort { $0.sortOrder < $1.sortOrder }
+
+        withAnimation(.spring(response: 0.3)) { slots = updated }
+        let haptic = UIImpactFeedbackGenerator(style: .medium)
+        haptic.impactOccurred()
+    }
+
     private func addSlot(_ slot: MediaSlot) {
         var updated = slots.filter { $0.sortOrder != slot.sortOrder }
         updated.append(slot)
         updated.sort { $0.sortOrder < $1.sortOrder }
         withAnimation(.spring(response: 0.25)) { slots = updated }
+    }
+}
+
+// MARK: - Conditional draggable modifier
+
+private struct SlotDragModifier<Preview: View>: ViewModifier {
+    let enabled: Bool
+    let index: Int
+    let onDragStart: () -> Void
+    let onDragEnd: () -> Void
+    @ViewBuilder let preview: () -> Preview
+
+    func body(content: Content) -> some View {
+        if enabled {
+            content.draggable(String(index)) {
+                preview()
+                    .opacity(0.9)
+                    .onAppear { onDragStart() }
+                    .onDisappear { onDragEnd() }
+            }
+        } else {
+            content
+        }
     }
 }

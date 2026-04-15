@@ -12,8 +12,18 @@ final class DiscoverViewModel {
     var matchData: MatchData?
     var errorMessage: String?
 
+    /// Set to true when the server rejects a LIKE because the daily limit is hit.
+    /// DiscoverView observes this to present the UpgradeModal.
+    var shouldShowUpgradePrompt = false
+
+    // Swipe history
+    var history: [HistoryItem] = []
+    var isLoadingHistory = false
+    var historyCursor: String?
+
     private var undoTimer: Timer?
     private var trpc: TRPCClient?
+    private weak var appState: AppState?
 
     enum ViewMode: String, CaseIterable {
         case stack, grid, history
@@ -26,10 +36,53 @@ final class DiscoverViewModel {
         var featuredImage: String?
     }
 
+    struct HistoryItem: Codable, Identifiable {
+        let id: String
+        let userId: String
+        let swipeType: String       // "LIKE" | "PASS"
+        let swipedAt: Date
+        let headline: String?
+        let location: String?
+        let mediaSlots: [MediaSlot]?
+        let user: UserWithProfile?
+    }
+
     // MARK: - Setup
 
-    func setup(trpc: TRPCClient) {
+    func setup(trpc: TRPCClient, appState: AppState) {
         self.trpc = trpc
+        self.appState = appState
+    }
+
+    // MARK: - Load Discovery Queue
+
+    // MARK: - Swipe History
+
+    func loadHistory(reset: Bool = true) async {
+        guard let trpc else { return }
+        if reset { historyCursor = nil; history = [] }
+        isLoadingHistory = true
+        defer { isLoadingHistory = false }
+
+        do {
+            struct Input: Codable { let cursor: String?; let limit: Int }
+            struct Result: Codable {
+                let items: [HistoryItem]
+                let nextCursor: String?
+            }
+            let result: Result = try await trpc.query(
+                "connectDiscover.getSwipeHistory",
+                input: Input(cursor: historyCursor, limit: 20)
+            )
+            if reset {
+                history = result.items
+            } else {
+                history.append(contentsOf: result.items)
+            }
+            historyCursor = result.nextCursor
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 
     // MARK: - Load Discovery Queue
@@ -38,8 +91,8 @@ final class DiscoverViewModel {
         guard let trpc else { return }
         isLoading = true
 
-        // Load filters from UserDefaults
-        let filters = loadFilters()
+        // Read filters from AppState (live-synced with Settings)
+        let filters = appState?.discoveryFilters ?? AppState.DiscoveryFilters()
 
         do {
             struct QueueInput: Codable {
@@ -55,18 +108,18 @@ final class DiscoverViewModel {
                 var maxDistanceMiles: Int?
             }
 
-            var filterInput: DiscoveryFilterInput?
-            if let f = filters {
-                var fi = DiscoveryFilterInput()
-                if f.role != "ALL" { fi.role = f.role }
-                if !f.city.isEmpty { fi.location = f.city }
-                if f.globalSearch { fi.globalSearch = true }
-                filterInput = fi
+            var fi = DiscoveryFilterInput()
+            if filters.role != "ALL" { fi.role = filters.role }
+            if !filters.city.isEmpty { fi.location = filters.city }
+            if filters.globalSearch {
+                fi.globalSearch = true
+            } else {
+                fi.maxDistanceMiles = filters.maxDistanceMiles
             }
 
             let result: [ConnectProfile] = try await trpc.query(
                 "connectDiscover.getDiscoveryQueue",
-                input: QueueInput(limit: 10, filters: filterInput)
+                input: QueueInput(limit: 10, filters: fi)
             )
             profiles = result
             currentIndex = 0
@@ -78,14 +131,35 @@ final class DiscoverViewModel {
 
     // MARK: - Swipe
 
+    /// Called from the UI when the user swipes.
+    /// - For PASS: submits immediately.
+    /// - For LIKE: opens the note prompt first. The actual network call happens
+    ///   in `submitLikeNote` / `skipLikeNote` which funnel to `performSwipe`.
     func swipe(targetUserId: String, type: SwipeType, matchNote: String? = nil) async {
-        guard let trpc else { return }
-
-        // If LIKE, show note prompt first
-        if type == .LIKE && pendingLikeUserId == nil {
+        if type == .LIKE && matchNote == nil && pendingLikeUserId == nil {
             pendingLikeUserId = targetUserId
             return
         }
+        await performSwipe(targetUserId: targetUserId, type: type, matchNote: matchNote)
+    }
+
+    /// Called from the like note prompt after the user taps Send.
+    func submitLikeNote(_ note: String?) async {
+        guard let userId = pendingLikeUserId else { return }
+        pendingLikeUserId = nil
+        await performSwipe(targetUserId: userId, type: .LIKE, matchNote: note)
+    }
+
+    /// Called from the like note prompt when the user taps Skip or dismisses.
+    func skipLikeNote() async {
+        guard let userId = pendingLikeUserId else { return }
+        pendingLikeUserId = nil
+        await performSwipe(targetUserId: userId, type: .LIKE, matchNote: nil)
+    }
+
+    /// Does the actual network call — bypasses the "pending note" gate.
+    private func performSwipe(targetUserId: String, type: SwipeType, matchNote: String?) async {
+        guard let trpc else { return }
 
         do {
             let result: SwipeResult = try await trpc.mutate(
@@ -93,7 +167,7 @@ final class DiscoverViewModel {
                 input: SwipeInput(
                     targetUserId: targetUserId,
                     type: type,
-                    matchNote: matchNote
+                    matchNote: matchNote?.isEmpty == true ? nil : matchNote
                 )
             )
 
@@ -113,23 +187,14 @@ final class DiscoverViewModel {
                 )
             }
         } catch {
-            errorMessage = error.localizedDescription
+            let msg = error.localizedDescription.lowercased()
+            if msg.contains("daily like limit") || msg.contains("rate limit") || msg.contains("too_many_requests") {
+                shouldShowUpgradePrompt = true
+            } else {
+                errorMessage = error.localizedDescription
+                appState?.showError("Swipe failed — please try again.")
+            }
         }
-
-        pendingLikeUserId = nil
-    }
-
-    /// Called from the like note prompt
-    func submitLikeNote(_ note: String?) async {
-        guard let userId = pendingLikeUserId else { return }
-        pendingLikeUserId = nil
-        await swipe(targetUserId: userId, type: .LIKE, matchNote: note)
-    }
-
-    func skipLikeNote() async {
-        guard let userId = pendingLikeUserId else { return }
-        pendingLikeUserId = nil
-        await swipe(targetUserId: userId, type: .LIKE)
     }
 
     // MARK: - Undo
@@ -160,6 +225,16 @@ final class DiscoverViewModel {
         currentIndex += 1
     }
 
+    /// Pass on a profile: no backend swipe is recorded. The card is moved to
+    /// the bottom of the local stack so the user can revisit it later.
+    /// `currentIndex` stays put — the card that *was* at index+1 is now at
+    /// `currentIndex` and becomes the new top of the stack.
+    func recyclePass(targetUserId: String) {
+        guard let idx = profiles.firstIndex(where: { $0.userId == targetUserId }) else { return }
+        let card = profiles.remove(at: idx)
+        profiles.append(card)
+    }
+
     // MARK: - Private
 
     private func startUndoTimer() {
@@ -172,18 +247,4 @@ final class DiscoverViewModel {
         }
     }
 
-    private func loadFilters() -> StoredFilters? {
-        guard let data = UserDefaults.standard.data(forKey: "ekko-connect-filters"),
-              let filters = try? JSONDecoder().decode(StoredFilters.self, from: data) else {
-            return nil
-        }
-        return filters
-    }
-}
-
-private struct StoredFilters: Codable {
-    var city: String = ""
-    var maxDistanceMiles: Int = 50
-    var globalSearch: Bool = false
-    var role: String = "ALL"
 }

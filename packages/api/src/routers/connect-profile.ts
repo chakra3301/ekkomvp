@@ -112,6 +112,15 @@ export const connectProfileRouter = router({
       assertCleanContent(input.bio);
       assertCleanContent(input.lookingFor);
 
+      // New profiles start on the FREE tier — enforce that plan's slot ceiling
+      // so a client can't smuggle in 12 slots at creation time.
+      if (input.mediaSlots.length > CONNECT_TIERS.FREE.maxMediaSlots) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Your plan allows up to ${CONNECT_TIERS.FREE.maxMediaSlots} media slots. Upgrade for more!`,
+        });
+      }
+
       // Check if profile already exists
       const existing = await prisma.connectProfile.findUnique({
         where: { userId: ctx.user.id },
@@ -171,52 +180,54 @@ export const connectProfileRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const existing = await prisma.connectProfile.findUnique({
-        where: { userId: ctx.user.id },
-      });
-
-      if (!existing) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Connect profile not found. Create one first.",
-        });
-      }
-
       assertCleanContent(input.headline);
       assertCleanContent(input.bio);
       assertCleanContent(input.lookingFor);
 
-      // Validate media slots against tier limit
-      if (input.mediaSlots) {
-        const maxSlots =
-          existing.connectTier === "INFINITE"
-            ? CONNECT_TIERS.INFINITE.maxMediaSlots
-            : CONNECT_TIERS.FREE.maxMediaSlots;
-        if (input.mediaSlots.length > maxSlots) {
+      // Read tier + validate + write in one transaction so tier can't shift under us.
+      const profile = await prisma.$transaction(async (tx) => {
+        const existing = await tx.connectProfile.findUnique({
+          where: { userId: ctx.user.id },
+        });
+
+        if (!existing) {
           throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: `Your plan allows up to ${maxSlots} media slots. Upgrade for more!`,
+            code: "NOT_FOUND",
+            message: "Connect profile not found. Create one first.",
           });
         }
-      }
 
-      const updateData: Record<string, unknown> = {};
-      if (input.headline !== undefined) updateData.headline = input.headline;
-      if (input.lookingFor !== undefined) updateData.lookingFor = input.lookingFor;
-      if (input.bio !== undefined) updateData.bio = input.bio;
-      if (input.mediaSlots !== undefined) updateData.mediaSlots = input.mediaSlots;
-      if (input.prompts !== undefined) updateData.prompts = input.prompts;
-      if (input.instagramHandle !== undefined) updateData.instagramHandle = input.instagramHandle;
-      if (input.twitterHandle !== undefined) updateData.twitterHandle = input.twitterHandle;
-      if (input.websiteUrl !== undefined) updateData.websiteUrl = input.websiteUrl || null;
-      if (input.disciplineIds !== undefined) updateData.disciplineIds = input.disciplineIds;
-      if (input.location !== undefined) updateData.location = input.location;
-      if (input.latitude !== undefined) updateData.latitude = input.latitude;
-      if (input.longitude !== undefined) updateData.longitude = input.longitude;
+        if (input.mediaSlots) {
+          const maxSlots =
+            existing.connectTier === "INFINITE"
+              ? CONNECT_TIERS.INFINITE.maxMediaSlots
+              : CONNECT_TIERS.FREE.maxMediaSlots;
+          if (input.mediaSlots.length > maxSlots) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `Your plan allows up to ${maxSlots} media slots. Upgrade for more!`,
+            });
+          }
+        }
 
-      const profile = await prisma.connectProfile.update({
-        where: { userId: ctx.user.id },
-        data: updateData,
+        const updateData: Record<string, unknown> = {};
+        if (input.headline !== undefined) updateData.headline = input.headline;
+        if (input.lookingFor !== undefined) updateData.lookingFor = input.lookingFor;
+        if (input.bio !== undefined) updateData.bio = input.bio;
+        if (input.mediaSlots !== undefined) updateData.mediaSlots = input.mediaSlots;
+        if (input.prompts !== undefined) updateData.prompts = input.prompts;
+        if (input.instagramHandle !== undefined) updateData.instagramHandle = input.instagramHandle;
+        if (input.twitterHandle !== undefined) updateData.twitterHandle = input.twitterHandle;
+        if (input.websiteUrl !== undefined) updateData.websiteUrl = input.websiteUrl || null;
+        if (input.disciplineIds !== undefined) updateData.disciplineIds = input.disciplineIds;
+        if (input.location !== undefined) updateData.location = input.location;
+        if (input.latitude !== undefined) updateData.latitude = input.latitude;
+        if (input.longitude !== undefined) updateData.longitude = input.longitude;
+
+        return tx.connectProfile.update({
+          where: { userId: ctx.user.id },
+          data: updateData,
+        });
       });
 
       return profile;

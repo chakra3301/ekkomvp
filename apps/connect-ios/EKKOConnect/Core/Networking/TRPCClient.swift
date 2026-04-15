@@ -13,9 +13,21 @@ final class TRPCClient {
     private let encoder: JSONEncoder
     private let session: URLSession
 
-    init(baseURL: URL, session: URLSession = .shared) {
+    init(baseURL: URL, session: URLSession? = nil) {
         self.baseURL = baseURL
-        self.session = session
+        // Use a session configured to PRESERVE the Authorization header on
+        // cross-host redirects (e.g. ekkoconnect.app → www.ekkoconnect.app).
+        // URLSession strips it by default for security, which would 401 us.
+        if let session {
+            self.session = session
+        } else {
+            let config = URLSessionConfiguration.default
+            self.session = URLSession(
+                configuration: config,
+                delegate: AuthPreservingRedirectDelegate(),
+                delegateQueue: nil
+            )
+        }
 
         self.decoder = JSONDecoder()
         // tRPC with superjson serializes dates as ISO 8601 strings
@@ -61,9 +73,14 @@ final class TRPCClient {
             let inputData = try encoder.encode(AnyEncodable(input))
             let inputJSON = String(data: inputData, encoding: .utf8) ?? "{}"
             let wrapped = "{\"json\":\(inputJSON)}"
-            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+            guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+                throw TRPCError.invalidResponse
+            }
             components.queryItems = [URLQueryItem(name: "input", value: wrapped)]
-            url = components.url!
+            guard let composed = components.url else {
+                throw TRPCError.invalidResponse
+            }
+            url = composed
         }
 
         var request = URLRequest(url: url)
@@ -234,5 +251,28 @@ private struct AnyEncodable: Encodable {
 
     func encode(to encoder: Encoder) throws {
         try _encode(encoder)
+    }
+}
+
+// MARK: - Redirect delegate
+
+/// URLSession strips the Authorization header by default on cross-host redirects
+/// (e.g. ekkoconnect.app → www.ekkoconnect.app). This delegate re-attaches the
+/// original request's Authorization header to the redirected request so the
+/// backend still sees the Bearer token.
+private final class AuthPreservingRedirectDelegate: NSObject, URLSessionTaskDelegate {
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        willPerformHTTPRedirection response: HTTPURLResponse,
+        newRequest request: URLRequest,
+        completionHandler: @escaping (URLRequest?) -> Void
+    ) {
+        var mutable = request
+        if mutable.value(forHTTPHeaderField: "Authorization") == nil,
+           let original = task.originalRequest?.value(forHTTPHeaderField: "Authorization") {
+            mutable.setValue(original, forHTTPHeaderField: "Authorization")
+        }
+        completionHandler(mutable)
     }
 }

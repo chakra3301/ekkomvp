@@ -1,7 +1,7 @@
 import SwiftUI
-import SceneKit
 import AVFoundation
 import Kingfisher
+import WebKit
 
 /// Profile card layout:
 /// Hero (first media) → Name/headline/location → Bio → Looking for →
@@ -220,10 +220,10 @@ struct ConnectProfileCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(prompt.question)
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(.white.opacity(0.75))
+                        .foregroundStyle(.primary.opacity(0.7))
                     Text(prompt.answer)
                         .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.primary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 18)
@@ -242,7 +242,7 @@ struct ConnectProfileCard: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(displayName)
-                    .font(.title2.bold())
+                    .font(.custom(EKKOFont.regular, size: 26))
                 if connectTier == .INFINITE {
                     Image(systemName: "infinity")
                         .font(.caption)
@@ -255,7 +255,7 @@ struct ConnectProfileCard: View {
             }
             if let headline, !headline.isEmpty {
                 Text(headline)
-                    .font(.subheadline)
+                    .font(.custom(EKKOFont.regular, size: 16))
                     .foregroundStyle(.secondary)
             }
             if let location, !location.isEmpty {
@@ -336,7 +336,15 @@ struct ConnectProfileCard: View {
                 AudioPlayerView(urlString: slot.url)
             } else if slot.isModel {
                 ModelViewerView(urlString: slot.url)
-                    .frame(height: 300)
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+                    )
+                    .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
+                    .padding(.horizontal, 16)
             } else if slot.isVideo {
                 VideoPlayerView(urlString: slot.url)
                     .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
@@ -369,10 +377,10 @@ struct ConnectProfileCard: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(entry.question)
                 .font(.caption.weight(.medium))
-                .foregroundStyle(.white.opacity(0.6))
+                .foregroundStyle(.primary.opacity(0.65))
             Text(entry.answer)
                 .font(.subheadline.weight(.medium))
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 18)
@@ -472,10 +480,12 @@ struct VideoPlayerView: View {
     let urlString: String
     @State private var player: AVPlayer?
     @State private var isVisible = false
+    @State private var aspect: CGFloat = 9/16
+    @State private var loopObserver: NSObjectProtocol?
 
     var body: some View {
         VideoPlayerRepresentable(player: player)
-            .aspectRatio(9/16, contentMode: .fit)
+            .aspectRatio(aspect, contentMode: .fit)
             .frame(maxWidth: .infinity)
             .clipShape(RoundedRectangle(cornerRadius: 0))
             .onAppear {
@@ -485,27 +495,50 @@ struct VideoPlayerView: View {
             .onDisappear {
                 isVisible = false
                 player?.pause()
+                if let loopObserver {
+                    NotificationCenter.default.removeObserver(loopObserver)
+                    self.loopObserver = nil
+                }
             }
+            .task { await loadAspect() }
+    }
+
+    private func loadAspect() async {
+        guard let url = URL(string: urlString) else { return }
+        let asset = AVURLAsset(url: url)
+        do {
+            let tracks = try await asset.loadTracks(withMediaType: .video)
+            guard let track = tracks.first else { return }
+            let size = try await track.load(.naturalSize)
+            let transform = try await track.load(.preferredTransform)
+            let t = size.applying(transform)
+            let w = abs(t.width), h = abs(t.height)
+            guard h > 0 else { return }
+            let ratio = w / h
+            await MainActor.run {
+                withAnimation(.easeInOut(duration: 0.2)) { aspect = ratio }
+            }
+        } catch {}
     }
 
     private func setupAndPlay() {
-        guard player == nil, let url = URL(string: urlString) else {
-            player?.play()
+        if let existing = player {
+            existing.play()
             return
         }
+        guard let url = URL(string: urlString) else { return }
         let item = AVPlayerItem(url: url)
         let avPlayer = AVPlayer(playerItem: item)
         avPlayer.isMuted = true
         player = avPlayer
 
-        // Loop
-        NotificationCenter.default.addObserver(
+        loopObserver = NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
             object: item,
             queue: .main
-        ) { _ in
-            avPlayer.seek(to: .zero)
-            avPlayer.play()
+        ) { [weak avPlayer] _ in
+            avPlayer?.seek(to: .zero)
+            avPlayer?.play()
         }
 
         avPlayer.play()
@@ -541,111 +574,63 @@ struct VideoPlayerRepresentable: UIViewRepresentable {
     }
 }
 
-// MARK: - 3D Model Viewer
+// MARK: - 3D Model Viewer (WKWebView + <model-viewer>)
 
 struct ModelViewerView: View {
     let urlString: String
-    @State private var scene: SCNScene?
-    @State private var isLoading = true
 
     var body: some View {
-        ZStack {
-            if let scene {
-                SceneViewRepresentable(scene: scene)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
-                    .padding(.horizontal, 16)
-            } else if isLoading {
-                ZStack {
-                    Color.gray.opacity(0.06)
-                    VStack(spacing: 8) {
-                        ProgressView()
-                        Text("Loading 3D model...")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .padding(.horizontal, 16)
-            } else {
-                ZStack {
-                    Color.gray.opacity(0.06)
-                    VStack(spacing: 8) {
-                        Image(systemName: "cube")
-                            .font(.largeTitle)
-                            .foregroundStyle(EKKOTheme.primary)
-                        Text("3D Model")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .padding(.horizontal, 16)
-            }
-        }
-        .task { await loadModel() }
-    }
-
-    private func loadModel() async {
-        guard let url = URL(string: urlString) else {
-            isLoading = false
-            return
-        }
-
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let tempDir = FileManager.default.temporaryDirectory
-            let ext = url.pathExtension.isEmpty ? "usdz" : url.pathExtension
-            let tempFile = tempDir.appendingPathComponent("model_\(UUID().uuidString).\(ext)")
-            try data.write(to: tempFile)
-
-            let loadedScene = try SCNScene(url: tempFile, options: [
-                .checkConsistency: true
-            ])
-
-            // Add ambient light
-            let lightNode = SCNNode()
-            lightNode.light = SCNLight()
-            lightNode.light?.type = .ambient
-            lightNode.light?.intensity = 500
-            loadedScene.rootNode.addChildNode(lightNode)
-
-            // Add directional light
-            let dirLight = SCNNode()
-            dirLight.light = SCNLight()
-            dirLight.light?.type = .directional
-            dirLight.light?.intensity = 800
-            dirLight.position = SCNVector3(5, 5, 5)
-            dirLight.look(at: SCNVector3(0, 0, 0))
-            loadedScene.rootNode.addChildNode(dirLight)
-
-            await MainActor.run {
-                scene = loadedScene
-                isLoading = false
-            }
-
-            try? FileManager.default.removeItem(at: tempFile)
-        } catch {
-            await MainActor.run {
-                isLoading = false
-            }
-        }
+        ModelWebView(urlString: urlString)
     }
 }
 
-struct SceneViewRepresentable: UIViewRepresentable {
-    let scene: SCNScene
+private struct ModelWebView: UIViewRepresentable {
+    let urlString: String
 
-    func makeUIView(context: Context) -> SCNView {
-        let scnView = SCNView()
-        scnView.scene = scene
-        scnView.allowsCameraControl = true // pinch, pan, rotate
-        scnView.autoenablesDefaultLighting = true
-        scnView.backgroundColor = .clear
-        scnView.antialiasingMode = .multisampling4X
-        return scnView
+    func makeUIView(context: Context) -> WKWebView {
+        let config = WKWebViewConfiguration()
+        config.allowsInlineMediaPlayback = true
+        let webView = WKWebView(frame: .zero, configuration: config)
+        webView.scrollView.isScrollEnabled = false
+        webView.isOpaque = false
+        webView.backgroundColor = .clear
+        webView.scrollView.backgroundColor = .clear
+        return webView
     }
 
-    func updateUIView(_ uiView: SCNView, context: Context) {
-        uiView.scene = scene
+    func updateUIView(_ webView: WKWebView, context: Context) {
+        let ext = (URL(string: urlString)?.pathExtension ?? "").lowercased()
+        let iosSrcAttr = ext == "usdz" ? "ios-src=\"\(urlString)\"" : ""
+        let html = """
+        <!doctype html>
+        <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+          <style>
+            html, body { margin: 0; padding: 0; height: 100%; background: transparent; }
+            model-viewer { width: 100%; height: 100%; background: transparent; --poster-color: transparent; }
+          </style>
+          <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+        </head>
+        <body>
+          <model-viewer
+            src="\(urlString)"
+            \(iosSrcAttr)
+            camera-controls
+            touch-action="pan-y"
+            auto-rotate
+            auto-rotate-delay="1500"
+            interaction-prompt="none"
+            shadow-intensity="1"
+            exposure="1"
+            ar
+            ar-modes="webxr scene-viewer quick-look"
+            style="background-color: transparent; --poster-color: transparent;"
+            alt="3D model">
+          </model-viewer>
+        </body>
+        </html>
+        """
+        webView.loadHTMLString(html, baseURL: URL(string: "https://ajax.googleapis.com/"))
     }
 }

@@ -33,6 +33,28 @@ interface PushPayload {
   url?: string;
 }
 
+/// Compute the current number of unread Connect messages for a user.
+/// Used so APNs updates the app-icon badge to an accurate count.
+async function computeBadgeCount(userId: string): Promise<number> {
+  const matches = await prisma.connectMatch.findMany({
+    where: {
+      OR: [{ user1Id: userId }, { user2Id: userId }],
+      status: "ACTIVE",
+    },
+    select: { id: true },
+  });
+  const matchIds = matches.map((m) => m.id);
+  if (matchIds.length === 0) return 0;
+
+  return prisma.connectMessage.count({
+    where: {
+      matchId: { in: matchIds },
+      senderId: { not: userId },
+      readAt: null,
+    },
+  });
+}
+
 export async function sendPushToUser(userId: string, payload: PushPayload) {
   const provider = getApnProvider();
   if (!provider) return;
@@ -44,19 +66,26 @@ export async function sendPushToUser(userId: string, payload: PushPayload) {
 
   if (!user?.pushToken || user.pushPlatform !== "ios") return;
 
+  const badge = await computeBadgeCount(userId);
+
   const notification = new apn.Notification();
   notification.alert = { title: payload.title, body: payload.body };
   notification.sound = "default";
-  notification.badge = 1;
+  notification.badge = badge;
   notification.topic = "app.ekkoconnect.connect";
   notification.payload = { url: payload.url };
+  // 1 week — standard for social notifications
+  notification.expiry = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
 
   try {
     const result = await provider.send(notification, user.pushToken);
     if (result.failed.length > 0) {
-      console.error("[Push] Failed:", result.failed[0]?.response);
-      // Clear invalid tokens
-      if (result.failed[0]?.status === "410") {
+      const failure = result.failed[0];
+      console.error("[Push] Failed:", failure?.response || failure);
+      // Clear invalid tokens (410 Gone, BadDeviceToken, Unregistered)
+      const status = failure?.status;
+      const reason = (failure?.response as { reason?: string })?.reason;
+      if (status === "410" || reason === "BadDeviceToken" || reason === "Unregistered") {
         await prisma.user.update({
           where: { id: userId },
           data: { pushToken: null, pushPlatform: null },

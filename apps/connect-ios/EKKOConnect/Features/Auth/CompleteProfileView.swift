@@ -55,6 +55,16 @@ struct CompleteProfileView: View {
                     .padding(.top, 8)
             }
 
+            // Escape hatch — lets users back out to the sign-in screen
+            // in case they got here with a stale session (e.g. account deleted
+            // on another device) or just want to use a different account.
+            Button("Sign out") {
+                Task { await appState.signOut() }
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .padding(.top, 8)
+
             Spacer()
 
             // Navigation buttons
@@ -189,6 +199,17 @@ struct CompleteProfileView: View {
         isLoading = true
         errors = [:]
 
+        // Validate the stored session is still valid. If the user was deleted
+        // on the server, Supabase will 401 — sign out so they can log in again.
+        do {
+            _ = try await appState.supabase.auth.session
+            try await appState.supabase.auth.refreshSession()
+        } catch {
+            await appState.signOut()
+            isLoading = false
+            return
+        }
+
         let trimmedName = displayName.trimmingCharacters(in: .whitespaces)
         let username = generateUsername(from: trimmedName)
 
@@ -228,8 +249,15 @@ struct CompleteProfileView: View {
             // 3. Reload the profile to get the full object
             await appState.fetchCurrentUser()
         } catch {
-            errors["submit"] = error.localizedDescription
             print("[CompleteProfile] Submit error: \(error)")
+            // If the server rejects the token (e.g. account was deleted), bail to sign-in
+            let msg = error.localizedDescription.lowercased()
+            if msg.contains("401") || msg.contains("unauthorized") || msg.contains("not authenticated") {
+                await appState.signOut()
+                isLoading = false
+                return
+            }
+            errors["submit"] = error.localizedDescription
         }
         isLoading = false
     }

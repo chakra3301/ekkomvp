@@ -88,6 +88,10 @@ struct SwipeCard: View {
             .onTapGesture {
                 if isTop { isExpanded = true }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Profile card for \(displayName)")
+            .accessibilityHint(isTop ? "Double-tap to view full profile. Swipe right to like, left to pass." : "")
+            .accessibilityAddTraits(isTop ? .isButton : [])
         }
     }
 
@@ -179,7 +183,7 @@ struct SwipeCard: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 8) {
                 Text(displayName)
-                    .font(.title2.bold())
+                    .font(.custom(EKKOFont.regular, size: 26))
                     .foregroundStyle(.white)
 
                 if profile.connectTier == .INFINITE {
@@ -195,7 +199,7 @@ struct SwipeCard: View {
 
             if let headline = profile.headline, !headline.isEmpty {
                 Text(headline)
-                    .font(.subheadline)
+                    .font(.custom(EKKOFont.regular, size: 16))
                     .foregroundStyle(.white.opacity(0.8))
             }
 

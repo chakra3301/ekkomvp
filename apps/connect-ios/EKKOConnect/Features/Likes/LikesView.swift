@@ -3,9 +3,23 @@ import Kingfisher
 
 struct LikesView: View {
     @Environment(AppState.self) private var appState
+    @Environment(PurchaseManager.self) private var purchaseManager
     @State private var likes: [ConnectSwipe] = []
     @State private var isLoading = true
     @State private var isSwiping = false
+    @State private var matchData: MatchCelebrationData?
+    @State private var showUpgradeSheet = false
+
+    private var isPremium: Bool {
+        appState.currentConnectProfile?.connectTier == .INFINITE
+    }
+
+    struct MatchCelebrationData: Identifiable {
+        let id: String
+        let displayName: String
+        var avatarUrl: String?
+        var featuredImage: String?
+    }
 
     private let columns = [
         GridItem(.flexible(), spacing: 12),
@@ -15,16 +29,57 @@ struct LikesView: View {
     var body: some View {
         Group {
             if isLoading {
-                VStack { Spacer(); ProgressView(); Spacer() }
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        SkeletonView(width: 180, height: 20)
+                            .padding(.horizontal, 16)
+                        SkeletonGrid(rows: 3)
+                    }
+                    .padding(.top, 8)
+                }
             } else if likes.isEmpty {
                 emptyState
             } else {
-                likesGrid
+                ZStack {
+                    likesGrid
+                        .blur(radius: isPremium ? 0 : 22)
+                        .disabled(!isPremium)
+                        .allowsHitTesting(isPremium)
+                    if !isPremium {
+                        premiumGate
+                    }
+                }
             }
         }
         .navigationTitle("Likes")
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadLikes() }
+        .sheet(isPresented: $showUpgradeSheet) {
+            UpgradeModal(isPresented: $showUpgradeSheet)
+                .environment(purchaseManager)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
+        .overlay {
+            if let match = matchData {
+                MatchCelebrationOverlay(
+                    matchId: match.id,
+                    displayName: match.displayName,
+                    avatarUrl: match.avatarUrl,
+                    featuredImage: match.featuredImage,
+                    onSendMessage: {
+                        // Navigate to the chat: select Matches tab + push ChatView via AppState
+                        let matchId = match.id
+                        matchData = nil
+                        appState.selectedTab = 2
+                        appState.pendingChatMatchId = matchId
+                    },
+                    onKeepSwiping: { matchData = nil }
+                )
+                .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: matchData != nil)
     }
 
     // MARK: - Likes Grid
@@ -80,7 +135,7 @@ struct LikesView: View {
                 )
 
                 Text(displayName)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.custom(EKKOFont.regular, size: 16))
                     .foregroundStyle(.white)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -130,6 +185,53 @@ struct LikesView: View {
         .glassCard()
     }
 
+    // MARK: - Premium Gate Overlay
+
+    private var premiumGate: some View {
+        VStack(spacing: 16) {
+            Spacer()
+            VStack(spacing: 14) {
+                Image(systemName: "lock.fill")
+                    .font(.system(size: 36))
+                    .foregroundStyle(EKKOTheme.primary)
+
+                Text("See who likes you")
+                    .font(.title3.bold())
+
+                Text("Upgrade to reveal everyone who's already interested — and like them back instantly.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+
+                Button {
+                    showUpgradeSheet = true
+                } label: {
+                    Text("Upgrade to Infinite")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(EKKOTheme.primary)
+                        .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 4)
+            }
+            .padding(.vertical, 24)
+            .frame(maxWidth: .infinity)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 24))
+            .overlay(
+                RoundedRectangle(cornerRadius: 24)
+                    .stroke(Color.white.opacity(0.12), lineWidth: 0.5)
+            )
+            .shadow(color: .black.opacity(0.3), radius: 20, y: 8)
+            .padding(.horizontal, 24)
+            Spacer()
+        }
+    }
+
     // MARK: - Empty State
 
     private var emptyState: some View {
@@ -174,28 +276,48 @@ struct LikesView: View {
 
     private func handleLikeBack(_ targetUserId: String) async {
         isSwiping = true
+        defer { isSwiping = false }
         do {
             let result: SwipeResult = try await appState.trpc.mutate(
                 "connectMatch.swipe",
                 input: SwipeInput(targetUserId: targetUserId, type: .LIKE)
             )
-            if result.matched {
-                // TODO: Show match celebration
+            // Optimistically remove this person from the likes stack. If the
+            // other side later unmatches, they'll reappear on next full load.
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                likes.removeAll { $0.userId == targetUserId }
             }
-            await loadLikes()
-        } catch {}
-        isSwiping = false
+            if result.matched, let matchId = result.matchId {
+                let liker = likes.first { $0.userId == targetUserId }
+                let name = liker?.user?.profile?.displayName ?? "Your Match"
+                let avatar = liker?.user?.profile?.avatarUrl
+                matchData = MatchCelebrationData(
+                    id: matchId,
+                    displayName: name,
+                    avatarUrl: avatar,
+                    featuredImage: avatar
+                )
+            }
+        } catch {
+            // Surface the real error so we can tell a daily-limit cap apart
+            // from a network error or a validation issue.
+            appState.showError(error.localizedDescription)
+        }
     }
 
     private func handlePass(_ targetUserId: String) async {
         isSwiping = true
+        defer { isSwiping = false }
         do {
             let _: SwipeResult = try await appState.trpc.mutate(
                 "connectMatch.swipe",
                 input: SwipeInput(targetUserId: targetUserId, type: .PASS)
             )
-            await loadLikes()
-        } catch {}
-        isSwiping = false
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                likes.removeAll { $0.userId == targetUserId }
+            }
+        } catch {
+            appState.showError(error.localizedDescription)
+        }
     }
 }

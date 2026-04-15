@@ -4,11 +4,21 @@ struct MatchesView: View {
     @Environment(AppState.self) private var appState
     @State private var matches: [MatchListItem] = []
     @State private var isLoading = true
+    @State private var activeChat: ChatRoute?
+
+    private struct ChatRoute: Identifiable, Hashable {
+        let id: String
+    }
 
     var body: some View {
         Group {
             if isLoading {
-                VStack { Spacer(); ProgressView(); Spacer() }
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(0..<6, id: \.self) { _ in
+                        SkeletonRow()
+                    }
+                    Spacer()
+                }
             } else if matches.isEmpty {
                 emptyState
             } else {
@@ -18,6 +28,19 @@ struct MatchesView: View {
         .navigationTitle("Matches")
         .navigationBarTitleDisplayMode(.inline)
         .task { await loadMatches() }
+        .navigationDestination(item: $activeChat) { route in
+            ChatView(matchId: route.id)
+        }
+        .onAppear { consumePendingChatRouteIfAny() }
+        .onChange(of: appState.pendingChatMatchId) { _, _ in
+            consumePendingChatRouteIfAny()
+        }
+    }
+
+    private func consumePendingChatRouteIfAny() {
+        guard let pending = appState.pendingChatMatchId else { return }
+        activeChat = ChatRoute(id: pending)
+        appState.pendingChatMatchId = nil
     }
 
     // MARK: - Matches List
@@ -92,24 +115,40 @@ struct MatchesView: View {
     @ViewBuilder
     private func conversationRow(_ match: MatchListItem) -> some View {
         let displayName = match.otherUser.profile?.displayName ?? "User"
+        let unread = appState.unreadByMatch[match.id] ?? 0
 
         HStack(spacing: 12) {
-            AvatarView(
-                url: match.otherUser.profile?.avatarUrl,
-                name: displayName,
-                size: 56
-            )
+            ZStack(alignment: .topTrailing) {
+                AvatarView(
+                    url: match.otherUser.profile?.avatarUrl,
+                    name: displayName,
+                    size: 56
+                )
+                // Unread dot / count bubble
+                if unread > 0 {
+                    Text(unread > 99 ? "99+" : "\(unread)")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 6)
+                        .frame(minWidth: 20, minHeight: 20)
+                        .background(EKKOTheme.primary)
+                        .clipShape(Capsule())
+                        .overlay(Capsule().stroke(Color(.systemBackground), lineWidth: 2))
+                        .offset(x: 4, y: -4)
+                }
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(displayName)
-                        .font(.subheadline.weight(.semibold))
+                        .font(.custom(EKKOFont.regular, size: 16))
                         .foregroundStyle(.primary)
                     Spacer()
                     if let lastMsg = match.lastMessage {
                         Text(lastMsg.createdAt.relativeShort)
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(unread > 0 ? EKKOTheme.primary : .secondary)
+                            .fontWeight(unread > 0 ? .semibold : .regular)
                     }
                 }
 

@@ -32,18 +32,12 @@ const handler = async (req: Request) => {
         );
         const { data: tokenAuth, error: tokenErr } = await supabaseAdmin.auth.getUser(token);
         if (tokenErr) {
-          console.error(`[tRPC/${procedure}] Bearer token rejected by Supabase: ${tokenErr.message}. Token prefix: ${token.slice(0, 30)}...`);
+          console.error(`[tRPC/${procedure}] Bearer token rejected: ${tokenErr.message}`);
         } else if (!tokenAuth.user) {
-          console.error(`[tRPC/${procedure}] Bearer token returned no user. Token prefix: ${token.slice(0, 30)}...`);
-        } else {
-          console.log(`[tRPC/${procedure}] Bearer auth OK for ${tokenAuth.user.email} (${tokenAuth.user.id})`);
+          console.error(`[tRPC/${procedure}] Bearer token returned no user`);
         }
         supabaseUser = tokenAuth.user;
-      } else {
-        console.log(`[tRPC/${procedure}] No cookie auth, no Authorization header`);
       }
-    } else {
-      console.log(`[tRPC/${procedure}] Cookie auth OK for ${supabaseUser.email}`);
     }
 
     let dbUser = null;

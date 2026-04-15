@@ -44,12 +44,14 @@ export const connectDiscoverRouter = router({
       const userId = ctx.user.id;
       const { limit, filters } = input;
 
-      // Get IDs of users already swiped on
-      const swipedUserIds = await prisma.connectSwipe.findMany({
-        where: { userId },
+      // Exclude only users we already *liked* — passing is now non-destructive
+      // (the client recycles passed cards to the bottom of the local stack),
+      // so old PASS records shouldn't permanently hide those profiles.
+      const likedUserIds = await prisma.connectSwipe.findMany({
+        where: { userId, type: "LIKE" },
         select: { targetUserId: true },
       });
-      const swipedSet = new Set(swipedUserIds.map((s) => s.targetUserId));
+      const swipedSet = new Set(likedUserIds.map((s) => s.targetUserId));
 
       // Get IDs of blocked users (both directions)
       const blocks = await prisma.block.findMany({
@@ -179,28 +181,27 @@ export const connectDiscoverRouter = router({
     .query(async ({ ctx, input }) => {
       const { cursor, limit } = input;
 
+      // Look up matched user ids first so the main query has a simple filter.
+      const matches = await prisma.connectMatch.findMany({
+        where: {
+          OR: [
+            { user1Id: ctx.user.id, status: "ACTIVE" },
+            { user2Id: ctx.user.id, status: "ACTIVE" },
+          ],
+        },
+        select: { user1Id: true, user2Id: true },
+      });
+      const matchedUserIds = matches.map((m) =>
+        m.user1Id === ctx.user.id ? m.user2Id : m.user1Id
+      );
+
       const likes = await prisma.connectSwipe.findMany({
         where: {
           targetUserId: ctx.user.id,
           type: "LIKE",
-          // Exclude users who already have a mutual match
-          NOT: {
-            userId: {
-              in: (
-                await prisma.connectMatch.findMany({
-                  where: {
-                    OR: [
-                      { user1Id: ctx.user.id, status: "ACTIVE" },
-                      { user2Id: ctx.user.id, status: "ACTIVE" },
-                    ],
-                  },
-                  select: { user1Id: true, user2Id: true },
-                })
-              ).flatMap((m) =>
-                m.user1Id === ctx.user.id ? [m.user2Id] : [m.user1Id]
-              ),
-            },
-          },
+          ...(matchedUserIds.length > 0
+            ? { userId: { notIn: matchedUserIds } }
+            : {}),
         },
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,

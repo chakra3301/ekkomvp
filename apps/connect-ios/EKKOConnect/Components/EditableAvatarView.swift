@@ -35,6 +35,9 @@ struct EditableAvatarView: View {
             .contentShape(Circle())
         }
         .disabled(isUploading)
+        .accessibilityLabel("Profile picture")
+        .accessibilityHint("Double-tap to change")
+        .accessibilityAddTraits(.isButton)
         .onChange(of: photoSelection) { _, item in
             guard let item else { return }
             Task { await uploadAvatar(item) }

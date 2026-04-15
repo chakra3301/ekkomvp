@@ -301,6 +301,14 @@ struct ProfileSetupView: View {
                     }
                 }
             }
+
+            // Refresh AppState so the router advances to MainTabView
+            // (when setup was required as a first-run gate).
+            await appState.refreshConnectProfile()
+
+            // If we were invoked from inside a NavigationStack (edit flow),
+            // pop back. When used as the first-run gate, there's nothing to dismiss —
+            // the router automatically switches to MainTabView once currentConnectProfile is set.
             dismiss()
         } catch {
             errorMessage = error.localizedDescription

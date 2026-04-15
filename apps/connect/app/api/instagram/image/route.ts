@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
       },
       redirect: "follow",
       cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
     });
 
     if (!res.ok) {
@@ -40,7 +41,6 @@ export async function GET(request: NextRequest) {
       headers: {
         "Content-Type": contentType,
         "Cache-Control": "public, max-age=900, s-maxage=900",
-        "Access-Control-Allow-Origin": "*",
       },
     });
   } catch {

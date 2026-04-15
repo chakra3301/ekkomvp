@@ -18,10 +18,10 @@ struct ChatView: View {
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var showEmojiPicker = false
     @State private var audioRecorder = AudioRecorder()
+    @State private var showReportSheet = false
 
-    // Typing indicator state
-    @State private var isOtherTyping = false
-    @State private var typingTimer: Timer?
+    // Realtime (typing indicators + live messages + read receipts)
+    @State private var realtimeService: RealtimeService?
 
     private var currentUserId: String? {
         appState.session?.user.id.uuidString
@@ -35,6 +35,10 @@ struct ChatView: View {
 
     private var displayName: String {
         otherUser?.profile?.displayName ?? "User"
+    }
+
+    private var isOtherTyping: Bool {
+        realtimeService?.isOtherTyping ?? false
     }
 
     var body: some View {
@@ -82,7 +86,7 @@ struct ChatView: View {
                     Divider()
                     Button("Unmatch", role: .destructive) { Task { await handleUnmatch() } }
                     Button("Block", role: .destructive) { Task { await handleBlock() } }
-                    Button("Report") { /* TODO */ }
+                    Button("Report") { showReportSheet = true }
                 } label: {
                     Image(systemName: "ellipsis")
                         .foregroundStyle(.secondary)
@@ -92,11 +96,67 @@ struct ChatView: View {
         .sheet(isPresented: $showProfileSheet) {
             profileSheet
         }
-        .task { await loadChat() }
+        .sheet(isPresented: $showReportSheet) {
+            if let otherId = otherUser?.id {
+                ReportSheet(targetType: .USER, targetId: otherId)
+            }
+        }
+        .task {
+            await loadChat()
+            await setupRealtime()
+        }
+        .onDisappear {
+            Task { await realtimeService?.unsubscribe() }
+        }
+        .onChange(of: realtimeService?.newMessageSignal) { _, _ in
+            Task { await reloadMessages() }
+        }
+        .onChange(of: realtimeService?.readSignal) { _, _ in
+            Task { await reloadMessages() }
+        }
+        .onChange(of: messageText) { _, newValue in
+            // Notify the other user that we're typing (throttled in the service)
+            guard !newValue.isEmpty, let userId = currentUserId else { return }
+            Task { await realtimeService?.sendTyping(userId: userId) }
+        }
         .onChange(of: selectedPhoto) { _, item in
             guard let item else { return }
             Task { await handlePhotoPicked(item) }
             selectedPhoto = nil
+        }
+    }
+
+    // MARK: - Realtime setup
+
+    private func setupRealtime() async {
+        guard let userId = currentUserId else { return }
+        let service = RealtimeService(supabase: appState.supabase)
+        realtimeService = service
+        await service.subscribeToChat(matchId: matchId, currentUserId: userId)
+    }
+
+    private func reloadMessages() async {
+        do {
+            struct MessagesInput: Codable {
+                let matchId: String
+                let limit: Int
+            }
+            struct MessagesResult: Codable {
+                let messages: [ConnectMessage]
+            }
+            let result: MessagesResult = try await appState.trpc.query(
+                "connectChat.getMessages",
+                input: MessagesInput(matchId: matchId, limit: 50)
+            )
+            messages = result.messages.reversed()
+
+            // Broadcast that we've read their messages, and persist to DB
+            try? await appState.trpc.mutate("connectChat.markAsRead", input: ["matchId": matchId])
+            if let userId = currentUserId {
+                await realtimeService?.sendRead(userId: userId)
+            }
+        } catch {
+            appState.showError("Couldn't load messages: \(error.localizedDescription)")
         }
     }
 
@@ -257,6 +317,7 @@ struct ChatView: View {
                                 .background(EKKOTheme.primary)
                                 .clipShape(Circle())
                         }
+                        .accessibilityLabel("Send message")
                         .padding(.trailing, 4)
                         .disabled(isSending)
                     }
@@ -449,7 +510,8 @@ struct ChatView: View {
             )
             messages.append(msg)
         } catch {
-            messageText = text // restore on failure
+            messageText = text // restore so the user can retry
+            appState.showError("Couldn't send message. Check your connection.")
         }
         isSending = false
     }
@@ -476,15 +538,20 @@ struct ChatView: View {
                 input: SendMessageInput(matchId: matchId, imageUrl: imageUrl)
             )
             messages.append(msg)
-        } catch {}
+        } catch {
+            appState.showError("Couldn't send image. Try again.")
+        }
         isUploading = false
     }
 
     private func handleUnmatch() async {
         do {
             try await appState.trpc.mutate("connectMatch.unmatch", input: matchId)
+            appState.showSuccess("Unmatched")
             dismiss()
-        } catch {}
+        } catch {
+            appState.showError("Couldn't unmatch. Try again.")
+        }
     }
 
     private func handleBlock() async {
@@ -492,8 +559,11 @@ struct ChatView: View {
         do {
             try await appState.trpc.mutate("block.block", input: ["userId": otherUserId])
             try await appState.trpc.mutate("connectMatch.unmatch", input: matchId)
+            appState.showSuccess("User blocked")
             dismiss()
-        } catch {}
+        } catch {
+            appState.showError("Couldn't block user. Try again.")
+        }
     }
 }
 

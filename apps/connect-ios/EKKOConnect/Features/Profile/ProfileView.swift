@@ -9,11 +9,7 @@ struct ProfileView: View {
     var body: some View {
         Group {
             if isLoading {
-                VStack {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
-                }
+                SkeletonProfile()
             } else if let profile = connectProfile {
                 profileContent(profile)
             } else {
@@ -157,7 +153,7 @@ struct ProfileView: View {
             let result: ToggleResult = try await appState.trpc.mutate("connectProfile.toggleActive")
             connectProfile?.isActive = result.isActive
         } catch {
-            // TODO: Show error toast
+            appState.showError("Couldn't update profile: \(error.localizedDescription)")
         }
         isTogglingActive = false
     }

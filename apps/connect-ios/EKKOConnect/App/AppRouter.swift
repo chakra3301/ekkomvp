@@ -23,7 +23,14 @@ struct AppRouter: View {
                 } else if !appState.isAuthenticated {
                     AuthFlowView()
                 } else if appState.currentProfile == nil {
+                    // Step 1: Name, DOB, role
                     CompleteProfileView()
+                } else if appState.hasCheckedConnectProfile && appState.currentConnectProfile == nil {
+                    // Step 2: Media, prompts, details — required before accessing app features.
+                    // Wrap in a NavigationStack so ProfileSetupView's toolbar works.
+                    NavigationStack {
+                        ProfileSetupView()
+                    }
                 } else {
                     MainTabView()
                 }
@@ -31,6 +38,9 @@ struct AppRouter: View {
         }
         .animation(.easeInOut(duration: 0.3), value: appState.isLoading)
         .animation(.easeInOut(duration: 0.3), value: appState.isAuthenticated)
+        .overlay(alignment: .top) {
+            ToastHost()
+        }
     }
 }
 
@@ -54,7 +64,6 @@ struct AuthFlowView: View {
 /// Main app with bottom tab bar
 struct MainTabView: View {
     @Environment(AppState.self) private var appState
-    @State private var selectedTab = 0
 
     init() {
         // Translucent tab bar — system blur material that lets mesh background show through
@@ -71,8 +80,12 @@ struct MainTabView: View {
         UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
     }
 
+    @State private var unreadRefreshTimer: Timer?
+    @State private var showWelcome = false
+
     var body: some View {
-        TabView(selection: $selectedTab) {
+        @Bindable var state = appState
+        TabView(selection: $state.selectedTab) {
             NavigationStack {
                 DiscoverView()
             }
@@ -95,6 +108,7 @@ struct MainTabView: View {
             .tabItem {
                 Label("Matches", systemImage: "message")
             }
+            .badge(appState.totalUnreadCount)
             .tag(2)
 
             NavigationStack {
@@ -106,5 +120,29 @@ struct MainTabView: View {
             .tag(3)
         }
         .tint(EKKOTheme.primary)
+        .task {
+            // Initial load + periodic refresh of unread counts
+            await appState.refreshUnreadCounts()
+            unreadRefreshTimer?.invalidate()
+            unreadRefreshTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { _ in
+                Task { await appState.refreshUnreadCounts() }
+            }
+            // Show welcome sheet once, right after the user first reaches the main app
+            if !OnboardingTracker.hasSeenWelcome {
+                try? await Task.sleep(for: .milliseconds(600))
+                showWelcome = true
+            }
+        }
+        .sheet(isPresented: $showWelcome) {
+            WelcomeSheet()
+        }
+        .onDisappear {
+            unreadRefreshTimer?.invalidate()
+            unreadRefreshTimer = nil
+        }
+        .onChange(of: appState.selectedTab) { _, _ in
+            // Refresh when user pokes the tab bar
+            Task { await appState.refreshUnreadCounts() }
+        }
     }
 }

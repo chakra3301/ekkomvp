@@ -3,6 +3,9 @@ import SwiftUI
 struct DiscoverView: View {
     @Environment(AppState.self) private var appState
     @State private var viewModel = DiscoverViewModel()
+    @State private var reportTargetUserId: String?
+    @State private var showUpgradeSheet = false
+    @Environment(PurchaseManager.self) private var purchaseManager
 
     var body: some View {
         ZStack {
@@ -60,8 +63,10 @@ struct DiscoverView: View {
                     avatarUrl: match.avatarUrl,
                     featuredImage: match.featuredImage,
                     onSendMessage: {
+                        let matchId = match.id
                         viewModel.matchData = nil
-                        // TODO: Navigate to chat with match.id
+                        appState.pendingChatMatchId = matchId
+                        appState.selectedTab = 2
                     },
                     onKeepSwiping: {
                         viewModel.matchData = nil
@@ -74,10 +79,36 @@ struct DiscoverView: View {
         .navigationTitle("Discover")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            viewModel.setup(trpc: appState.trpc)
+            viewModel.setup(trpc: appState.trpc, appState: appState)
             await viewModel.loadQueue()
         }
+        .onChange(of: appState.discoveryFilters) { _, _ in
+            Task { await viewModel.loadQueue() }
+        }
+        .sheet(item: Binding(
+            get: { reportTargetUserId.map { ReportTarget(id: $0) } },
+            set: { reportTargetUserId = $0?.id }
+        )) { target in
+            ReportSheet(targetType: .USER, targetId: target.id) {
+                // After report submitted, advance past this profile
+                viewModel.advanceIndex()
+            }
+        }
+        .sheet(isPresented: $showUpgradeSheet) {
+            UpgradeModal(isPresented: $showUpgradeSheet)
+                .environment(purchaseManager)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
+        .onChange(of: viewModel.shouldShowUpgradePrompt) { _, newValue in
+            if newValue {
+                showUpgradeSheet = true
+                viewModel.shouldShowUpgradePrompt = false
+            }
+        }
     }
+
+    private struct ReportTarget: Identifiable { let id: String }
 
     // MARK: - View Mode Toggle
 
@@ -154,9 +185,15 @@ struct DiscoverView: View {
                         profile: profile,
                         isTop: index == 0,
                         onSwipe: { type in
-                            viewModel.advanceIndex()
-                            Task {
-                                await viewModel.swipe(targetUserId: profile.userId, type: type)
+                            if type == .PASS {
+                                // Pass is non-destructive — recycle to bottom of the stack
+                                // so the user can revisit later.
+                                viewModel.recyclePass(targetUserId: profile.userId)
+                            } else {
+                                viewModel.advanceIndex()
+                                Task {
+                                    await viewModel.swipe(targetUserId: profile.userId, type: type)
+                                }
                             }
                         },
                         onBlock: {
@@ -166,7 +203,7 @@ struct DiscoverView: View {
                             }
                         },
                         onReport: {
-                            viewModel.advanceIndex()
+                            reportTargetUserId = profile.userId
                         }
                     )
                     .frame(width: cardWidth, height: cardHeight)
@@ -199,17 +236,115 @@ struct DiscoverView: View {
         let featuredSlot = profile.mediaSlots.first { $0.sortOrder == 0 } ?? profile.mediaSlots.first
 
         Button {
-            // Like on tap in grid mode
             Task {
                 await viewModel.swipe(targetUserId: profile.userId, type: .LIKE)
             }
         } label: {
+            Color.clear
+                .aspectRatio(3/4, contentMode: .fit)
+                .overlay {
+                    ZStack(alignment: .bottom) {
+                        // Image fills the cell, anything outside is clipped
+                        if let slot = featuredSlot, let url = URL(string: slot.url) {
+                            KFImageView(url: url)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .clipped()
+                        } else {
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.15))
+                        }
+
+                        LinearGradient(
+                            colors: [.clear, .black.opacity(0.7)],
+                            startPoint: .center,
+                            endPoint: .bottom
+                        )
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(displayName)
+                                .font(.custom(EKKOFont.regular, size: 16))
+                                .foregroundStyle(.white)
+                            if let headline = profile.headline {
+                                Text(headline)
+                                    .font(.custom(EKKOFont.regular, size: 12))
+                                    .foregroundStyle(.white.opacity(0.7))
+                                    .lineLimit(1)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(12)
+                    }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .contentShape(RoundedRectangle(cornerRadius: 16))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - History Mode
+
+    private var historyMode: some View {
+        Group {
+            if viewModel.isLoadingHistory && viewModel.history.isEmpty {
+                loadingState
+            } else if viewModel.history.isEmpty {
+                VStack(spacing: 12) {
+                    Spacer()
+                    Image(systemName: "clock.arrow.circlepath")
+                        .font(.largeTitle)
+                        .foregroundStyle(.secondary)
+                    Text("No swipe history yet")
+                        .font(.headline)
+                    Text("Profiles you like or pass on will show up here.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                    Spacer()
+                }
+            } else {
+                ScrollView {
+                    LazyVGrid(
+                        columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+                        spacing: 12
+                    ) {
+                        ForEach(viewModel.history) { item in
+                            historyCard(item)
+                                .onAppear {
+                                    // Infinite scroll trigger
+                                    if item.id == viewModel.history.last?.id,
+                                       viewModel.historyCursor != nil,
+                                       !viewModel.isLoadingHistory {
+                                        Task { await viewModel.loadHistory(reset: false) }
+                                    }
+                                }
+                        }
+                    }
+                    .padding(16)
+                }
+                .refreshable { await viewModel.loadHistory() }
+            }
+        }
+        .task(id: viewModel.viewMode) {
+            if viewModel.viewMode == .history && viewModel.history.isEmpty {
+                await viewModel.loadHistory()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func historyCard(_ item: DiscoverViewModel.HistoryItem) -> some View {
+        let displayName = item.user?.profile?.displayName ?? "Creative"
+        let featured = item.mediaSlots?.first { $0.sortOrder == 0 } ?? item.mediaSlots?.first
+        let wasLike = item.swipeType == "LIKE"
+
+        ZStack(alignment: .topTrailing) {
+            // Photo
             ZStack(alignment: .bottom) {
-                if let slot = featuredSlot, let url = URL(string: slot.url) {
+                if let slot = featured, let url = URL(string: slot.url) {
                     KFImageView(url: url)
                 } else {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.15))
+                    Rectangle().fill(Color.gray.opacity(0.15))
                 }
 
                 LinearGradient(
@@ -222,7 +357,7 @@ struct DiscoverView: View {
                     Text(displayName)
                         .font(.subheadline.bold())
                         .foregroundStyle(.white)
-                    if let headline = profile.headline {
+                    if let headline = item.headline {
                         Text(headline)
                             .font(.caption)
                             .foregroundStyle(.white.opacity(0.7))
@@ -234,26 +369,15 @@ struct DiscoverView: View {
             }
             .aspectRatio(3/4, contentMode: .fill)
             .clipShape(RoundedRectangle(cornerRadius: 16))
-        }
-        .buttonStyle(.plain)
-    }
 
-    // MARK: - History Mode
-
-    private var historyMode: some View {
-        // TODO: Load swipe history from connectDiscover.getSwipeHistory
-        VStack {
-            Spacer()
-            Image(systemName: "clock.arrow.circlepath")
-                .font(.title)
-                .foregroundStyle(.secondary)
-            Text("Swipe history")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-            Text("Coming soon")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-            Spacer()
+            // LIKE / PASS badge
+            Image(systemName: wasLike ? "heart.fill" : "xmark")
+                .font(.caption.bold())
+                .foregroundStyle(.white)
+                .frame(width: 28, height: 28)
+                .background(wasLike ? EKKOTheme.primary : EKKOTheme.destructive)
+                .clipShape(Circle())
+                .padding(8)
         }
     }
 
@@ -261,10 +385,11 @@ struct DiscoverView: View {
 
     private var loadingState: some View {
         VStack {
-            Spacer()
-            ProgressView()
-            Spacer()
+            SkeletonSwipeCard()
+                .padding(.horizontal, 16)
+                .padding(.bottom, 24)
         }
+        .accessibilityLabel("Loading profiles")
     }
 
     private var emptyState: some View {

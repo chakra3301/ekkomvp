@@ -20,12 +20,31 @@ struct SettingsView: View {
     @State private var isSavingName = false
 
     // Discovery filters (persisted to UserDefaults)
-    @State private var filterCity = ""
-    @State private var filterDistance: Double = 50
-    @State private var filterGlobalSearch = false
-    @State private var filterRole = "ALL"
-
-    private let filterKey = "ekko-connect-filters"
+    // Discovery filter bindings that write directly into AppState
+    private var filterCity: Binding<String> {
+        Binding(
+            get: { appState.discoveryFilters.city },
+            set: { appState.discoveryFilters.city = $0 }
+        )
+    }
+    private var filterDistance: Binding<Double> {
+        Binding(
+            get: { Double(appState.discoveryFilters.maxDistanceMiles) },
+            set: { appState.discoveryFilters.maxDistanceMiles = Int($0) }
+        )
+    }
+    private var filterGlobalSearch: Binding<Bool> {
+        Binding(
+            get: { appState.discoveryFilters.globalSearch },
+            set: { appState.discoveryFilters.globalSearch = $0 }
+        )
+    }
+    private var filterRole: Binding<String> {
+        Binding(
+            get: { appState.discoveryFilters.role },
+            set: { appState.discoveryFilters.role = $0 }
+        )
+    }
 
     var body: some View {
         List {
@@ -178,7 +197,7 @@ struct SettingsView: View {
             // ============ DISCOVERY FILTERS ============
             Section {
                 HStack {
-                    TextField("e.g. Los Angeles", text: $filterCity)
+                    TextField("e.g. Los Angeles", text: filterCity)
                         .font(.subheadline)
                     Button {
                         Task { await useMyLocation() }
@@ -194,16 +213,16 @@ struct SettingsView: View {
                         Text("Maximum Distance")
                             .font(.subheadline)
                         Spacer()
-                        Text(filterGlobalSearch ? "Global" : "\(Int(filterDistance)) mi")
+                        Text(filterGlobalSearch.wrappedValue ? "Global" : "\(Int(filterDistance.wrappedValue)) mi")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
-                    Slider(value: $filterDistance, in: 10...200, step: 10)
-                        .disabled(filterGlobalSearch)
+                    Slider(value: filterDistance, in: 10...200, step: 10)
+                        .disabled(filterGlobalSearch.wrappedValue)
                         .tint(EKKOTheme.primary)
                 }
 
-                Toggle(isOn: $filterGlobalSearch) {
+                Toggle(isOn: filterGlobalSearch) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Global Search")
                             .font(.subheadline)
@@ -220,18 +239,18 @@ struct SettingsView: View {
                     HStack(spacing: 8) {
                         ForEach(["ALL", "CREATIVE", "CLIENT"], id: \.self) { role in
                             Button {
-                                filterRole = role
+                                filterRole.wrappedValue = role
                             } label: {
                                 Text(role == "ALL" ? "Everyone" : role == "CREATIVE" ? "Creatives" : "Clients")
                                     .font(.caption.weight(.medium))
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
                                     .background(
-                                        filterRole == role
+                                        filterRole.wrappedValue == role
                                         ? EKKOTheme.primary
                                         : Color.gray.opacity(0.1)
                                     )
-                                    .foregroundStyle(filterRole == role ? .white : .primary)
+                                    .foregroundStyle(filterRole.wrappedValue == role ? .white : .primary)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
                             .buttonStyle(.plain)
@@ -310,23 +329,22 @@ struct SettingsView: View {
                     Task { await appState.signOut() }
                 }
 
-                Button("Delete Account", role: .destructive) {
+                Button(role: .destructive) {
                     showDeleteConfirm = true
+                } label: {
+                    Text("DELETE ACCOUNT")
+                        .font(.custom(EKKOFont.regular, size: 16))
+                        .tracking(1.5)
                 }
+                .accessibilityLabel("Delete account")
+                .accessibilityHint("Permanently deletes your profile, matches, and messages")
             } header: {
                 Text("Account")
             }
         }
         .scrollContentBackground(.hidden)
         .navigationTitle("Settings")
-        .task {
-            await loadData()
-            loadFiltersFromStorage()
-        }
-        .onChange(of: filterCity) { _, _ in saveFiltersToStorage() }
-        .onChange(of: filterDistance) { _, _ in saveFiltersToStorage() }
-        .onChange(of: filterGlobalSearch) { _, _ in saveFiltersToStorage() }
-        .onChange(of: filterRole) { _, _ in saveFiltersToStorage() }
+        .task { await loadData() }
         .sheet(isPresented: $showUpgradeSheet) {
             UpgradeModal(isPresented: $showUpgradeSheet)
                 .environment(purchaseManager)
@@ -451,7 +469,10 @@ struct SettingsView: View {
             struct ToggleResult: Codable { let isActive: Bool }
             let result: ToggleResult = try await appState.trpc.mutate("connectProfile.toggleActive")
             connectProfile?.isActive = result.isActive
-        } catch {}
+            appState.showSuccess(result.isActive ? "Profile visible again" : "Profile paused")
+        } catch {
+            appState.showError("Couldn't update visibility.")
+        }
         isTogglingActive = false
     }
 
@@ -469,7 +490,10 @@ struct SettingsView: View {
             )
             appState.currentProfile = profile
             editingDisplayName = false
-        } catch {}
+            appState.showSuccess("Display name updated")
+        } catch {
+            appState.showError("Couldn't update display name.")
+        }
         isSavingName = false
     }
 
@@ -477,14 +501,42 @@ struct SettingsView: View {
         do {
             try await appState.trpc.mutate("block.unblock", input: userId)
             blockedUsers.removeAll { $0.id == userId }
-        } catch {}
+            appState.showSuccess("Unblocked")
+        } catch {
+            appState.showError("Couldn't unblock. Try again.")
+        }
     }
 
     private func useMyLocation() async {
-        // TODO: CoreLocation integration
         locating = true
-        try? await Task.sleep(for: .seconds(1))
-        locating = false
+        defer { locating = false }
+
+        do {
+            let manager = LocationManager()
+            let result = try await manager.getCurrentLocation()
+
+            // Update the local filter with the resolved city
+            if let city = result.city, !city.isEmpty {
+                filterCity.wrappedValue = city
+            }
+
+            // Persist coordinates + city to the user's ConnectProfile
+            struct LocationInput: Codable {
+                let location: String?
+                let latitude: Double
+                let longitude: Double
+            }
+            let _: ConnectProfile = try await appState.trpc.mutate(
+                "connectProfile.update",
+                input: LocationInput(
+                    location: result.city,
+                    latitude: result.latitude,
+                    longitude: result.longitude
+                )
+            )
+        } catch {
+            print("[Location] Failed: \(error.localizedDescription)")
+        }
     }
 
     private func deleteAccount() async {
@@ -525,33 +577,4 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Filter Persistence
-
-    private func loadFiltersFromStorage() {
-        guard let data = UserDefaults.standard.data(forKey: filterKey),
-              let filters = try? JSONDecoder().decode(FilterStorage.self, from: data) else { return }
-        filterCity = filters.city
-        filterDistance = Double(filters.maxDistanceMiles)
-        filterGlobalSearch = filters.globalSearch
-        filterRole = filters.role
-    }
-
-    private func saveFiltersToStorage() {
-        let filters = FilterStorage(
-            city: filterCity,
-            maxDistanceMiles: Int(filterDistance),
-            globalSearch: filterGlobalSearch,
-            role: filterRole
-        )
-        if let data = try? JSONEncoder().encode(filters) {
-            UserDefaults.standard.set(data, forKey: filterKey)
-        }
-    }
-}
-
-private struct FilterStorage: Codable {
-    var city: String = ""
-    var maxDistanceMiles: Int = 50
-    var globalSearch: Bool = false
-    var role: String = "ALL"
 }

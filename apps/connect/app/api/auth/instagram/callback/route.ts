@@ -12,12 +12,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/settings?ig=error`);
   }
 
-  // Decode state to get user ID
+  // Decode state to get user ID + validate freshness
   let userId: string;
   try {
     const decoded = JSON.parse(Buffer.from(state, "base64url").toString());
     userId = decoded.userId;
     if (!userId) throw new Error("Missing userId");
+    const ts = Number(decoded.ts);
+    const maxAgeMs = 10 * 60 * 1000; // 10 minutes
+    if (!Number.isFinite(ts) || Date.now() - ts > maxAgeMs) {
+      throw new Error("State expired");
+    }
   } catch {
     return NextResponse.redirect(`${origin}/settings?ig=error`);
   }

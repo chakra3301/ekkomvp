@@ -56,37 +56,35 @@ export const connectMatchRouter = router({
         }
       }
 
-      // Check if already swiped
-      const existing = await prisma.connectSwipe.findUnique({
-        where: { userId_targetUserId: { userId, targetUserId: input.targetUserId } },
-      });
+      // Atomic: create swipe, check mutual, create match (or find existing if
+      // the reverse side raced us to it), and update counters/notifications.
+      const result = await prisma.$transaction(async (tx) => {
+        const existing = await tx.connectSwipe.findUnique({
+          where: { userId_targetUserId: { userId, targetUserId: input.targetUserId } },
+        });
+        if (existing) {
+          throw new TRPCError({ code: "CONFLICT", message: "Already swiped on this user" });
+        }
 
-      if (existing) {
-        throw new TRPCError({ code: "CONFLICT", message: "Already swiped on this user" });
-      }
+        await tx.connectSwipe.create({
+          data: {
+            userId,
+            targetUserId: input.targetUserId,
+            type: input.type,
+            likedContentType: input.likedContentType,
+            likedContentIndex: input.likedContentIndex,
+            matchNote: input.matchNote,
+          },
+        });
 
-      // Create swipe
-      await prisma.connectSwipe.create({
-        data: {
-          userId,
-          targetUserId: input.targetUserId,
-          type: input.type,
-          likedContentType: input.likedContentType,
-          likedContentIndex: input.likedContentIndex,
-          matchNote: input.matchNote,
-        },
-      });
+        if (input.type !== "LIKE") return { matched: false as const };
 
-      // If LIKE, check for mutual
-      if (input.type === "LIKE") {
-        // Increment likes received counter
-        await prisma.connectProfile.updateMany({
+        await tx.connectProfile.updateMany({
           where: { userId: input.targetUserId },
           data: { likesReceivedCount: { increment: 1 } },
         });
 
-        // Send notification
-        await prisma.notification.create({
+        await tx.notification.create({
           data: {
             type: "CONNECT_LIKE",
             userId: input.targetUserId,
@@ -94,85 +92,90 @@ export const connectMatchRouter = router({
           },
         });
 
-        // Push notification
+        const reverseSwipe = await tx.connectSwipe.findUnique({
+          where: {
+            userId_targetUserId: { userId: input.targetUserId, targetUserId: userId },
+          },
+        });
+
+        if (!reverseSwipe || reverseSwipe.type !== "LIKE") {
+          return { matched: false as const };
+        }
+
+        const [user1Id, user2Id] = [userId, input.targetUserId].sort();
+
+        // Upsert-style: if the other side raced us, fall back to the existing row.
+        let match;
+        try {
+          match = await tx.connectMatch.create({ data: { user1Id, user2Id } });
+        } catch (e: unknown) {
+          if ((e as { code?: string }).code !== "P2002") throw e;
+          const found = await tx.connectMatch.findFirst({
+            where: { user1Id, user2Id },
+          });
+          if (!found) throw e;
+          match = found;
+        }
+
+        await tx.connectProfile.updateMany({
+          where: { userId },
+          data: { matchesCount: { increment: 1 } },
+        });
+        await tx.connectProfile.updateMany({
+          where: { userId: input.targetUserId },
+          data: { matchesCount: { increment: 1 } },
+        });
+
+        await tx.notification.createMany({
+          data: [
+            {
+              type: "CONNECT_MATCH",
+              userId,
+              actorId: input.targetUserId,
+              entityId: match.id,
+              entityType: "CONNECT_MATCH",
+            },
+            {
+              type: "CONNECT_MATCH",
+              userId: input.targetUserId,
+              actorId: userId,
+              entityId: match.id,
+              entityType: "CONNECT_MATCH",
+            },
+          ],
+        });
+
+        return { matched: true as const, matchId: match.id };
+      });
+
+      // Side effects outside the transaction (non-blocking pushes)
+      if (input.type === "LIKE") {
         sendPushToUser(input.targetUserId, {
           title: "Ekko Connect",
           body: "Someone liked your profile ❤️",
           url: "/likes",
-        }).catch(() => {});
+        }).catch((e) => console.error("[push] like notification failed:", e));
 
-        // Check if target has already liked us
-        const reverseSwipe = await prisma.connectSwipe.findUnique({
-          where: {
-            userId_targetUserId: {
-              userId: input.targetUserId,
-              targetUserId: userId,
-            },
-          },
-        });
-
-        if (reverseSwipe && reverseSwipe.type === "LIKE") {
-          // Mutual match! Create match with normalized user order
-          const [user1Id, user2Id] = [userId, input.targetUserId].sort();
-
-          const match = await prisma.connectMatch.create({
-            data: { user1Id, user2Id },
-          });
-
-          // Increment match counters
-          await prisma.$transaction([
-            prisma.connectProfile.updateMany({
-              where: { userId },
-              data: { matchesCount: { increment: 1 } },
-            }),
-            prisma.connectProfile.updateMany({
-              where: { userId: input.targetUserId },
-              data: { matchesCount: { increment: 1 } },
-            }),
-          ]);
-
-          // Send match notifications to both users
-          await prisma.notification.createMany({
-            data: [
-              {
-                type: "CONNECT_MATCH",
-                userId,
-                actorId: input.targetUserId,
-                entityId: match.id,
-                entityType: "CONNECT_MATCH",
-              },
-              {
-                type: "CONNECT_MATCH",
-                userId: input.targetUserId,
-                actorId: userId,
-                entityId: match.id,
-                entityType: "CONNECT_MATCH",
-              },
-            ],
-          });
-
-          // Push notifications for match — look up both names
+        if (result.matched) {
           const [actorProfile, targetProfile] = await Promise.all([
             prisma.profile.findUnique({ where: { userId }, select: { displayName: true } }),
             prisma.profile.findUnique({ where: { userId: input.targetUserId }, select: { displayName: true } }),
           ]);
-          const matchUrl = `/matches/${match.id}`;
+          const matchUrl = `/matches/${result.matchId}`;
           sendPushToUser(input.targetUserId, {
             title: "It's a Match! 🎉",
             body: `You and ${actorProfile?.displayName || "someone"} both liked each other`,
             url: matchUrl,
-          }).catch(() => {});
+          }).catch((e) => console.error("[push] match notification failed:", e));
           sendPushToUser(userId, {
             title: "It's a Match! 🎉",
             body: `You and ${targetProfile?.displayName || "someone"} both liked each other`,
             url: matchUrl,
-          }).catch(() => {});
-
-          return { matched: true, matchId: match.id };
+          }).catch((e) => console.error("[push] match notification failed:", e));
         }
       }
 
-      return { matched: false };
+      return result;
     }),
 
   getMatches: protectedProcedure

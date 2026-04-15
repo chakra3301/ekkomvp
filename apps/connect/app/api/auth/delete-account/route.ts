@@ -41,13 +41,19 @@ export async function POST(req: Request) {
     console.log(`[delete-account] Prisma user ${userId} not found or already deleted:`, e?.message);
   }
 
-  // Also clean up any orphaned Prisma row with the same email
-  // (in case a previous partial delete left the DB row around)
+  // Also clean up any orphaned Prisma row with the same email but a *different* id.
+  // Scoped with `id: { not: userId }` so we never race with a concurrent signup
+  // that now owns this email under a fresh Supabase id.
   if (email) {
     try {
-      await prisma.user.deleteMany({ where: { email } });
+      const { count } = await prisma.user.deleteMany({
+        where: { email, id: { not: userId } },
+      });
+      if (count > 0) {
+        console.log(`[delete-account] Removed ${count} orphan row(s) for ${email}`);
+      }
     } catch (e: any) {
-      console.log(`[delete-account] Email cleanup: no extra rows`, e?.message);
+      console.log(`[delete-account] Email cleanup skipped:`, e?.message);
     }
   }
 

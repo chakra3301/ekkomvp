@@ -68,24 +68,28 @@ extension View {
 
 struct GlassBubble: ViewModifier {
     var cornerRadius: CGFloat = 24
+    @Environment(\.colorScheme) private var colorScheme
 
     func body(content: Content) -> some View {
-        content
+        // Dark mode: tinted dark fill + softer white highlight border so content reads clearly.
+        // Light mode: the existing bright white glass treatment.
+        let fillColor: Color = colorScheme == .dark ? .white.opacity(0.08) : .white.opacity(0.3)
+        let strokeColor: Color = colorScheme == .dark ? .white.opacity(0.18) : .white.opacity(0.4)
+
+        return content
             .background(
                 ZStack {
-                    // Heavy blur with saturation boost
                     Color.clear.background(.ultraThinMaterial)
-                    // Light translucent fill
-                    Color.white.opacity(0.3)
+                    fillColor
                 }
                 .saturation(1.2)
             )
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(Color.white.opacity(0.4), lineWidth: 1)
+                    .stroke(strokeColor, lineWidth: 1)
             )
-            .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
+            .shadow(color: .black.opacity(colorScheme == .dark ? 0.35 : 0.15), radius: 16, y: 8)
     }
 }
 

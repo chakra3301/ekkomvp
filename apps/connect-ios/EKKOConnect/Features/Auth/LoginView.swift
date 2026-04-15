@@ -8,6 +8,7 @@ struct LoginView: View {
     @State private var password = ""
     @State private var isLoading = false
     @State private var errorMessage: String?
+    @State private var infoMessage: String?
     @State private var showRegister = false
     @State private var currentNonce: String?
 
@@ -26,6 +27,17 @@ struct LoginView: View {
                         .padding(.vertical, 8)
                         .frame(maxWidth: .infinity)
                         .background(EKKOTheme.destructive.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+
+                if let info = infoMessage {
+                    Text(info)
+                        .font(.caption)
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.green.opacity(0.2))
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
 
@@ -97,6 +109,17 @@ struct LoginView: View {
                         .padding(.horizontal, 16)
                         .frame(height: 48)
                         .glassBubble(cornerRadius: 14)
+
+                    // Forgot password link
+                    HStack {
+                        Spacer()
+                        Button("Forgot password?") {
+                            Task { await handlePasswordReset() }
+                        }
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.black.opacity(0.75))
+                        .underline()
+                    }
                 }
 
                 // Sign In button — glass styled
@@ -219,6 +242,22 @@ struct LoginView: View {
     }
 
     // MARK: - Auth Handlers
+
+    private func handlePasswordReset() async {
+        errorMessage = nil
+        infoMessage = nil
+        let trimmed = email.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else {
+            errorMessage = "Enter your email first, then tap Forgot password?"
+            return
+        }
+        do {
+            try await appState.supabase.auth.resetPasswordForEmail(trimmed)
+            infoMessage = "Check \(trimmed) for a password reset link."
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
 
     private func handleEmailSignIn() async {
         isLoading = true
