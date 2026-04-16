@@ -19,8 +19,7 @@ struct SkeletonView: View {
                         startPoint: .leading,
                         endPoint: .trailing
                     )
-                    .fra
-                    me(width: 120)
+                    .frame(width: 120)
                     .offset(x: shimmerOffset)
                     .onAppear {
                         shimmerOffset = -120

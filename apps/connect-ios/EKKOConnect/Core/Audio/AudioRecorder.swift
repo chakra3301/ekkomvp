@@ -29,7 +29,11 @@ final class AudioRecorder: NSObject, AVAudioRecorderDelegate {
 
     func startRecording() throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
+        if #available(iOS 26.0, *) {
+            try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothHFP])
+        } else {
+            try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetooth])
+        }
         try session.setActive(true, options: .notifyOthersOnDeactivation)
 
         let url = FileManager.default.temporaryDirectory

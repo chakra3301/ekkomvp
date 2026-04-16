@@ -90,8 +90,8 @@ struct DiscoverView: View {
             set: { reportTargetUserId = $0?.id }
         )) { target in
             ReportSheet(targetType: .USER, targetId: target.id) {
-                // After report submitted, advance past this profile
-                viewModel.advanceIndex()
+                // After report submitted, drop this profile from the stack.
+                viewModel.removeProfile(userId: target.id)
             }
         }
         .sheet(isPresented: $showUpgradeSheet) {
@@ -190,14 +190,17 @@ struct DiscoverView: View {
                                 // so the user can revisit later.
                                 viewModel.recyclePass(targetUserId: profile.userId)
                             } else {
-                                viewModel.advanceIndex()
+                                // Like is destructive — drop from the stack now so the
+                                // same card can't be swiped twice while the backend
+                                // call (and optional match celebration) resolves.
+                                viewModel.removeProfile(userId: profile.userId)
                                 Task {
                                     await viewModel.swipe(targetUserId: profile.userId, type: type)
                                 }
                             }
                         },
                         onBlock: {
-                            viewModel.advanceIndex()
+                            viewModel.removeProfile(userId: profile.userId)
                             Task {
                                 try? await appState.trpc.mutate("block.block", input: ["userId": profile.userId])
                             }

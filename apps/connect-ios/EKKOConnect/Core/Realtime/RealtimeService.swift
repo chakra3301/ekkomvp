@@ -5,6 +5,7 @@ import Realtime
 /// Manages Supabase Realtime channels for live chat features:
 /// new messages, typing indicators, and read receipts.
 @Observable
+@MainActor
 final class RealtimeService {
     private let supabase: SupabaseClient
     private var channel: RealtimeChannelV2?
@@ -35,43 +36,40 @@ final class RealtimeService {
             InsertAction.self,
             schema: "public",
             table: "connect_messages",
-            filter: "match_id=eq.\(matchId)"
+            filter: .eq("match_id", value: matchId)
         )
 
         // Listen for typing broadcasts
-        let typing = channel.broadcast(event: "typing")
+        let typing = channel.broadcastStream(event: "typing")
 
         // Listen for read broadcasts
-        let read = channel.broadcast(event: "read")
+        let read = channel.broadcastStream(event: "read")
 
-        await channel.subscribe()
+        try? await channel.subscribeWithError()
 
         self.channel = channel
 
         // Handle new messages
-        Task {
+        Task { @MainActor [weak self] in
             for await action in insertions {
                 let senderId = action.record["sender_id"]
                 if let senderStr = senderId?.stringValue, senderStr != currentUserId {
-                    await MainActor.run {
-                        newMessageSignal += 1
-                    }
+                    self?.newMessageSignal += 1
                 }
             }
         }
 
         // Handle typing
-        Task {
+        Task { @MainActor [weak self] in
             for await message in typing {
                 if let userIdJSON = message["userId"], let userId = userIdJSON.stringValue,
                    userId != currentUserId {
-                    await MainActor.run {
-                        isOtherTyping = true
-                        typingTimer?.invalidate()
-                        typingTimer = Timer.scheduledTimer(withTimeInterval: typingHideInterval, repeats: false) { _ in
-                            Task { @MainActor in
-                                self.isOtherTyping = false
-                            }
+                    guard let self else { return }
+                    self.isOtherTyping = true
+                    self.typingTimer?.invalidate()
+                    self.typingTimer = Timer.scheduledTimer(withTimeInterval: self.typingHideInterval, repeats: false) { _ in
+                        Task { @MainActor [weak self] in
+                            self?.isOtherTyping = false
                         }
                     }
                 }
@@ -79,13 +77,11 @@ final class RealtimeService {
         }
 
         // Handle read receipts
-        Task {
+        Task { @MainActor [weak self] in
             for await message in read {
                 if let userIdJSON = message["userId"], let userId = userIdJSON.stringValue,
                    userId != currentUserId {
-                    await MainActor.run {
-                        readSignal += 1
-                    }
+                    self?.readSignal += 1
                 }
             }
         }

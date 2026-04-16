@@ -101,9 +101,9 @@ extension PushManager: UNUserNotificationCenterDelegate {
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse
     ) async {
-        let userInfo = response.notification.request.content.userInfo
+        let route = routeFromNotification(response.notification.request.content.userInfo)
         await MainActor.run {
-            handleNotificationTap(userInfo)
+            self.pendingNotificationRoute = route
         }
     }
 }

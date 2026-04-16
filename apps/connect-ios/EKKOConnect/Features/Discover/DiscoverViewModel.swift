@@ -3,8 +3,9 @@ import SwiftUI
 /// Manages discover screen state: profile queue, swipe actions, undo, match detection.
 @Observable
 final class DiscoverViewModel {
+    /// The live stack. Top of the stack is `profiles.first`. On PASS we
+    /// rotate the top card to the bottom. On LIKE we remove the card.
     var profiles: [ConnectProfile] = []
-    var currentIndex = 0
     var isLoading = true
     var viewMode: ViewMode = .stack
     var canUndo = false
@@ -111,7 +112,8 @@ final class DiscoverViewModel {
             var fi = DiscoveryFilterInput()
             if filters.role != "ALL" { fi.role = filters.role }
             if !filters.city.isEmpty { fi.location = filters.city }
-            if filters.globalSearch {
+            let isInfinite = appState?.currentConnectProfile?.connectTier == .INFINITE
+            if filters.globalSearch && isInfinite {
                 fi.globalSearch = true
             } else {
                 fi.maxDistanceMiles = filters.maxDistanceMiles
@@ -122,7 +124,6 @@ final class DiscoverViewModel {
                 input: QueueInput(limit: 10, filters: fi)
             )
             profiles = result
-            currentIndex = 0
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -215,24 +216,22 @@ final class DiscoverViewModel {
 
     // MARK: - Visible Profiles
 
+    /// Top two cards of the stack. The top card is `profiles.first`.
     var visibleProfiles: [ConnectProfile] {
-        guard currentIndex < profiles.count else { return [] }
-        let end = min(currentIndex + 2, profiles.count)
-        return Array(profiles[currentIndex..<end])
-    }
-
-    func advanceIndex() {
-        currentIndex += 1
+        Array(profiles.prefix(2))
     }
 
     /// Pass on a profile: no backend swipe is recorded. The card is moved to
     /// the bottom of the local stack so the user can revisit it later.
-    /// `currentIndex` stays put — the card that *was* at index+1 is now at
-    /// `currentIndex` and becomes the new top of the stack.
     func recyclePass(targetUserId: String) {
         guard let idx = profiles.firstIndex(where: { $0.userId == targetUserId }) else { return }
         let card = profiles.remove(at: idx)
         profiles.append(card)
+    }
+
+    /// Remove a profile from the stack entirely (after a LIKE, block, or report).
+    func removeProfile(userId: String) {
+        profiles.removeAll { $0.userId == userId }
     }
 
     // MARK: - Private

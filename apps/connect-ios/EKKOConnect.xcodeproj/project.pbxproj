@@ -78,7 +78,7 @@
 		111182E0860949B7CD2A97E7 /* ProfileSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetupView.swift; sourceTree = "<group>"; };
 		112188F5EBEFDFFE01282BB2 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		1B5099770EB5143E66F61661 /* EKKOFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOFont.swift; sourceTree = "<group>"; };
-		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		25464A7A6B8484A571408E6D /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
 		27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchCelebrationOverlay.swift; sourceTree = "<group>"; };
 		37599C761D0200DAE7F3FD8C /* CompleteProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteProfileView.swift; sourceTree = "<group>"; };
@@ -467,11 +467,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-					FD8336ECB0B238202B2AD9B0 = {
-						DevelopmentTeam = "";
-					};
-				};
 			};
 			buildConfigurationList = 5EE46B4119D061763E04ED6B /* Build configuration list for PBXProject "EKKOConnect" */;
 			developmentRegion = en;
@@ -585,7 +580,7 @@
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 14;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -728,7 +723,7 @@
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 14;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

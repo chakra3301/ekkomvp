@@ -222,16 +222,38 @@ struct SettingsView: View {
                         .tint(EKKOTheme.primary)
                 }
 
-                Toggle(isOn: filterGlobalSearch) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Global Search")
-                            .font(.subheadline)
-                        Text("Find creatives worldwide")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                if purchaseManager.currentTier == .INFINITE {
+                    Toggle(isOn: filterGlobalSearch) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Global Search")
+                                .font(.subheadline)
+                            Text("Find creatives worldwide")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
+                    .tint(EKKOTheme.primary)
+                } else {
+                    Button {
+                        showUpgradeSheet = true
+                    } label: {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Global Search")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.primary)
+                                Text("Find creatives worldwide — Infinite")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "lock.fill")
+                                .font(.caption)
+                                .foregroundStyle(EKKOTheme.primary)
+                        }
+                    }
+                    .buttonStyle(.plain)
                 }
-                .tint(EKKOTheme.primary)
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Show me")

@@ -40,6 +40,8 @@ struct UpgradeModal: View {
                 // Benefits
                 VStack(alignment: .leading, spacing: 14) {
                     benefitRow(icon: "heart.fill", title: "Unlimited Likes", description: "Like as many profiles as you want")
+                    benefitRow(icon: "eye.fill", title: "See Who Likes You", description: "Reveal everyone already interested")
+                    benefitRow(icon: "globe", title: "Global Search", description: "Find creatives worldwide — no distance limit")
                     benefitRow(icon: "photo.stack", title: "12 Media Slots", description: "Showcase more of your work")
                     benefitRow(icon: "arrow.up.circle.fill", title: "Priority in Discovery", description: "Appear at the top of the stack")
                     benefitRow(icon: "infinity", title: "Infinite Badge", description: "Stand out with the Infinite badge")
