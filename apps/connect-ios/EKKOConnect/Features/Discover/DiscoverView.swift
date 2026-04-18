@@ -5,7 +5,20 @@ struct DiscoverView: View {
     @State private var viewModel = DiscoverViewModel()
     @State private var reportTargetUserId: String?
     @State private var showUpgradeSheet = false
+    @State private var locating = false
     @Environment(PurchaseManager.self) private var purchaseManager
+
+    /// The app requires an actual device location before it'll load the stack.
+    /// Infinite users can bypass this via a custom city override or global
+    /// search — they're discovering outside their physical location by design.
+    private var needsLocation: Bool {
+        let hasLocation = appState.currentConnectProfile?.latitude != nil
+        if hasLocation { return false }
+        let isInfinite = appState.hasInfiniteAccess
+        let filters = appState.discoveryFilters
+        let hasInfiniteOverride = isInfinite && (filters.globalSearch || !filters.city.isEmpty)
+        return !hasInfiniteOverride
+    }
 
     var body: some View {
         ZStack {
@@ -20,9 +33,14 @@ struct DiscoverView: View {
 
                 // Content
                 Group {
-                    if viewModel.isLoading {
+                    if viewModel.viewMode == .globe {
+                        // Globe fetches its own data — skip the location gate and swipe-queue loader.
+                        globeMode
+                    } else if needsLocation {
+                        locationGate
+                    } else if viewModel.isLoading {
                         loadingState
-                    } else if viewModel.visibleProfiles.isEmpty {
+                    } else if viewModel.visibleProfiles.isEmpty && viewModel.viewMode == .stack {
                         emptyState
                     } else {
                         switch viewModel.viewMode {
@@ -30,6 +48,8 @@ struct DiscoverView: View {
                             cardStack
                         case .grid:
                             gridMode
+                        case .globe:
+                            EmptyView() // handled above
                         case .history:
                             historyMode
                         }
@@ -83,6 +103,13 @@ struct DiscoverView: View {
             await viewModel.loadQueue()
         }
         .onChange(of: appState.discoveryFilters) { _, _ in
+            // If the user disables global search (or loses Infinite access)
+            // while on globe mode, drop back to the stack so they don't end
+            // up stranded on a feature they can't access.
+            let globeEligible = appState.hasInfiniteAccess && appState.discoveryFilters.globalSearch
+            if viewModel.viewMode == .globe && !globeEligible {
+                viewModel.viewMode = .stack
+            }
             Task { await viewModel.loadQueue() }
         }
         .sheet(item: Binding(
@@ -112,9 +139,19 @@ struct DiscoverView: View {
 
     // MARK: - View Mode Toggle
 
+    /// Globe mode is an Infinite-tier perk that only makes sense when the
+    /// user has opted into global search. Hide it otherwise so the toggle
+    /// doesn't advertise a button that will fall back to an empty view.
+    private var availableModes: [DiscoverViewModel.ViewMode] {
+        let globeEligible = appState.hasInfiniteAccess && appState.discoveryFilters.globalSearch
+        return DiscoverViewModel.ViewMode.allCases.filter { mode in
+            mode != .globe || globeEligible
+        }
+    }
+
     private var viewModeToggle: some View {
         HStack(spacing: 4) {
-            ForEach(DiscoverViewModel.ViewMode.allCases, id: \.self) { mode in
+            ForEach(availableModes, id: \.self) { mode in
                 Button {
                     withAnimation(.spring(response: 0.3)) {
                         viewModel.viewMode = mode
@@ -141,6 +178,7 @@ struct DiscoverView: View {
         switch mode {
         case .stack: return "square.stack.3d.up"
         case .grid: return "square.grid.2x2"
+        case .globe: return "globe"
         case .history: return "clock.arrow.circlepath"
         }
     }
@@ -193,9 +231,12 @@ struct DiscoverView: View {
                                 // Like is destructive — drop from the stack now so the
                                 // same card can't be swiped twice while the backend
                                 // call (and optional match celebration) resolves.
+                                // Capture profile before removal so the ViewModel
+                                // can show the match celebration.
+                                let snapshot = profile
                                 viewModel.removeProfile(userId: profile.userId)
                                 Task {
-                                    await viewModel.swipe(targetUserId: profile.userId, type: type)
+                                    await viewModel.swipe(profile: snapshot, type: type)
                                 }
                             }
                         },
@@ -239,8 +280,10 @@ struct DiscoverView: View {
         let featuredSlot = profile.mediaSlots.first { $0.sortOrder == 0 } ?? profile.mediaSlots.first
 
         Button {
+            let snapshot = profile
+            viewModel.removeProfile(userId: profile.userId)
             Task {
-                await viewModel.swipe(targetUserId: profile.userId, type: .LIKE)
+                await viewModel.swipe(profile: snapshot, type: .LIKE)
             }
         } label: {
             Color.clear
@@ -282,6 +325,41 @@ struct DiscoverView: View {
                 .contentShape(RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - Globe Mode
+
+    private var globeMode: some View {
+        GlobeView { pin, zoom in
+            // Expanding a pin filters the swipe queue and flips back to the
+            // stack. Zoom level decides scope: close → the pin's exact city;
+            // far → a broad radius around the pin's coords (region/country).
+            var filters = appState.discoveryFilters
+            filters.globalSearch = false
+
+            switch zoom {
+            case .close:
+                // City-level filter. Use the city string, clear any geo override.
+                filters.city = pin.city ?? ""
+                filters.overrideLatitude = nil
+                filters.overrideLongitude = nil
+                filters.overrideMaxDistanceMiles = nil
+            case .far:
+                // Country/region-level — use pin coords with a wide radius.
+                // 500 miles ≈ roughly the radius of a mid-sized country
+                // (big enough to sweep Germany/France/etc., small enough to
+                // not span continents).
+                filters.city = ""
+                filters.overrideLatitude = pin.lat
+                filters.overrideLongitude = pin.lon
+                filters.overrideMaxDistanceMiles = 500
+            }
+
+            appState.discoveryFilters = filters
+            withAnimation(.spring(response: 0.35)) {
+                viewModel.viewMode = .stack
+            }
+        }
     }
 
     // MARK: - History Mode
@@ -386,6 +464,68 @@ struct DiscoverView: View {
 
     // MARK: - States
 
+    private var locationGate: some View {
+        VStack(spacing: 16) {
+            Spacer()
+            Image(systemName: "location.circle.fill")
+                .font(.system(size: 48))
+                .foregroundStyle(EKKOTheme.primary)
+
+            Text("Turn On Location")
+                .font(.headline)
+
+            Text("EKKO Connect matches you with nearby creatives. Enable location so we can find them.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+
+            Button {
+                Task { await enableLocation() }
+            } label: {
+                Label(locating ? "Locating…" : "Use My Location", systemImage: "location.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    .background(EKKOTheme.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
+            }
+            .disabled(locating)
+            .padding(.top, 4)
+            Spacer()
+        }
+        .padding()
+        .glassCard()
+        .padding(.horizontal, 24)
+    }
+
+    private func enableLocation() async {
+        locating = true
+        defer { locating = false }
+        do {
+            let manager = LocationManager()
+            let result = try await manager.getCurrentLocation()
+            struct LocationInput: Codable {
+                let location: String?
+                let latitude: Double
+                let longitude: Double
+            }
+            let profile: ConnectProfile = try await appState.trpc.mutate(
+                "connectProfile.update",
+                input: LocationInput(
+                    location: result.city,
+                    latitude: result.latitude,
+                    longitude: result.longitude
+                )
+            )
+            appState.currentConnectProfile = profile
+            await viewModel.loadQueue()
+        } catch {
+            appState.showError(error.localizedDescription)
+        }
+    }
+
     private var loadingState: some View {
         VStack {
             SkeletonSwipeCard()
@@ -413,6 +553,19 @@ struct DiscoverView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
+
+            Button {
+                Task { await viewModel.loadQueue() }
+            } label: {
+                Label("Refresh", systemImage: "arrow.clockwise")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .background(EKKOTheme.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
+            }
+            .padding(.top, 4)
             Spacer()
         }
         .padding()

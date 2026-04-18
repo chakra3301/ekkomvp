@@ -19,6 +19,8 @@ struct ConnectProfileCard: View {
     var twitterHandle: String?
     var websiteUrl: String?
     var connectTier: ConnectTier = .FREE
+    /// When true, the name gets a "GM" badge instead of the Infinite icon.
+    var isAdmin: Bool = false
     var editableAvatar: Bool = false
 
     /// Media beyond the hero, sorted by sortOrder
@@ -243,7 +245,21 @@ struct ConnectProfileCard: View {
             HStack {
                 Text(displayName)
                     .font(.custom(EKKOFont.regular, size: 26))
-                if connectTier == .INFINITE {
+                if isAdmin {
+                    Text("GM")
+                        .font(.caption.bold())
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            LinearGradient(
+                                colors: [EKKOTheme.primary, Color.purple],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .clipShape(Capsule())
+                } else if connectTier == .INFINITE {
                     Image(systemName: "infinity")
                         .font(.caption)
                         .foregroundStyle(EKKOTheme.primary)

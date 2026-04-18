@@ -9,9 +9,11 @@ struct LikesView: View {
     @State private var isSwiping = false
     @State private var matchData: MatchCelebrationData?
     @State private var showUpgradeSheet = false
+    @State private var expandedProfile: ConnectProfile?
+    @State private var isLoadingExpanded = false
 
     private var isPremium: Bool {
-        appState.currentConnectProfile?.connectTier == .INFINITE
+        appState.hasInfiniteAccess
     }
 
     struct MatchCelebrationData: Identifiable {
@@ -60,6 +62,9 @@ struct LikesView: View {
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
+        .sheet(item: $expandedProfile) { profile in
+            expandedProfileSheet(profile)
+        }
         .overlay {
             if let match = matchData {
                 MatchCelebrationOverlay(
@@ -106,42 +111,53 @@ struct LikesView: View {
     @ViewBuilder
     private func likeCard(_ like: ConnectSwipe) -> some View {
         let displayName = like.user?.profile?.displayName ?? "Creative"
-        let avatarUrl = like.user?.profile?.avatarUrl
+        // Prefer the Connect profile's first media slot (the hero photo the user
+        // set in their Connect profile). Fall back to the general profile avatar.
+        let heroUrl = like.user?.connectProfile?.mediaSlots?
+            .sorted { $0.sortOrder < $1.sortOrder }
+            .first(where: { $0.mediaType == "PHOTO" })?.url
+            ?? like.user?.profile?.avatarUrl
 
         VStack(spacing: 0) {
-            // Photo
-            ZStack(alignment: .bottom) {
-                if let url = avatarUrl, let imageURL = URL(string: url) {
-                    KFImage(imageURL)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(maxWidth: .infinity)
-                        .clipped()
-                } else {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.15))
-                        .overlay {
-                            Text(String(displayName.prefix(1)).uppercased())
-                                .font(.largeTitle.bold())
-                                .foregroundStyle(.secondary)
-                        }
+            // Photo — tap to expand into full profile
+            Button {
+                Task { await openProfile(for: like) }
+            } label: {
+                ZStack(alignment: .bottom) {
+                    if let url = heroUrl, let imageURL = URL(string: url) {
+                        KFImage(imageURL)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity)
+                            .clipped()
+                    } else {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.15))
+                            .overlay {
+                                Text(String(displayName.prefix(1)).uppercased())
+                                    .font(.largeTitle.bold())
+                                    .foregroundStyle(.secondary)
+                            }
+                    }
+
+                    // Name overlay
+                    LinearGradient(
+                        colors: [.clear, .black.opacity(0.7)],
+                        startPoint: .center,
+                        endPoint: .bottom
+                    )
+
+                    Text(displayName)
+                        .font(.custom(EKKOFont.regular, size: 16))
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(12)
                 }
-
-                // Name overlay
-                LinearGradient(
-                    colors: [.clear, .black.opacity(0.7)],
-                    startPoint: .center,
-                    endPoint: .bottom
-                )
-
-                Text(displayName)
-                    .font(.custom(EKKOFont.regular, size: 16))
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(12)
+                .aspectRatio(3/4, contentMode: .fill)
+                .contentShape(Rectangle())
             }
-            .aspectRatio(3/4, contentMode: .fill)
+            .buttonStyle(.plain)
 
             // Match note
             if let note = like.matchNote, !note.isEmpty {
@@ -318,6 +334,89 @@ struct LikesView: View {
             }
         } catch {
             appState.showError(error.localizedDescription)
+        }
+    }
+
+    // MARK: - Expanded Profile Sheet
+
+    private func openProfile(for like: ConnectSwipe) async {
+        guard let profileId = like.user?.connectProfile?.id else { return }
+        isLoadingExpanded = true
+        defer { isLoadingExpanded = false }
+        do {
+            let profile: ConnectProfile = try await appState.trpc.query(
+                "connectProfile.getById",
+                input: profileId
+            )
+            expandedProfile = profile
+        } catch {
+            appState.showError("Couldn't load profile — try again.")
+        }
+    }
+
+    @ViewBuilder
+    private func expandedProfileSheet(_ profile: ConnectProfile) -> some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 0) {
+                    ConnectProfileCard(
+                        displayName: profile.user?.profile?.displayName ?? "Creative",
+                        avatarUrl: profile.user?.profile?.avatarUrl,
+                        headline: profile.headline,
+                        location: profile.location,
+                        lookingFor: profile.lookingFor,
+                        bio: profile.bio,
+                        mediaSlots: profile.mediaSlots,
+                        prompts: profile.prompts,
+                        instagramHandle: profile.instagramHandle,
+                        twitterHandle: profile.twitterHandle,
+                        websiteUrl: profile.websiteUrl,
+                        connectTier: profile.connectTier,
+                        isAdmin: profile.user?.role == .ADMIN
+                    )
+
+                    // Pass / Like Back actions (same flow as the grid card)
+                    HStack(spacing: 24) {
+                        Button {
+                            let targetUserId = profile.userId
+                            expandedProfile = nil
+                            Task { await handlePass(targetUserId) }
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.title2)
+                                .foregroundStyle(EKKOTheme.destructive)
+                                .frame(width: 56, height: 56)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Circle())
+                                .shadow(radius: 8)
+                        }
+
+                        Button {
+                            let targetUserId = profile.userId
+                            expandedProfile = nil
+                            Task { await handleLikeBack(targetUserId) }
+                        } label: {
+                            Image(systemName: "heart.fill")
+                                .font(.title)
+                                .foregroundStyle(.white)
+                                .frame(width: 64, height: 64)
+                                .background(EKKOTheme.primary)
+                                .clipShape(Circle())
+                                .shadow(radius: 8)
+                        }
+                    }
+                    .padding(.top, 32)
+                    .padding(.bottom, 40)
+                    .disabled(isSwiping)
+                }
+            }
+            .navigationTitle(profile.user?.profile?.displayName ?? "Profile")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { expandedProfile = nil }
+                }
+            }
         }
     }
 }

@@ -10,6 +10,10 @@ final class DiscoverViewModel {
     var viewMode: ViewMode = .stack
     var canUndo = false
     var pendingLikeUserId: String?
+    /// Full profile snapshot for the pending LIKE. Held so the match
+    /// celebration can show the right name/avatar even after the card has
+    /// been removed from `profiles`.
+    private var pendingLikeProfile: ConnectProfile?
     var matchData: MatchData?
     var errorMessage: String?
 
@@ -27,7 +31,7 @@ final class DiscoverViewModel {
     private weak var appState: AppState?
 
     enum ViewMode: String, CaseIterable {
-        case stack, grid, history
+        case stack, grid, globe, history
     }
 
     struct MatchData: Identifiable {
@@ -111,11 +115,32 @@ final class DiscoverViewModel {
 
             var fi = DiscoveryFilterInput()
             if filters.role != "ALL" { fi.role = filters.role }
-            if !filters.city.isEmpty { fi.location = filters.city }
-            let isInfinite = appState?.currentConnectProfile?.connectTier == .INFINITE
+
+            let isInfinite = appState?.hasInfiniteAccess == true
+            let lat = appState?.currentConnectProfile?.latitude
+            let lon = appState?.currentConnectProfile?.longitude
+
             if filters.globalSearch && isInfinite {
+                // Infinite — global search: no geo or city filter.
                 fi.globalSearch = true
+            } else if isInfinite && !filters.city.isEmpty {
+                // Infinite — custom city override: filter by that city name
+                // (distance doesn't apply since we don't geocode the string).
+                fi.location = filters.city
+            } else if let oLat = filters.overrideLatitude, let oLon = filters.overrideLongitude {
+                // Radius-based origin override (set when the user taps a pin
+                // on the globe view at a wide zoom). Filter to creatives near
+                // that region, not near the current user.
+                fi.latitude = oLat
+                fi.longitude = oLon
+                fi.maxDistanceMiles = filters.overrideMaxDistanceMiles ?? filters.maxDistanceMiles
             } else {
+                // Everyone else — use the user's actual device coordinates
+                // within their chosen radius. If the user hasn't enabled
+                // location yet, we still send maxDistanceMiles so the server
+                // can no-op the distance filter (needs lat/lon to apply).
+                fi.latitude = lat
+                fi.longitude = lon
                 fi.maxDistanceMiles = filters.maxDistanceMiles
             }
 
@@ -126,6 +151,7 @@ final class DiscoverViewModel {
             profiles = result
         } catch {
             errorMessage = error.localizedDescription
+            appState?.showError("Couldn't load creatives — pull to retry.")
         }
         isLoading = false
     }
@@ -136,37 +162,40 @@ final class DiscoverViewModel {
     /// - For PASS: submits immediately.
     /// - For LIKE: opens the note prompt first. The actual network call happens
     ///   in `submitLikeNote` / `skipLikeNote` which funnel to `performSwipe`.
-    func swipe(targetUserId: String, type: SwipeType, matchNote: String? = nil) async {
+    func swipe(profile: ConnectProfile, type: SwipeType, matchNote: String? = nil) async {
         if type == .LIKE && matchNote == nil && pendingLikeUserId == nil {
-            pendingLikeUserId = targetUserId
+            pendingLikeUserId = profile.userId
+            pendingLikeProfile = profile
             return
         }
-        await performSwipe(targetUserId: targetUserId, type: type, matchNote: matchNote)
+        await performSwipe(profile: profile, type: type, matchNote: matchNote)
     }
 
     /// Called from the like note prompt after the user taps Send.
     func submitLikeNote(_ note: String?) async {
-        guard let userId = pendingLikeUserId else { return }
+        guard let profile = pendingLikeProfile else { return }
         pendingLikeUserId = nil
-        await performSwipe(targetUserId: userId, type: .LIKE, matchNote: note)
+        pendingLikeProfile = nil
+        await performSwipe(profile: profile, type: .LIKE, matchNote: note)
     }
 
     /// Called from the like note prompt when the user taps Skip or dismisses.
     func skipLikeNote() async {
-        guard let userId = pendingLikeUserId else { return }
+        guard let profile = pendingLikeProfile else { return }
         pendingLikeUserId = nil
-        await performSwipe(targetUserId: userId, type: .LIKE, matchNote: nil)
+        pendingLikeProfile = nil
+        await performSwipe(profile: profile, type: .LIKE, matchNote: nil)
     }
 
     /// Does the actual network call — bypasses the "pending note" gate.
-    private func performSwipe(targetUserId: String, type: SwipeType, matchNote: String?) async {
+    private func performSwipe(profile: ConnectProfile, type: SwipeType, matchNote: String?) async {
         guard let trpc else { return }
 
         do {
             let result: SwipeResult = try await trpc.mutate(
                 "connectMatch.swipe",
                 input: SwipeInput(
-                    targetUserId: targetUserId,
+                    targetUserId: profile.userId,
                     type: type,
                     matchNote: matchNote?.isEmpty == true ? nil : matchNote
                 )
@@ -177,13 +206,11 @@ final class DiscoverViewModel {
 
             // Check for match
             if result.matched, let matchId = result.matchId {
-                let matchedProfile = profiles.first { $0.userId == targetUserId }
-                let firstPhoto = matchedProfile?.mediaSlots.first { $0.mediaType == "PHOTO" }
-
+                let firstPhoto = profile.mediaSlots.first { $0.mediaType == "PHOTO" }
                 matchData = MatchData(
                     id: matchId,
-                    displayName: matchedProfile?.user?.profile?.displayName ?? "Your Match",
-                    avatarUrl: matchedProfile?.user?.profile?.avatarUrl,
+                    displayName: profile.user?.profile?.displayName ?? "Your Match",
+                    avatarUrl: profile.user?.profile?.avatarUrl,
                     featuredImage: firstPhoto?.url
                 )
             }
@@ -230,8 +257,13 @@ final class DiscoverViewModel {
     }
 
     /// Remove a profile from the stack entirely (after a LIKE, block, or report).
+    /// When the stack drains, auto-trigger a reload so the user isn't stranded
+    /// on an empty screen.
     func removeProfile(userId: String) {
         profiles.removeAll { $0.userId == userId }
+        if profiles.isEmpty && !isLoading {
+            Task { await loadQueue() }
+        }
     }
 
     // MARK: - Private

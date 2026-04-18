@@ -28,7 +28,7 @@ struct EKKOConnectApp: App {
                     // Wire managers
                     AppDelegate.pushManager = pushManager
                     pushManager.setup(trpc: appState.trpc)
-                    purchaseManager.setup(trpc: appState.trpc)
+                    purchaseManager.setup(trpc: appState.trpc, appState: appState)
 
                     // Configure RevenueCat (only if an API key is set)
                     if !Config.revenueCatAPIKey.isEmpty {

@@ -65,11 +65,9 @@ struct UpgradeModal: View {
 
                 // Price + CTA
                 VStack(spacing: 12) {
-                    if let price = connectTiers[.INFINITE]?.price {
-                        Text(price)
-                            .font(.headline)
-                            .foregroundStyle(.white.opacity(0.9))
-                    }
+                    // Price + duration shown together so App Review sees the
+                    // auto-renewal period disclosure clearly.
+                    priceLine
 
                     // Animated gradient CTA button
                     Button {
@@ -116,6 +114,11 @@ struct UpgradeModal: View {
                             .background(Color.red.opacity(0.5))
                             .clipShape(Capsule())
                     }
+
+                    // Required by App Review Guideline 3.1.2(a): auto-renewal
+                    // disclosure + functional Terms/Privacy links on the
+                    // purchase screen.
+                    legalDisclosure
                 }
                 .padding(.bottom, 36)
             }
@@ -126,6 +129,53 @@ struct UpgradeModal: View {
                 animatePhase = 1
             }
         }
+    }
+
+    // MARK: - Price + Legal Disclosure
+
+    @ViewBuilder
+    private var priceLine: some View {
+        // Prefer the live-resolved StoreKit price (locale-correct) and fall
+        // back to the static tier config if offerings haven't loaded yet.
+        let price: String = {
+            if let p = purchaseManager.offerings?.current?.availablePackages.first?.storeProduct.localizedPriceString {
+                return p
+            }
+            return connectTiers[.INFINITE]?.price ?? ""
+        }()
+
+        VStack(spacing: 2) {
+            Text("\(price) / month")
+                .font(.headline)
+                .foregroundStyle(.white.opacity(0.95))
+            Text("Auto-renewing subscription")
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.7))
+        }
+    }
+
+    private var legalDisclosure: some View {
+        VStack(spacing: 8) {
+            Text("Payment will be charged to your Apple ID at confirmation. Subscriptions renew automatically unless canceled at least 24 hours before the end of the current period. Manage or cancel anytime in your App Store account settings.")
+                .font(.system(size: 11))
+                .foregroundStyle(.white.opacity(0.6))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+
+            HStack(spacing: 16) {
+                Button("Terms of Service") {
+                    if let url = LegalURLs.terms { UIApplication.shared.open(url) }
+                }
+                Text("·")
+                    .foregroundStyle(.white.opacity(0.4))
+                Button("Privacy Policy") {
+                    if let url = LegalURLs.privacy { UIApplication.shared.open(url) }
+                }
+            }
+            .font(.system(size: 11, weight: .medium))
+            .foregroundStyle(.white.opacity(0.85))
+        }
+        .padding(.top, 6)
     }
 
     // MARK: - Animated Gradient Background

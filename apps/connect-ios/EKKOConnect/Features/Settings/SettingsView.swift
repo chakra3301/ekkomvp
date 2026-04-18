@@ -196,16 +196,51 @@ struct SettingsView: View {
 
             // ============ DISCOVERY FILTERS ============
             Section {
-                HStack {
-                    TextField("e.g. Los Angeles", text: filterCity)
-                        .font(.subheadline)
-                    Button {
-                        Task { await useMyLocation() }
-                    } label: {
+                // Device location — always the source of truth. Free-tier users
+                // can only discover within a radius of this point.
+                Button {
+                    Task { await useMyLocation() }
+                } label: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(connectProfile?.location ?? "Turn On Location")
+                                .font(.subheadline)
+                                .foregroundStyle(.primary)
+                            if connectProfile?.latitude == nil {
+                                Text("Required to discover creatives near you")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        Spacer()
                         Image(systemName: locating ? "arrow.circlepath" : "location.fill")
                             .font(.caption)
+                            .foregroundStyle(EKKOTheme.primary)
                     }
-                    .disabled(locating)
+                }
+                .buttonStyle(.plain)
+                .disabled(locating)
+
+                // Infinite-only: override device location with a specific city.
+                if appState.hasInfiniteAccess {
+                    HStack {
+                        Image(systemName: "mappin.and.ellipse")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        TextField("Search a specific city (optional)", text: filterCity)
+                            .font(.subheadline)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.words)
+                        if !filterCity.wrappedValue.isEmpty {
+                            Button {
+                                filterCity.wrappedValue = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -222,7 +257,7 @@ struct SettingsView: View {
                         .tint(EKKOTheme.primary)
                 }
 
-                if purchaseManager.currentTier == .INFINITE {
+                if appState.hasInfiniteAccess {
                     Toggle(isOn: filterGlobalSearch) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Global Search")
@@ -408,9 +443,31 @@ struct SettingsView: View {
 
     @ViewBuilder
     private var subscriptionRow: some View {
-        let isInfinite = purchaseManager.currentTier == .INFINITE
+        if appState.isAdmin {
+            HStack(spacing: 12) {
+                Text("GM")
+                    .font(.caption.bold())
+                    .foregroundStyle(.white)
+                    .frame(width: 36, height: 36)
+                    .background(
+                        LinearGradient(
+                            colors: [EKKOTheme.primary, Color.purple],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
 
-        if isInfinite {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("EKKO GM")
+                        .font(.subheadline.weight(.semibold))
+                    Text("Admin · full Infinite access")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+            }
+        } else if purchaseManager.currentTier == .INFINITE {
             HStack(spacing: 12) {
                 Image(systemName: "infinity")
                     .font(.title3.bold())
@@ -537,18 +594,13 @@ struct SettingsView: View {
             let manager = LocationManager()
             let result = try await manager.getCurrentLocation()
 
-            // Update the local filter with the resolved city
-            if let city = result.city, !city.isEmpty {
-                filterCity.wrappedValue = city
-            }
-
             // Persist coordinates + city to the user's ConnectProfile
             struct LocationInput: Codable {
                 let location: String?
                 let latitude: Double
                 let longitude: Double
             }
-            let _: ConnectProfile = try await appState.trpc.mutate(
+            let profile: ConnectProfile = try await appState.trpc.mutate(
                 "connectProfile.update",
                 input: LocationInput(
                     location: result.city,
@@ -556,8 +608,12 @@ struct SettingsView: View {
                     longitude: result.longitude
                 )
             )
+            // Keep local state in sync so the Settings row + Discover gate
+            // update immediately without requiring a reload.
+            appState.currentConnectProfile = profile
+            connectProfile = profile
         } catch {
-            print("[Location] Failed: \(error.localizedDescription)")
+            appState.showError(error.localizedDescription)
         }
     }
 
@@ -587,15 +643,15 @@ struct SettingsView: View {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         do {
-            let (data, response) = try await URLSession.shared.data(for: request)
+            let (_, response) = try await URLSession.shared.data(for: request)
             let status = (response as? HTTPURLResponse)?.statusCode ?? 0
-            print("[delete-account] ← \(status): \(String(data: data, encoding: .utf8) ?? "")")
-
             if status == 200 {
                 await appState.signOut()
+            } else {
+                appState.showError("Couldn't delete account. Try again or contact support.")
             }
         } catch {
-            print("[delete-account] Request failed: \(error)")
+            appState.showError("Couldn't delete account: \(error.localizedDescription)")
         }
     }
 

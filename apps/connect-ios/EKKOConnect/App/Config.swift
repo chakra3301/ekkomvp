@@ -30,5 +30,5 @@ enum Config {
 
     /// Public iOS API key from RevenueCat → Project Settings → API Keys.
     /// If empty, the app still works — the Upgrade modal just shows "No packages available".
-    static let revenueCatAPIKey = ""
+    static let revenueCatAPIKey = "appl_IjzuBgCzejzBKxGuFVCBQDyUVUt"
 }

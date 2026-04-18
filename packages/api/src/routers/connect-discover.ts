@@ -4,6 +4,43 @@ import { CONNECT_LIMITS } from "@ekko/config";
 
 import { router, protectedProcedure } from "../trpc";
 
+/// Deterministic hash for a string that produces a number in [0, 1).
+/// Used to scatter user pins within a city grid cell so the globe view shows
+/// each user at a stable position without ever revealing their real coords.
+function hashToUnit(seed: string, salt: string): number {
+  let h = 2166136261 >>> 0;
+  const combined = `${seed}:${salt}`;
+  for (let i = 0; i < combined.length; i++) {
+    h ^= combined.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return (h & 0xffffffff) / 0xffffffff;
+}
+
+/// Snaps a stored lat/lon to a city-level grid (~22km) and adds a
+/// deterministic per-user scatter (~±11km) based on userId. The real
+/// coordinate never leaves the server — the client only sees a point
+/// that is stable per user, spread across city bounds for aesthetics.
+function privacyScatter(
+  userId: string,
+  latitude: number,
+  longitude: number
+): { lat: number; lon: number } {
+  const GRID = 0.2; // degrees, ~22km at the equator
+  const JITTER = 0.11; // ±0.11° ≈ ±12km
+
+  const gridLat = Math.round(latitude / GRID) * GRID;
+  const gridLon = Math.round(longitude / GRID) * GRID;
+
+  const jitterLat = (hashToUnit(userId, "lat") - 0.5) * 2 * JITTER;
+  const jitterLon = (hashToUnit(userId, "lon") - 0.5) * 2 * JITTER;
+
+  return {
+    lat: gridLat + jitterLat,
+    lon: gridLon + jitterLon,
+  };
+}
+
 // Haversine distance in miles between two lat/lng points
 function haversineDistance(
   lat1: number,
@@ -322,5 +359,97 @@ export const connectDiscoverRouter = router({
         }));
 
       return { items, nextCursor };
+    }),
+
+  /// Returns a privacy-safe set of pins for the globe view. Stored GPS coords
+  /// are never exposed — each pin is snapped to a ~22km grid with a
+  /// deterministic per-user scatter, so a user's dot is stable across
+  /// sessions but can't be reverse-geocoded back to their real location.
+  ///
+  /// Gated to INFINITE-tier users because the globe is a paid feature.
+  getGlobalPins: protectedProcedure
+    .query(async ({ ctx }) => {
+      const userId = ctx.user.id;
+
+      // Gate: require admin or INFINITE-tier — matches hasInfiniteAccess on the client.
+      const self = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          role: true,
+          connectProfile: { select: { connectTier: true } },
+        },
+      });
+      const isAdmin = self?.role === "ADMIN";
+      const isInfinite = self?.connectProfile?.connectTier === "INFINITE";
+      if (!isAdmin && !isInfinite) {
+        return { pins: [] };
+      }
+
+      // Blocks filter both directions — don't show users who blocked the viewer
+      // and don't show users the viewer blocked.
+      const blocks = await prisma.block.findMany({
+        where: {
+          OR: [{ blockerId: userId }, { blockedId: userId }],
+        },
+        select: { blockerId: true, blockedId: true },
+      });
+      const blockedSet = new Set<string>();
+      blocks.forEach((b) => {
+        blockedSet.add(b.blockerId);
+        blockedSet.add(b.blockedId);
+      });
+      blockedSet.add(userId); // also exclude self
+
+      const profiles = await prisma.connectProfile.findMany({
+        where: {
+          isActive: true,
+          latitude: { not: null },
+          longitude: { not: null },
+          userId: { notIn: Array.from(blockedSet) },
+        },
+        select: {
+          userId: true,
+          location: true,
+          latitude: true,
+          longitude: true,
+          connectTier: true,
+          user: {
+            select: {
+              role: true,
+              profile: {
+                select: {
+                  displayName: true,
+                  avatarUrl: true,
+                  username: true,
+                },
+              },
+            },
+          },
+        },
+        take: 5000, // cap the payload — enough for a populated globe
+      });
+
+      const pins = profiles
+        .filter((p) => p.latitude != null && p.longitude != null)
+        .map((p) => {
+          const { lat, lon } = privacyScatter(
+            p.userId,
+            p.latitude!,
+            p.longitude!
+          );
+          return {
+            userId: p.userId,
+            lat,
+            lon,
+            city: p.location ?? null,
+            role: p.user.role, // CREATIVE | CLIENT | ADMIN
+            isInfinite: p.connectTier === "INFINITE",
+            displayName: p.user.profile?.displayName ?? null,
+            avatarUrl: p.user.profile?.avatarUrl ?? null,
+            username: p.user.profile?.username ?? null,
+          };
+        });
+
+      return { pins };
     }),
 });

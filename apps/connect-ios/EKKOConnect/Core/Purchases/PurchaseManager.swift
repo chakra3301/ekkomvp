@@ -10,6 +10,7 @@ final class PurchaseManager {
     var errorMessage: String?
 
     private var trpc: TRPCClient?
+    private weak var appState: AppState?
 
     // MARK: - Setup
 
@@ -22,17 +23,30 @@ final class PurchaseManager {
         }
     }
 
-    func setup(trpc: TRPCClient) {
+    func setup(trpc: TRPCClient, appState: AppState? = nil) {
         self.trpc = trpc
+        self.appState = appState
     }
 
     // MARK: - Load Offerings
 
     func loadOfferings() async {
         do {
-            offerings = try await Purchases.shared.offerings()
+            let fetched = try await Purchases.shared.offerings()
+            offerings = fetched
+            #if DEBUG
+            let current = fetched.current
+            print("[IAP] Current offering: \(current?.identifier ?? "nil")")
+            print("[IAP] Packages: \(current?.availablePackages.map { $0.identifier } ?? [])")
+            print("[IAP] Products: \(current?.availablePackages.map { $0.storeProduct.productIdentifier } ?? [])")
+            if let first = current?.availablePackages.first {
+                print("[IAP] First product price: \(first.storeProduct.localizedPriceString)")
+            }
+            #endif
         } catch {
+            #if DEBUG
             print("[IAP] Failed to load offerings: \(error)")
+            #endif
         }
     }
 
@@ -41,13 +55,23 @@ final class PurchaseManager {
     func checkEntitlements() async {
         do {
             let customerInfo = try await Purchases.shared.customerInfo()
-            if customerInfo.entitlements["infinite"]?.isActive == true {
-                currentTier = .INFINITE
-            } else {
-                currentTier = .FREE
+            let entitlement = customerInfo.entitlements["infinite"]
+            let hasInfinite = entitlement?.isActive == true
+            currentTier = hasInfinite ? .INFINITE : .FREE
+
+            // Reconcile with the backend. RevenueCat restores entitlements on
+            // every launch (not just on fresh purchase), and the DB can drift
+            // from StoreKit on expiration, cancellation, refund, or a previous
+            // sync that failed. If they disagree, push the truth to the server
+            // so every tier-gated feature unlocks (or re-locks) immediately.
+            let serverTier = appState?.currentConnectProfile?.connectTier ?? .FREE
+            if (hasInfinite && serverTier != .INFINITE) || (!hasInfinite && serverTier == .INFINITE) {
+                await syncTierWithBackend(hasInfinite ? .INFINITE : .FREE)
             }
         } catch {
+            #if DEBUG
             print("[IAP] Failed to check entitlements: \(error)")
+            #endif
         }
     }
 
@@ -107,13 +131,27 @@ final class PurchaseManager {
     private func syncTierWithBackend(_ tier: ConnectTier) async {
         guard let trpc else { return }
         do {
-            struct TierInput: Codable { let tier: String }
-            let _: ConnectProfile = try await trpc.mutate(
+            // Server expects a bare enum string ("FREE" | "INFINITE"), not an object.
+            let _: TierResponse = try await trpc.mutate(
                 "connectProfile.upgradeTier",
-                input: TierInput(tier: tier.rawValue)
+                input: tier.rawValue
             )
+            // Refresh the locally cached connect profile so every badge /
+            // gate that reads `appState.currentConnectProfile?.connectTier`
+            // flips to the new tier without requiring a relaunch.
+            if let refreshed: ConnectProfile = try? await trpc.query("connectProfile.getCurrent") {
+                await MainActor.run {
+                    appState?.currentConnectProfile = refreshed
+                }
+            }
         } catch {
+            #if DEBUG
             print("[IAP] Backend tier sync failed: \(error)")
+            #endif
         }
     }
+}
+
+private struct TierResponse: Codable {
+    let connectTier: String
 }

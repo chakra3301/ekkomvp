@@ -90,13 +90,17 @@ final class TRPCClient {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
+        #if DEBUG
         print("[tRPC] GET \(procedure) → \(url)")
+        #endif
         let (data, response) = try await session.data(for: request)
         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+        #if DEBUG
         print("[tRPC] GET \(procedure) ← \(statusCode) (\(data.count) bytes)")
         if statusCode >= 400 {
             print("[tRPC] Response body: \(String(data: data, encoding: .utf8) ?? "nil")")
         }
+        #endif
         try validateResponse(response, data: data)
         return try decodeResult(data)
     }
@@ -122,13 +126,17 @@ final class TRPCClient {
             request.httpBody = "{\"json\":{}}".data(using: .utf8)
         }
 
+        #if DEBUG
         print("[tRPC] POST \(procedure) (token: \(token != nil ? "yes" : "no"))")
+        #endif
         let (data, response) = try await session.data(for: request)
         let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+        #if DEBUG
         print("[tRPC] POST \(procedure) ← \(statusCode) (\(data.count) bytes)")
         if statusCode >= 400 {
             print("[tRPC] Error body: \(String(data: data, encoding: .utf8) ?? "nil")")
         }
+        #endif
         try validateResponse(response, data: data)
         return try decodeResult(data)
     }

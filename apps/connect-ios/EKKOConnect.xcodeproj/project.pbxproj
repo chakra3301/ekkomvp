@@ -19,6 +19,7 @@
 		207CB98D4A3CFD1058F23976 /* TwitterPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8785EFD367E67672B664E3B3 /* TwitterPreview.swift */; };
 		2CC5783C311CC1E98831B183 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5878DD8F54AB84ECFA38FE67 /* PurchaseManager.swift */; };
 		3110F7976710874B222F2D1C /* RealtimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A1EB3F55C190724AF3370B /* RealtimeService.swift */; };
+		3CD02AC52F91833400CECC5E /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 3CD02AC42F91833400CECC5E /* Products.storekit */; };
 		46670C24E1C16DB9AA265E6A /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF82251403BC9D6473DE86 /* RegisterView.swift */; };
 		484DEB42319F17DC8DA7A8E0 /* EKKOTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E35A587910461E3D00A183 /* EKKOTheme.swift */; };
 		4BCC6930BB82281351B4B312 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2F19CF4CF4990526EF8D8357 /* Kingfisher */; };
@@ -69,6 +70,10 @@
 		F8C0FC5924DDFB6ADF4F21BB /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015ABB13D19287E17C80378A /* ChatView.swift */; };
 		F9405CE89A6E69200925B1B5 /* EKKOConnectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB39030676E81329E1BC87B5 /* EKKOConnectApp.swift */; };
 		FA79A68C6AF53C1C85AC0877 /* EmojiPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C87F8CB757DBBC151809C62 /* EmojiPickerSheet.swift */; };
+		5E32D1A48091B4F42E9C0C02 /* GlobePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E32D1A48091B4F42E9C0C01 /* GlobePin.swift */; };
+		5E32D1A48091B4F42E9C0C04 /* GlobeSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E32D1A48091B4F42E9C0C03 /* GlobeSceneView.swift */; };
+		5E32D1A48091B4F42E9C0C06 /* GlobeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E32D1A48091B4F42E9C0C05 /* GlobeView.swift */; };
+		5E32D1A48091B4F42E9C0D02 /* coastlines.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 5E32D1A48091B4F42E9C0D01 /* coastlines.geojson */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -83,6 +88,7 @@
 		27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchCelebrationOverlay.swift; sourceTree = "<group>"; };
 		37599C761D0200DAE7F3FD8C /* CompleteProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteProfileView.swift; sourceTree = "<group>"; };
 		3C2A698D4ADD418F1A28B37E /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		3CD02AC42F91833400CECC5E /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; name = Products.storekit; path = EKKOConnect/Resources/Products.storekit; sourceTree = "<group>"; };
 		3E8DACECBC06504D944E9928 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		4477E6AA1C95510FD0FE5B75 /* ConnectMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectMessage.swift; sourceTree = "<group>"; };
 		462F15F81C0442317081C5EB /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -134,6 +140,10 @@
 		FA892215FACB6BF82AA3E680 /* SocialLogos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLogos.swift; sourceTree = "<group>"; };
 		FB39030676E81329E1BC87B5 /* EKKOConnectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOConnectApp.swift; sourceTree = "<group>"; };
 		FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeCard.swift; sourceTree = "<group>"; };
+		5E32D1A48091B4F42E9C0C01 /* GlobePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobePin.swift; sourceTree = "<group>"; };
+		5E32D1A48091B4F42E9C0C03 /* GlobeSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeSceneView.swift; sourceTree = "<group>"; };
+		5E32D1A48091B4F42E9C0C05 /* GlobeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeView.swift; sourceTree = "<group>"; };
+		5E32D1A48091B4F42E9C0D01 /* coastlines.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = coastlines.geojson; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,6 +240,7 @@
 				7FA796FEFEEF21ACBD9272F1 /* ConnectSwipe.swift */,
 				462F15F81C0442317081C5EB /* Constants.swift */,
 				DE831145F32102D043E1C487 /* Enums.swift */,
+				5E32D1A48091B4F42E9C0C01 /* GlobePin.swift */,
 				3E8DACECBC06504D944E9928 /* Profile.swift */,
 				CD2EA2BD53985DE45F5B5447 /* User.swift */,
 			);
@@ -307,6 +318,7 @@
 		664977B35ED7BE2ECAD3A358 = {
 			isa = PBXGroup;
 			children = (
+				3CD02AC42F91833400CECC5E /* Products.storekit */,
 				57D1187DC98859C93E84B92B /* EKKOConnect */,
 				BA4DC6DA936ED0FACB4A48E1 /* Products */,
 			);
@@ -356,6 +368,7 @@
 			isa = PBXGroup;
 			children = (
 				D2B61B9994A7B2E2DFB0D5A3 /* Assets.xcassets */,
+				5E32D1A48091B4F42E9C0D01 /* coastlines.geojson */,
 				7F196972C0FE82EA4A7B9468 /* EKKOConnect.entitlements */,
 				BDBF6E9D03EE9B1A1DE0E7B7 /* Info.plist */,
 				34154F18B225397470710F03 /* Fonts */,
@@ -385,6 +398,8 @@
 			children = (
 				7CA70C2381F53D3DEEA3BE99 /* DiscoverView.swift */,
 				6AD79D17365D6EF42685880E /* DiscoverViewModel.swift */,
+				5E32D1A48091B4F42E9C0C03 /* GlobeSceneView.swift */,
+				5E32D1A48091B4F42E9C0C05 /* GlobeView.swift */,
 				B05B535B091DE1E1D3B9E12B /* LikeNoteSheet.swift */,
 				27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */,
 				FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */,
@@ -497,8 +512,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3CD02AC52F91833400CECC5E /* Products.storekit in Resources */,
 				768BDA4A31ADE99DAFD8CDFB /* ArchesRegular.ttf in Resources */,
 				0BC9FED059C44D8E0F03BCED /* ArchesRegularItalic.ttf in Resources */,
+				5E32D1A48091B4F42E9C0D02 /* coastlines.geojson in Resources */,
 				E78566061BF105349FD37E2A /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -534,6 +551,9 @@
 				9F660FD92B5AF6F09363B149 /* EditableAvatarView.swift in Sources */,
 				FA79A68C6AF53C1C85AC0877 /* EmojiPickerSheet.swift in Sources */,
 				182D176CDAFE74938414D202 /* Enums.swift in Sources */,
+				5E32D1A48091B4F42E9C0C02 /* GlobePin.swift in Sources */,
+				5E32D1A48091B4F42E9C0C04 /* GlobeSceneView.swift in Sources */,
+				5E32D1A48091B4F42E9C0C06 /* GlobeView.swift in Sources */,
 				59B4404A9D99ECE7E4C31F1B /* InstagramPreview.swift in Sources */,
 				B3324319A2A650E6B33BA338 /* LegalLinks.swift in Sources */,
 				8697DA9C62887B598633DE9F /* LikeNoteSheet.swift in Sources */,

@@ -2,13 +2,18 @@ import SwiftUI
 
 struct ProfileView: View {
     @Environment(AppState.self) private var appState
-    @State private var connectProfile: ConnectProfile?
     @State private var isLoading = true
     @State private var isTogglingActive = false
 
+    /// Read through to AppState so tier changes from a purchase propagate
+    /// automatically — no local copy to go stale.
+    private var connectProfile: ConnectProfile? {
+        appState.currentConnectProfile
+    }
+
     var body: some View {
         Group {
-            if isLoading {
+            if isLoading && connectProfile == nil {
                 SkeletonProfile()
             } else if let profile = connectProfile {
                 profileContent(profile)
@@ -90,6 +95,7 @@ struct ProfileView: View {
                     twitterHandle: profile.twitterHandle,
                     websiteUrl: profile.websiteUrl,
                     connectTier: profile.connectTier,
+                    isAdmin: appState.isAdmin,
                     editableAvatar: true
                 )
                 .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.cardRadius))
@@ -139,9 +145,9 @@ struct ProfileView: View {
     private func loadProfile() async {
         do {
             let profile: ConnectProfile = try await appState.trpc.query("connectProfile.getCurrent")
-            connectProfile = profile
+            appState.currentConnectProfile = profile
         } catch {
-            connectProfile = nil
+            appState.currentConnectProfile = nil
         }
         isLoading = false
     }
@@ -151,7 +157,7 @@ struct ProfileView: View {
         do {
             struct ToggleResult: Codable { let isActive: Bool }
             let result: ToggleResult = try await appState.trpc.mutate("connectProfile.toggleActive")
-            connectProfile?.isActive = result.isActive
+            appState.currentConnectProfile?.isActive = result.isActive
         } catch {
             appState.showError("Couldn't update profile: \(error.localizedDescription)")
         }

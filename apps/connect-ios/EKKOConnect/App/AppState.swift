@@ -22,6 +22,15 @@ final class AppState {
     var isLoading = true
     var isAuthenticated: Bool { session != nil }
 
+    /// Admins ("GM"s) always have full platform access regardless of purchase state.
+    var isAdmin: Bool { currentUser?.role == .ADMIN }
+
+    /// True if the user has Infinite-tier access via purchase OR admin status.
+    /// Use this for any feature gate (global search, see-who-likes-you, etc.).
+    var hasInfiniteAccess: Bool {
+        isAdmin || currentConnectProfile?.connectTier == .INFINITE
+    }
+
     /// True once we've attempted to load the ConnectProfile at least once.
     /// Used to avoid flashing the setup wizard before the first fetch completes.
     var hasCheckedConnectProfile = false
@@ -64,6 +73,15 @@ final class AppState {
         var maxDistanceMiles: Int = 50
         var globalSearch: Bool = false
         var role: String = "ALL" // ALL | CREATIVE | CLIENT
+
+        /// Optional radius-based origin that takes priority over the user's
+        /// device coords when set. Populated when the user expands a pin on
+        /// the globe view at a wide zoom — we filter to "people near this
+        /// region" instead of "people near me". Cleared by setting `city`
+        /// or `globalSearch`, or by explicit reset.
+        var overrideLatitude: Double?
+        var overrideLongitude: Double?
+        var overrideMaxDistanceMiles: Int?
     }
 
     private static let filtersKey = "ekko-connect-filters"
@@ -113,11 +131,15 @@ final class AppState {
     // MARK: - Init
 
     init() {
-        let supabaseURL = URL(string: Config.supabaseURL)!
+        guard let supabaseURL = URL(string: Config.supabaseURL) else {
+            fatalError("Config.supabaseURL is not a valid URL: \(Config.supabaseURL)")
+        }
         let supabaseClient = SupabaseClient(supabaseURL: supabaseURL, supabaseKey: Config.supabaseAnonKey)
         self.supabase = supabaseClient
 
-        let trpcBaseURL = URL(string: Config.trpcBaseURL)!
+        guard let trpcBaseURL = URL(string: Config.trpcBaseURL) else {
+            fatalError("Config.trpcBaseURL is not a valid URL: \(Config.trpcBaseURL)")
+        }
         self.trpc = TRPCClient(baseURL: trpcBaseURL)
 
         // Always get a fresh token from Supabase for each tRPC request
@@ -136,11 +158,14 @@ final class AppState {
             let session = try await supabase.auth.session
             self.session = session
             trpc.setAccessToken(session.accessToken)
-            print("[Auth] Session restored. User ID: \(session.user.id)")
-            print("[Auth] Token prefix: \(String(session.accessToken.prefix(20)))...")
+            #if DEBUG
+            print("[Auth] Session restored.")
+            #endif
             await fetchCurrentUser()
         } catch {
+            #if DEBUG
             print("[Auth] No session: \(error)")
+            #endif
             self.session = nil
         }
     }
@@ -162,13 +187,24 @@ final class AppState {
     }
 
     func fetchCurrentUser() async {
-        print("[Auth] fetchCurrentUser starting...")
+        // Fetch the full User record (includes role, which we need for admin/GM).
+        do {
+            let user: User = try await trpc.query("auth.me")
+            self.currentUser = user
+        } catch {
+            #if DEBUG
+            print("[Auth] auth.me failed: \(error)")
+            #endif
+            self.currentUser = nil
+        }
+
         do {
             let profile: Profile = try await trpc.query("profile.getCurrent")
             self.currentProfile = profile
-            print("[Auth] Profile loaded: \(profile.displayName ?? "unknown")")
         } catch {
-            print("[Auth] fetchCurrentUser failed: \(error)")
+            #if DEBUG
+            print("[Auth] profile.getCurrent failed: \(error)")
+            #endif
             self.currentProfile = nil
         }
 
@@ -180,8 +216,6 @@ final class AppState {
             self.currentConnectProfile = nil
         }
         hasCheckedConnectProfile = true
-
-        print("[Auth] fetchCurrentUser done. hasProfile: \(currentProfile != nil), hasConnectProfile: \(currentConnectProfile != nil)")
     }
 
     /// Call after the user finishes Profile Setup so the router advances.

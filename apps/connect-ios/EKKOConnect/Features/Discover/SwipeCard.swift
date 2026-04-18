@@ -186,7 +186,21 @@ struct SwipeCard: View {
                     .font(.custom(EKKOFont.regular, size: 26))
                     .foregroundStyle(.white)
 
-                if profile.connectTier == .INFINITE {
+                if profile.user?.role == .ADMIN {
+                    Text("GM")
+                        .font(.caption2.bold())
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(
+                            LinearGradient(
+                                colors: [EKKOTheme.primary, Color.purple],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .clipShape(Capsule())
+                } else if profile.connectTier == .INFINITE {
                     Image(systemName: "infinity")
                         .font(.caption2.bold())
                         .foregroundStyle(EKKOTheme.primary)
@@ -244,7 +258,8 @@ struct SwipeCard: View {
                         instagramHandle: profile.instagramHandle,
                         twitterHandle: profile.twitterHandle,
                         websiteUrl: profile.websiteUrl,
-                        connectTier: profile.connectTier
+                        connectTier: profile.connectTier,
+                        isAdmin: profile.user?.role == .ADMIN
                     )
 
                     // Action buttons
