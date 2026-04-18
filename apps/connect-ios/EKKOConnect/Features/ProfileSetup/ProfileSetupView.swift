@@ -18,13 +18,24 @@ struct ProfileSetupView: View {
     @State private var instagramHandle = ""
     @State private var twitterHandle = ""
     @State private var websiteUrl = ""
+    @State private var profileTemplate: ConnectProfileTemplate = .default
 
     // Existing profile (for edit mode)
     @State private var existingProfile: ConnectProfile?
     @State private var isLoadingProfile = true
 
-    private let steps = ["Media", "Prompts", "Details", "Preview"]
     private var isEditing: Bool { existingProfile != nil }
+
+    /// Steps differ between first-time setup and edit:
+    /// - Setup keeps the original 4 steps so signup stays fast.
+    /// - Edit prepends a "Template" step so users can switch profile layouts.
+    private var steps: [String] {
+        isEditing
+            ? ["Template", "Media", "Prompts", "Details", "Preview"]
+            : ["Media", "Prompts", "Details", "Preview"]
+    }
+
+    private var currentStepName: String { steps[currentStep] }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -52,17 +63,19 @@ struct ProfileSetupView: View {
                 // Step content
                 ScrollView {
                     Group {
-                        switch currentStep {
-                        case 0:
+                        switch currentStepName {
+                        case "Template":
+                            templateStep
+                        case "Media":
                             MediaSlotGrid(
                                 slots: $mediaSlots,
                                 userId: appState.session?.user.id.uuidString ?? ""
                             )
-                        case 1:
+                        case "Prompts":
                             PromptEditor(prompts: $prompts)
-                        case 2:
+                        case "Details":
                             detailsStep
-                        case 3:
+                        case "Preview":
                             previewStep
                         default:
                             EmptyView()
@@ -219,23 +232,39 @@ struct ProfileSetupView: View {
         )
     }
 
+    // MARK: - Template Step (edit mode only)
+
+    private var templateStep: some View {
+        VStack(spacing: 16) {
+            ForEach(ConnectProfileTemplate.allCases) { template in
+                TemplatePreviewCard(
+                    template: template,
+                    isSelected: profileTemplate == template,
+                    onSelect: { profileTemplate = template }
+                )
+            }
+        }
+    }
+
     // MARK: - Helpers
 
     private var canProceed: Bool {
-        switch currentStep {
-        case 0: return mediaSlots.count >= ConnectLimits.minMediaSlots
-        case 1: return prompts.count >= ConnectLimits.minPrompts &&
+        switch currentStepName {
+        case "Template": return true
+        case "Media": return mediaSlots.count >= ConnectLimits.minMediaSlots
+        case "Prompts": return prompts.count >= ConnectLimits.minPrompts &&
             prompts.allSatisfy { !$0.answer.trimmingCharacters(in: .whitespaces).isEmpty }
         default: return true
         }
     }
 
     private var stepDescription: String {
-        switch currentStep {
-        case 0: return "Add up to 6 photos, videos, audio clips, or 3D models. First slot is featured."
-        case 1: return "Answer at least 1 prompt to show your personality and creative interests."
-        case 2: return "Add a bio, headline, what you're looking for, and social links."
-        case 3: return "Preview your profile card. This is what others will see."
+        switch currentStepName {
+        case "Template": return "Pick how your profile looks. You can change this anytime — it doesn't affect your data."
+        case "Media": return "Add up to 6 photos, videos, audio clips, or 3D models. First slot is featured."
+        case "Prompts": return "Answer at least 1 prompt to show your personality and creative interests."
+        case "Details": return "Add a bio, headline, what you're looking for, and social links."
+        case "Preview": return "Preview your profile card. This is what others will see."
         default: return ""
         }
     }
@@ -257,6 +286,7 @@ struct ProfileSetupView: View {
                 instagramHandle = profile.instagramHandle ?? ""
                 twitterHandle = profile.twitterHandle ?? ""
                 websiteUrl = profile.websiteUrl ?? ""
+                profileTemplate = ConnectProfileTemplate.from(profile.profileTemplate)
                 initialized = true
             }
         } catch {
@@ -271,6 +301,8 @@ struct ProfileSetupView: View {
     private func handleSave() async {
         isSubmitting = true
         do {
+            // Template is an advanced/editing-only field — only send it on edit
+            // so initial signup payload stays minimal.
             let payload = ProfilePayload(
                 headline: headline.isEmpty ? nil : headline,
                 lookingFor: lookingFor.isEmpty ? nil : lookingFor,
@@ -280,7 +312,8 @@ struct ProfileSetupView: View {
                 instagramHandle: instagramHandle.isEmpty ? nil : instagramHandle,
                 twitterHandle: twitterHandle.isEmpty ? nil : twitterHandle,
                 websiteUrl: websiteUrl.isEmpty ? nil : websiteUrl,
-                location: location.isEmpty ? nil : location
+                location: location.isEmpty ? nil : location,
+                profileTemplate: isEditing ? profileTemplate.rawValue : nil
             )
 
             struct GenericResponse: Codable { let id: String }
@@ -315,5 +348,156 @@ struct ProfileSetupView: View {
             print("[ProfileSetup] Save error: \(error)")
         }
         isSubmitting = false
+    }
+}
+
+// MARK: - Template Preview Card
+
+struct TemplatePreviewCard: View {
+    let template: ConnectProfileTemplate
+    let isSelected: Bool
+    let onSelect: () -> Void
+
+    var body: some View {
+        Button(action: onSelect) {
+            VStack(alignment: .leading, spacing: 0) {
+                preview
+                    .frame(height: 160)
+                    .frame(maxWidth: .infinity)
+                    .clipped()
+
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text(template.title)
+                            .font(.custom(EKKOFont.regular, size: 18))
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        if isSelected {
+                            HStack(spacing: 4) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.caption)
+                                Text("Selected")
+                                    .font(.caption.weight(.medium))
+                            }
+                            .foregroundStyle(EKKOTheme.primary)
+                        }
+                    }
+                    Text(template.summary)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(14)
+            }
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(isSelected ? EKKOTheme.primary : Color.white.opacity(0.1),
+                            lineWidth: isSelected ? 2 : 0.5)
+            )
+            .shadow(color: .black.opacity(isSelected ? 0.2 : 0.08), radius: 12, y: 6)
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var preview: some View {
+        switch template {
+        case .default:
+            defaultPreview
+        case .hero:
+            heroPreview
+        }
+    }
+
+    /// Schematic of the existing ConnectProfileCard layout.
+    private var defaultPreview: some View {
+        ZStack {
+            LinearGradient(
+                colors: [Color.gray.opacity(0.25), Color.gray.opacity(0.15)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            VStack(spacing: 6) {
+                // Hero block
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(EKKOTheme.primary.opacity(0.35))
+                    .frame(height: 60)
+                    .overlay(alignment: .bottomLeading) {
+                        Circle()
+                            .fill(.white)
+                            .frame(width: 24, height: 24)
+                            .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                            .offset(x: 8, y: 12)
+                    }
+                    .padding(.horizontal, 16)
+
+                Spacer().frame(height: 8)
+
+                // Name + bio bars
+                VStack(alignment: .leading, spacing: 3) {
+                    RoundedRectangle(cornerRadius: 2).fill(.primary).frame(width: 70, height: 5)
+                    RoundedRectangle(cornerRadius: 2).fill(.secondary.opacity(0.5)).frame(width: 90, height: 3)
+                    RoundedRectangle(cornerRadius: 2).fill(.secondary.opacity(0.5)).frame(width: 60, height: 3)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 24)
+
+                Spacer()
+            }
+            .padding(.top, 8)
+        }
+    }
+
+    /// Schematic of the new ConnectProfileHeroView: full-bleed cover, big name, work rail.
+    private var heroPreview: some View {
+        ZStack(alignment: .bottom) {
+            // Full-bleed cover
+            LinearGradient(
+                colors: [EKKOTheme.primary.opacity(0.6), EKKOTheme.primary.opacity(0.15), .black.opacity(0.85)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            // Big name overlay
+            VStack(alignment: .leading, spacing: 4) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(.white)
+                    .frame(width: 110, height: 10)
+                    .shadow(color: EKKOTheme.primary.opacity(0.6), radius: 6)
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(.white.opacity(0.7))
+                    .frame(width: 70, height: 4)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.bottom, 56)
+
+            // Avatar + work rail
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Circle()
+                        .fill(.white)
+                        .frame(width: 22, height: 22)
+                        .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                    Spacer()
+                }
+                .padding(.horizontal, 16)
+                .offset(y: 8)
+
+                HStack(spacing: 6) {
+                    ForEach(0..<4, id: \.self) { _ in
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(.white.opacity(0.9))
+                            .frame(width: 36, height: 22)
+                    }
+                }
+                .padding(.horizontal, 16)
+            }
+            .padding(.bottom, 8)
+        }
     }
 }

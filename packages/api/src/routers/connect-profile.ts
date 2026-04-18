@@ -17,6 +17,8 @@ const promptSchema = z.object({
   answer: z.string().min(1).max(CONNECT_LIMITS.PROMPT_ANSWER_MAX),
 });
 
+const profileTemplateSchema = z.enum(["DEFAULT", "HERO"]);
+
 export const connectProfileRouter = router({
   getCurrent: protectedProcedure.query(async ({ ctx }) => {
     const profile = await prisma.connectProfile.findUnique({
@@ -105,6 +107,7 @@ export const connectProfileRouter = router({
         location: z.string().max(200).optional(),
         latitude: z.number().min(-90).max(90).optional(),
         longitude: z.number().min(-180).max(180).optional(),
+        profileTemplate: profileTemplateSchema.optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -148,6 +151,7 @@ export const connectProfileRouter = router({
           location: input.location,
           latitude: input.latitude,
           longitude: input.longitude,
+          profileTemplate: input.profileTemplate,
         },
       });
 
@@ -177,6 +181,7 @@ export const connectProfileRouter = router({
         location: z.string().max(200).optional(),
         latitude: z.number().min(-90).max(90).nullable().optional(),
         longitude: z.number().min(-180).max(180).nullable().optional(),
+        profileTemplate: profileTemplateSchema.nullable().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -223,6 +228,7 @@ export const connectProfileRouter = router({
         if (input.location !== undefined) updateData.location = input.location;
         if (input.latitude !== undefined) updateData.latitude = input.latitude;
         if (input.longitude !== undefined) updateData.longitude = input.longitude;
+        if (input.profileTemplate !== undefined) updateData.profileTemplate = input.profileTemplate;
 
         return tx.connectProfile.update({
           where: { userId: ctx.user.id },

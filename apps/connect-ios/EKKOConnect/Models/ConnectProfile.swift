@@ -23,6 +23,9 @@ struct ConnectProfile: Codable, Identifiable {
     var matchesCount: Int
     var isActive: Bool
     var connectTier: ConnectTier
+    /// "DEFAULT" (or nil) renders ConnectProfileCard. "HERO" renders ConnectProfileHeroView.
+    /// Advanced option — only exposed in the edit flow, not initial setup.
+    var profileTemplate: String?
     let createdAt: Date?
     let updatedAt: Date?
 
@@ -56,6 +59,7 @@ struct ConnectProfile: Codable, Identifiable {
         matchesCount = (try? container.decode(Int.self, forKey: .matchesCount)) ?? 0
         isActive = (try? container.decode(Bool.self, forKey: .isActive)) ?? true
         connectTier = (try? container.decode(ConnectTier.self, forKey: .connectTier)) ?? .FREE
+        profileTemplate = try container.decodeIfPresent(String.self, forKey: .profileTemplate)
         createdAt = try? container.decodeIfPresent(Date.self, forKey: .createdAt)
         updatedAt = try? container.decodeIfPresent(Date.self, forKey: .updatedAt)
         user = try container.decodeIfPresent(UserWithProfile.self, forKey: .user)
@@ -68,7 +72,36 @@ struct ConnectProfile: Codable, Identifiable {
         case instagramAccessToken, instagramTokenExpiry, instagramUserId
         case disciplineIds, location, latitude, longitude
         case likesReceivedCount, matchesCount, isActive, connectTier
+        case profileTemplate
         case createdAt, updatedAt, user
+    }
+}
+
+enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
+    case `default` = "DEFAULT"
+    case hero = "HERO"
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .default: return "Default"
+        case .hero:    return "Hero"
+        }
+    }
+
+    var summary: String {
+        switch self {
+        case .default:
+            return "The standard Connect card — clean, balanced, with media gallery and prompts."
+        case .hero:
+            return "Full-bleed cover with a parallax effect and an oversized name overlay. Best for portfolio-forward creatives."
+        }
+    }
+
+    static func from(_ raw: String?) -> ConnectProfileTemplate {
+        guard let raw, let t = ConnectProfileTemplate(rawValue: raw) else { return .default }
+        return t
     }
 }
 
@@ -112,4 +145,5 @@ struct ProfilePayload: Codable {
     var location: String?
     var latitude: Double?
     var longitude: Double?
+    var profileTemplate: String?
 }

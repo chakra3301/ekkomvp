@@ -13,13 +13,16 @@
 		10669041C45250A6A607B0CA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A698D4ADD418F1A28B37E /* LoginView.swift */; };
 		182D176CDAFE74938414D202 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE831145F32102D043E1C487 /* Enums.swift */; };
 		1A8EF3890E4F06100109896F /* ReportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95847590D257E624076B08A2 /* ReportSheet.swift */; };
+		1B95F39D1C91D3BE049ED190 /* GlobeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E9E97572DF4DE816EE020F /* GlobeView.swift */; };
 		1C1620057F65E56C56B1332E /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E8DACECBC06504D944E9928 /* Profile.swift */; };
+		1E321C35DAED39CAEF425D81 /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = D08B3118FD262A697877D048 /* Products.storekit */; };
 		1E75599884921A90DCF588E0 /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CA70C2381F53D3DEEA3BE99 /* DiscoverView.swift */; };
 		203E2A600502DA6B8CB73B4D /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9478C8C0DE104FC8483C57 /* ToastView.swift */; };
 		207CB98D4A3CFD1058F23976 /* TwitterPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8785EFD367E67672B664E3B3 /* TwitterPreview.swift */; };
 		2CC5783C311CC1E98831B183 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5878DD8F54AB84ECFA38FE67 /* PurchaseManager.swift */; };
 		3110F7976710874B222F2D1C /* RealtimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A1EB3F55C190724AF3370B /* RealtimeService.swift */; };
-		3CD02AC52F91833400CECC5E /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 3CD02AC42F91833400CECC5E /* Products.storekit */; };
+		34B0FD178FAED2EB05CB4FBE /* GlobeSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA357290B949894640624B9 /* GlobeSceneView.swift */; };
+		42F7C87B23E2204320184E8A /* coastlines.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */; };
 		46670C24E1C16DB9AA265E6A /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF82251403BC9D6473DE86 /* RegisterView.swift */; };
 		484DEB42319F17DC8DA7A8E0 /* EKKOTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E35A587910461E3D00A183 /* EKKOTheme.swift */; };
 		4BCC6930BB82281351B4B312 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2F19CF4CF4990526EF8D8357 /* Kingfisher */; };
@@ -30,12 +33,14 @@
 		5E53B57FFEEEC253793D4653 /* EKKOFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B5099770EB5143E66F61661 /* EKKOFont.swift */; };
 		623C6D7EE80E2767294520C6 /* MediaSlotGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6293A856B21826507BDAAD /* MediaSlotGrid.swift */; };
 		64055F417C73062889564E27 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBB35904B051E0219F70AB71 /* Config.swift */; };
+		6419836DA8FDF8732059D0F2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */; };
 		65B186E836D6B2F31D2F7F0D /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 299840B7578F31EAB38D86DE /* Supabase */; };
 		65D17522620447E44AC5C650 /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD79D17365D6EF42685880E /* DiscoverViewModel.swift */; };
 		6A30492134840F22DBE715CC /* UpgradeModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45AFA2F36F18688B5B69096 /* UpgradeModal.swift */; };
 		6B081664C65AAABF8A41DFDC /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9B2983FEC60425BB2002CBB /* AudioRecorder.swift */; };
 		6CDDEB78D7EA9919D6BD7DAA /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54C28665D5A22F8D330557C /* AppRouter.swift */; };
 		6E90CDDD7C12D88CE6C5FDCD /* ConnectSwipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA796FEFEEF21ACBD9272F1 /* ConnectSwipe.swift */; };
+		73620589D2CFB383D2B3256C /* GlobePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A043BF395AB7DECF8934F57D /* GlobePin.swift */; };
 		73A430368D6FB4A5E9C3F2CB /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88755341BA620E386F3BB984 /* AvatarView.swift */; };
 		768BDA4A31ADE99DAFD8CDFB /* ArchesRegular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E086B38FCEDB58ADC9A2C558 /* ArchesRegular.ttf */; };
 		8697DA9C62887B598633DE9F /* LikeNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05B535B091DE1E1D3B9E12B /* LikeNoteSheet.swift */; };
@@ -59,6 +64,7 @@
 		C0F197E04602B03E5B2E98B9 /* PushManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F5F79C21AB212732A7643 /* PushManager.swift */; };
 		C2398567163841428B28F77A /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 871BC70E098C57BEE2436D76 /* StorageService.swift */; };
 		C438D5D8876115BB576FF8FE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 462F15F81C0442317081C5EB /* Constants.swift */; };
+		CC0E8BF108397E0D0B28FE67 /* ConnectProfileHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */; };
 		CEE35E6D319FC5335AAD0D74 /* MatchesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2976395A3932307E2D2B960 /* MatchesView.swift */; };
 		D5F751147C89C4445EC2752A /* DeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25464A7A6B8484A571408E6D /* DeepLinkHandler.swift */; };
 		DF6EF3259CC99F54FC6952EF /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E6159F8DBC428A2811B432 /* NetworkError.swift */; };
@@ -70,10 +76,6 @@
 		F8C0FC5924DDFB6ADF4F21BB /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 015ABB13D19287E17C80378A /* ChatView.swift */; };
 		F9405CE89A6E69200925B1B5 /* EKKOConnectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB39030676E81329E1BC87B5 /* EKKOConnectApp.swift */; };
 		FA79A68C6AF53C1C85AC0877 /* EmojiPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C87F8CB757DBBC151809C62 /* EmojiPickerSheet.swift */; };
-		5E32D1A48091B4F42E9C0C02 /* GlobePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E32D1A48091B4F42E9C0C01 /* GlobePin.swift */; };
-		5E32D1A48091B4F42E9C0C04 /* GlobeSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E32D1A48091B4F42E9C0C03 /* GlobeSceneView.swift */; };
-		5E32D1A48091B4F42E9C0C06 /* GlobeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E32D1A48091B4F42E9C0C05 /* GlobeView.swift */; };
-		5E32D1A48091B4F42E9C0D02 /* coastlines.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 5E32D1A48091B4F42E9C0D01 /* coastlines.geojson */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,13 +84,14 @@
 		06E6159F8DBC428A2811B432 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		111182E0860949B7CD2A97E7 /* ProfileSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetupView.swift; sourceTree = "<group>"; };
 		112188F5EBEFDFFE01282BB2 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileHeroView.swift; sourceTree = "<group>"; };
 		1B5099770EB5143E66F61661 /* EKKOFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOFont.swift; sourceTree = "<group>"; };
-		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		25464A7A6B8484A571408E6D /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
 		27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchCelebrationOverlay.swift; sourceTree = "<group>"; };
+		2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */ = {isa = PBXFileReference; path = coastlines.geojson; sourceTree = "<group>"; };
 		37599C761D0200DAE7F3FD8C /* CompleteProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteProfileView.swift; sourceTree = "<group>"; };
 		3C2A698D4ADD418F1A28B37E /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		3CD02AC42F91833400CECC5E /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; name = Products.storekit; path = EKKOConnect/Resources/Products.storekit; sourceTree = "<group>"; };
 		3E8DACECBC06504D944E9928 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		4477E6AA1C95510FD0FE5B75 /* ConnectMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectMessage.swift; sourceTree = "<group>"; };
 		462F15F81C0442317081C5EB /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -101,6 +104,7 @@
 		7CA70C2381F53D3DEEA3BE99 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
 		7F196972C0FE82EA4A7B9468 /* EKKOConnect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EKKOConnect.entitlements; sourceTree = "<group>"; };
 		7FA796FEFEEF21ACBD9272F1 /* ConnectSwipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSwipe.swift; sourceTree = "<group>"; };
+		811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		85FE6C07E51E526F3BC4299A /* ConnectProfileCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileCard.swift; sourceTree = "<group>"; };
 		871BC70E098C57BEE2436D76 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
 		8785EFD367E67672B664E3B3 /* TwitterPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPreview.swift; sourceTree = "<group>"; };
@@ -111,6 +115,8 @@
 		94763DBB8AE7EE82754BBDB6 /* InstagramPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstagramPreview.swift; sourceTree = "<group>"; };
 		95847590D257E624076B08A2 /* ReportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportSheet.swift; sourceTree = "<group>"; };
 		99D29F132143689C326F8305 /* LikesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikesView.swift; sourceTree = "<group>"; };
+		A043BF395AB7DECF8934F57D /* GlobePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobePin.swift; sourceTree = "<group>"; };
+		AFA357290B949894640624B9 /* GlobeSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeSceneView.swift; sourceTree = "<group>"; };
 		B05B535B091DE1E1D3B9E12B /* LikeNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeNoteSheet.swift; sourceTree = "<group>"; };
 		B0D2D8890B2231560DA21604 /* SkeletonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonView.swift; sourceTree = "<group>"; };
 		B4D4E206CAAC1783C689691E /* View+Glass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Glass.swift"; sourceTree = "<group>"; };
@@ -124,6 +130,7 @@
 		CD2EA2BD53985DE45F5B5447 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		CE5E3FA89419F1E6D935732C /* LegalLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalLinks.swift; sourceTree = "<group>"; };
 		CE6293A856B21826507BDAAD /* MediaSlotGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSlotGrid.swift; sourceTree = "<group>"; };
+		D08B3118FD262A697877D048 /* Products.storekit */ = {isa = PBXFileReference; path = Products.storekit; sourceTree = "<group>"; };
 		D2B61B9994A7B2E2DFB0D5A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D7556E0055DF8FFC25312217 /* ArchesRegularItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ArchesRegularItalic.ttf; sourceTree = "<group>"; };
 		DD9F5F79C21AB212732A7643 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
@@ -135,15 +142,12 @@
 		E7457FFE66BC891D4429F592 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E9B2983FEC60425BB2002CBB /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		EB9478C8C0DE104FC8483C57 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		F1E9E97572DF4DE816EE020F /* GlobeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeView.swift; sourceTree = "<group>"; };
 		F5E35A587910461E3D00A183 /* EKKOTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOTheme.swift; sourceTree = "<group>"; };
 		F751F506688A2D55E2B49DD6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		FA892215FACB6BF82AA3E680 /* SocialLogos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLogos.swift; sourceTree = "<group>"; };
 		FB39030676E81329E1BC87B5 /* EKKOConnectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOConnectApp.swift; sourceTree = "<group>"; };
 		FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeCard.swift; sourceTree = "<group>"; };
-		5E32D1A48091B4F42E9C0C01 /* GlobePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobePin.swift; sourceTree = "<group>"; };
-		5E32D1A48091B4F42E9C0C03 /* GlobeSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeSceneView.swift; sourceTree = "<group>"; };
-		5E32D1A48091B4F42E9C0C05 /* GlobeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeView.swift; sourceTree = "<group>"; };
-		5E32D1A48091B4F42E9C0D01 /* coastlines.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = coastlines.geojson; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -240,7 +244,7 @@
 				7FA796FEFEEF21ACBD9272F1 /* ConnectSwipe.swift */,
 				462F15F81C0442317081C5EB /* Constants.swift */,
 				DE831145F32102D043E1C487 /* Enums.swift */,
-				5E32D1A48091B4F42E9C0C01 /* GlobePin.swift */,
+				A043BF395AB7DECF8934F57D /* GlobePin.swift */,
 				3E8DACECBC06504D944E9928 /* Profile.swift */,
 				CD2EA2BD53985DE45F5B5447 /* User.swift */,
 			);
@@ -318,7 +322,6 @@
 		664977B35ED7BE2ECAD3A358 = {
 			isa = PBXGroup;
 			children = (
-				3CD02AC42F91833400CECC5E /* Products.storekit */,
 				57D1187DC98859C93E84B92B /* EKKOConnect */,
 				BA4DC6DA936ED0FACB4A48E1 /* Products */,
 			);
@@ -368,9 +371,11 @@
 			isa = PBXGroup;
 			children = (
 				D2B61B9994A7B2E2DFB0D5A3 /* Assets.xcassets */,
-				5E32D1A48091B4F42E9C0D01 /* coastlines.geojson */,
+				2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */,
 				7F196972C0FE82EA4A7B9468 /* EKKOConnect.entitlements */,
 				BDBF6E9D03EE9B1A1DE0E7B7 /* Info.plist */,
+				811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */,
+				D08B3118FD262A697877D048 /* Products.storekit */,
 				34154F18B225397470710F03 /* Fonts */,
 			);
 			path = Resources;
@@ -398,8 +403,8 @@
 			children = (
 				7CA70C2381F53D3DEEA3BE99 /* DiscoverView.swift */,
 				6AD79D17365D6EF42685880E /* DiscoverViewModel.swift */,
-				5E32D1A48091B4F42E9C0C03 /* GlobeSceneView.swift */,
-				5E32D1A48091B4F42E9C0C05 /* GlobeView.swift */,
+				AFA357290B949894640624B9 /* GlobeSceneView.swift */,
+				F1E9E97572DF4DE816EE020F /* GlobeView.swift */,
 				B05B535B091DE1E1D3B9E12B /* LikeNoteSheet.swift */,
 				27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */,
 				FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */,
@@ -444,6 +449,7 @@
 		FCB7388F8ADED7FC34C9DE14 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */,
 				E6C3DE4E19C55050385849AF /* ProfileView.swift */,
 			);
 			path = Profile;
@@ -482,6 +488,11 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					FD8336ECB0B238202B2AD9B0 = {
+						DevelopmentTeam = "";
+					};
+				};
 			};
 			buildConfigurationList = 5EE46B4119D061763E04ED6B /* Build configuration list for PBXProject "EKKOConnect" */;
 			developmentRegion = en;
@@ -512,11 +523,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3CD02AC52F91833400CECC5E /* Products.storekit in Resources */,
 				768BDA4A31ADE99DAFD8CDFB /* ArchesRegular.ttf in Resources */,
 				0BC9FED059C44D8E0F03BCED /* ArchesRegularItalic.ttf in Resources */,
-				5E32D1A48091B4F42E9C0D02 /* coastlines.geojson in Resources */,
 				E78566061BF105349FD37E2A /* Assets.xcassets in Resources */,
+				6419836DA8FDF8732059D0F2 /* PrivacyInfo.xcprivacy in Resources */,
+				1E321C35DAED39CAEF425D81 /* Products.storekit in Resources */,
+				42F7C87B23E2204320184E8A /* coastlines.geojson in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -539,6 +551,7 @@
 				B45A9EEDACEFD70001D310F2 /* ConnectMessage.swift in Sources */,
 				99F0D9CB3DF848E1E918D2C4 /* ConnectProfile.swift in Sources */,
 				88B70FED49166AF787F7C30A /* ConnectProfileCard.swift in Sources */,
+				CC0E8BF108397E0D0B28FE67 /* ConnectProfileHeroView.swift in Sources */,
 				6E90CDDD7C12D88CE6C5FDCD /* ConnectSwipe.swift in Sources */,
 				C438D5D8876115BB576FF8FE /* Constants.swift in Sources */,
 				042C8F5257012667CCA0605E /* Date+Relative.swift in Sources */,
@@ -551,9 +564,9 @@
 				9F660FD92B5AF6F09363B149 /* EditableAvatarView.swift in Sources */,
 				FA79A68C6AF53C1C85AC0877 /* EmojiPickerSheet.swift in Sources */,
 				182D176CDAFE74938414D202 /* Enums.swift in Sources */,
-				5E32D1A48091B4F42E9C0C02 /* GlobePin.swift in Sources */,
-				5E32D1A48091B4F42E9C0C04 /* GlobeSceneView.swift in Sources */,
-				5E32D1A48091B4F42E9C0C06 /* GlobeView.swift in Sources */,
+				73620589D2CFB383D2B3256C /* GlobePin.swift in Sources */,
+				34B0FD178FAED2EB05CB4FBE /* GlobeSceneView.swift in Sources */,
+				1B95F39D1C91D3BE049ED190 /* GlobeView.swift in Sources */,
 				59B4404A9D99ECE7E4C31F1B /* InstagramPreview.swift in Sources */,
 				B3324319A2A650E6B33BA338 /* LegalLinks.swift in Sources */,
 				8697DA9C62887B598633DE9F /* LikeNoteSheet.swift in Sources */,
@@ -600,7 +613,7 @@
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 14;
-				DEVELOPMENT_TEAM = X429L5AGXB;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -743,7 +756,7 @@
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 14;
-				DEVELOPMENT_TEAM = X429L5AGXB;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

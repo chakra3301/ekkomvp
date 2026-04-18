@@ -1000,6 +1000,11 @@ model ConnectProfile {
 
   // Status
   isActive  Boolean  @default(true) @map("is_active")
+
+  // Profile template — null/"DEFAULT" = current ConnectProfileCard, "HERO" = full-bleed hero variant.
+  // Optional / advanced; not selectable during initial setup.
+  profileTemplate String? @map("profile_template") @db.VarChar(50)
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

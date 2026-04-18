@@ -81,34 +81,58 @@ struct ProfileView: View {
                 }
                 .padding(.horizontal, 16)
 
-                // Profile card
-                ConnectProfileCard(
-                    displayName: appState.currentProfile?.displayName ?? "Your Name",
-                    avatarUrl: appState.currentProfile?.avatarUrl,
-                    headline: profile.headline,
-                    location: profile.location,
-                    lookingFor: profile.lookingFor,
-                    bio: profile.bio,
-                    mediaSlots: profile.mediaSlots,
-                    prompts: profile.prompts,
-                    instagramHandle: profile.instagramHandle,
-                    twitterHandle: profile.twitterHandle,
-                    websiteUrl: profile.websiteUrl,
-                    connectTier: profile.connectTier,
-                    isAdmin: appState.isAdmin,
-                    editableAvatar: true
-                )
-                .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.cardRadius))
+                // Profile body — Hero variant or Default card
+                switch ConnectProfileTemplate.from(profile.profileTemplate) {
+                case .hero:
+                    ConnectProfileHeroView(
+                        displayName: appState.currentProfile?.displayName ?? "Your Name",
+                        avatarUrl: appState.currentProfile?.avatarUrl,
+                        headline: profile.headline,
+                        location: profile.location,
+                        lookingFor: profile.lookingFor,
+                        bio: profile.bio,
+                        mediaSlots: profile.mediaSlots,
+                        prompts: profile.prompts,
+                        instagramHandle: profile.instagramHandle,
+                        twitterHandle: profile.twitterHandle,
+                        websiteUrl: profile.websiteUrl,
+                        connectTier: profile.connectTier,
+                        likesReceivedCount: profile.likesReceivedCount,
+                        matchesCount: profile.matchesCount,
+                        isAdmin: appState.isAdmin
+                    )
 
-                // Stats
-                HStack(spacing: 12) {
-                    StatCard(value: profile.likesReceivedCount, label: "Likes Received")
-                    StatCard(value: profile.matchesCount, label: "Matches")
+                case .default:
+                    ConnectProfileCard(
+                        displayName: appState.currentProfile?.displayName ?? "Your Name",
+                        avatarUrl: appState.currentProfile?.avatarUrl,
+                        headline: profile.headline,
+                        location: profile.location,
+                        lookingFor: profile.lookingFor,
+                        bio: profile.bio,
+                        mediaSlots: profile.mediaSlots,
+                        prompts: profile.prompts,
+                        instagramHandle: profile.instagramHandle,
+                        twitterHandle: profile.twitterHandle,
+                        websiteUrl: profile.websiteUrl,
+                        connectTier: profile.connectTier,
+                        isAdmin: appState.isAdmin,
+                        editableAvatar: true
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.cardRadius))
+
+                    // Stats card pair — only shown for the default card; the
+                    // Hero view has its own inline stats row.
+                    HStack(spacing: 12) {
+                        StatCard(value: profile.likesReceivedCount, label: "Likes Received")
+                        StatCard(value: profile.matchesCount, label: "Matches")
+                    }
+                    .padding(.horizontal, 16)
                 }
-                .padding(.horizontal, 16)
             }
             .padding(.bottom, 24)
         }
+        .coordinateSpace(name: "heroScroll")
         .refreshable { await loadProfile() }
     }
 
