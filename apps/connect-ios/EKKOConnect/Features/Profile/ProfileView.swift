@@ -590,7 +590,45 @@ struct ProfileView: View {
                 multiline: false,
                 text: titleBinding
             )
+
+        case .audioMeta(let index):
+            // BPM + KEY editor for an audio slot (Music template).
+            let bpmBinding = Binding<Int?>(
+                get: { audioMetaAt(index: index).bpm },
+                set: { setAudioBPM(index: index, $0) }
+            )
+            let keyBinding = Binding<String?>(
+                get: { audioMetaAt(index: index).key },
+                set: { setAudioKey(index: index, $0) }
+            )
+            ProfileAudioMetaSheet(bpm: bpmBinding, key: keyBinding)
         }
+    }
+
+    private func audioMetaAt(index: Int) -> (bpm: Int?, key: String?) {
+        let sorted = draft.mediaSlots.sorted { $0.sortOrder < $1.sortOrder }
+        guard index < sorted.count else { return (nil, nil) }
+        return (sorted[index].bpm, sorted[index].key)
+    }
+
+    private func setAudioBPM(index: Int, _ value: Int?) {
+        let sorted = draft.mediaSlots.sorted { $0.sortOrder < $1.sortOrder }
+        guard index < sorted.count else { return }
+        let target = sorted[index]
+        guard let storageIndex = draft.mediaSlots.firstIndex(where: {
+            $0.url == target.url && $0.sortOrder == target.sortOrder
+        }) else { return }
+        draft.mediaSlots[storageIndex].bpm = value
+    }
+
+    private func setAudioKey(index: Int, _ value: String?) {
+        let sorted = draft.mediaSlots.sorted { $0.sortOrder < $1.sortOrder }
+        guard index < sorted.count else { return }
+        let target = sorted[index]
+        guard let storageIndex = draft.mediaSlots.firstIndex(where: {
+            $0.url == target.url && $0.sortOrder == target.sortOrder
+        }) else { return }
+        draft.mediaSlots[storageIndex].key = value
     }
 
     private func mediaTitleAt(index: Int) -> String {
@@ -620,7 +658,8 @@ struct ProfileView: View {
             onTapLookingFor:       { activeEditor = .lookingFor },
             onTapPrompts:          { activeEditor = .prompts },
             onTapSocials:          { activeEditor = .socials },
-            onEditMediaTitle:      { idx in activeEditor = .mediaTitle(idx) }
+            onEditMediaTitle:      { idx in activeEditor = .mediaTitle(idx) },
+            onEditAudioMeta:       { idx in activeEditor = .audioMeta(idx) }
         )
     }
 

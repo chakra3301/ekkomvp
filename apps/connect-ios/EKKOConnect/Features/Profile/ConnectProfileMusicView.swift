@@ -161,10 +161,7 @@ struct ConnectProfileMusicView: View {
                         // edit mode, plain text in display.
                         captionRow(slot: cur)
 
-                        Text(metaLine(for: cur))
-                            .font(.custom(mono, size: 10))
-                            .tracking(1.2)
-                            .foregroundStyle(.secondary)
+                        metaLineView(for: cur)
                     }
                     Spacer(minLength: 0)
                 }
@@ -379,7 +376,7 @@ struct ConnectProfileMusicView: View {
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(slot.title != nil ? .primary : .secondary)
                         .lineLimit(1)
-                    Text(metaLine(for: slot))
+                    Text(metaLineText(for: slot))
                         .font(.custom(mono, size: 9))
                         .tracking(1.0)
                         .foregroundStyle(.secondary)
@@ -606,25 +603,48 @@ struct ConnectProfileMusicView: View {
         // The .onChange binding above swaps the player and resumes if needed.
     }
 
-    // MARK: - Synthetic metadata
+    // MARK: - Track metadata (real or fallback)
     //
-    // BPM, KEY, LENGTH derived from sortOrder so each slot has stable
-    // plausible values. Real values would require an audio metadata
-    // pipeline at upload (BPM detection, key estimation) which Connect
-    // doesn't currently have.
+    // BPM and KEY are user-entered on the MediaSlot. Length is still
+    // synthesized — Connect doesn't read AVAsset duration yet. When
+    // bpm/key aren't set we show "—" as the explicit placeholder so the
+    // empty state is honest and clearly tappable in edit mode.
 
-    private func metaLine(for slot: MediaSlot) -> String {
-        "\(syntheticBPM(for: slot)) BPM  ·  KEY \(syntheticKey(for: slot))  ·  \(syntheticLength(for: slot))"
+    /// Inline metadata line for the now-playing card. Tappable in edit
+    /// mode to open the BPM + KEY editor, plain text otherwise.
+    @ViewBuilder
+    private func metaLineView(for slot: MediaSlot) -> some View {
+        let text = metaLineText(for: slot)
+        if let onEditMeta = editActions?.onEditAudioMeta {
+            Button {
+                onEditMeta(storageIndex(for: slot))
+            } label: {
+                HStack(spacing: 6) {
+                    Text(text)
+                        .font(.custom(mono, size: 10))
+                        .tracking(1.2)
+                        .foregroundStyle(.secondary)
+                    Image(systemName: "pencil")
+                        .font(.system(size: 8, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .padding(3)
+                        .background(Circle().fill(EKKOTheme.primary))
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        } else {
+            Text(text)
+                .font(.custom(mono, size: 10))
+                .tracking(1.2)
+                .foregroundStyle(.secondary)
+        }
     }
 
-    private func syntheticBPM(for slot: MediaSlot) -> Int {
-        let base = 70 + (slot.sortOrder * 17 + 11) % 80
-        return base
-    }
-
-    private func syntheticKey(for slot: MediaSlot) -> String {
-        let keys = ["C", "Cm", "D", "Dm", "Em", "F", "Fm", "G", "Gm", "Am", "Bm", "Abm"]
-        return keys[(slot.sortOrder * 5 + 3) % keys.count]
+    private func metaLineText(for slot: MediaSlot) -> String {
+        let bpm = slot.bpm.map { "\($0)" } ?? "—"
+        let key = slot.key?.isEmpty == false ? slot.key! : "—"
+        return "\(bpm) BPM  ·  KEY \(key)  ·  \(syntheticLength(for: slot))"
     }
 
     private func syntheticLength(for slot: MediaSlot) -> String {

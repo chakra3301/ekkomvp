@@ -14,6 +14,7 @@ enum ProfileEditSection: Identifiable {
     case prompts
     case socials
     case mediaTitle(Int) // edit one MediaSlot's caption
+    case audioMeta(Int)  // edit one audio MediaSlot's BPM + KEY
 
     var id: String {
         switch self {
@@ -24,6 +25,7 @@ enum ProfileEditSection: Identifiable {
         case .prompts: return "prompts"
         case .socials: return "socials"
         case .mediaTitle(let i): return "mediaTitle-\(i)"
+        case .audioMeta(let i): return "audioMeta-\(i)"
         }
     }
 
@@ -36,6 +38,7 @@ enum ProfileEditSection: Identifiable {
         case .prompts: return "Prompts"
         case .socials: return "Socials"
         case .mediaTitle: return "Caption"
+        case .audioMeta: return "Track Info"
         }
     }
 }
@@ -53,6 +56,9 @@ struct ProfileEditActions {
     var onTapSocials: () -> Void
     /// Per-slot caption editor. Optional — only Editorial uses captions.
     var onEditMediaTitle: ((Int) -> Void)? = nil
+    /// Per-slot audio metadata editor (BPM + KEY). Optional — only the
+    /// Music template surfaces this.
+    var onEditAudioMeta: ((Int) -> Void)? = nil
 }
 
 // MARK: - Editable section wrapper
@@ -324,6 +330,110 @@ struct ProfilePromptsSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
                 }
+            }
+        }
+    }
+}
+
+// MARK: - Audio metadata sheet (BPM + KEY)
+//
+// Used by the Music template to let the user fill in the BPM and musical
+// key of an audio slot. Connect doesn't analyse audio at upload, so these
+// values are user-entered and stored on the MediaSlot JSON.
+
+struct ProfileAudioMetaSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    @Binding var bpm: Int?
+    @Binding var key: String?
+
+    @State private var bpmDraft: String = ""
+    @State private var keyDraft: String = ""
+
+    /// Common keys, surfaced as quick chips so users don't have to type
+    /// them in. They can still type a custom value (e.g. DJ Camelot keys
+    /// like "8A") in the field directly.
+    private let suggestedKeys = [
+        "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+        "Cm", "C#m", "Dm", "D#m", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "A#m", "Bm",
+    ]
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("BPM")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.secondary)
+                        TextField("e.g. 128", text: $bpmDraft)
+                            .keyboardType(.numberPad)
+                            .padding(12)
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Key")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.secondary)
+                        TextField("e.g. Am", text: $keyDraft)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
+                            .padding(12)
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                        // Quick-pick chips for the common 24.
+                        Text("Suggestions")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 4)
+                        LazyVGrid(
+                            columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 6),
+                            spacing: 6
+                        ) {
+                            ForEach(suggestedKeys, id: \.self) { k in
+                                Button {
+                                    keyDraft = k
+                                } label: {
+                                    Text(k)
+                                        .font(.caption.monospaced())
+                                        .foregroundStyle(keyDraft == k ? Color.white : .primary)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            keyDraft == k ? EKKOTheme.primary : Color.secondary.opacity(0.12),
+                                            in: Capsule()
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+
+                    Spacer(minLength: 0)
+                }
+                .padding(20)
+            }
+            .navigationTitle("Track Info")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        bpm = Int(bpmDraft.trimmingCharacters(in: .whitespaces))
+                        let k = keyDraft.trimmingCharacters(in: .whitespaces)
+                        key = k.isEmpty ? nil : k
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear {
+                bpmDraft = bpm.map { String($0) } ?? ""
+                keyDraft = key ?? ""
             }
         }
     }

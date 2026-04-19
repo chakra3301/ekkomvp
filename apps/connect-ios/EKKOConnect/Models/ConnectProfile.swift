@@ -144,17 +144,32 @@ struct MediaSlot: Codable, Equatable {
     /// Optional cover image for audio slots (album art). Falls back to the
     /// gradient + waveform glyph when nil.
     var coverUrl: String?
+    /// User-entered BPM for audio slots. Connect doesn't analyse audio at
+    /// upload — this is filled in by the user via the Music template's
+    /// edit-mode metadata sheet.
+    var bpm: Int?
+    /// User-entered musical key for audio slots (e.g. "Abm", "C#", "F").
+    /// Same provenance as `bpm`.
+    var key: String?
 
-    init(url: String, mediaType: String, sortOrder: Int, title: String? = nil, coverUrl: String? = nil) {
+    init(url: String,
+         mediaType: String,
+         sortOrder: Int,
+         title: String? = nil,
+         coverUrl: String? = nil,
+         bpm: Int? = nil,
+         key: String? = nil) {
         self.url = url
         self.mediaType = mediaType
         self.sortOrder = sortOrder
         self.title = title
         self.coverUrl = coverUrl
+        self.bpm = bpm
+        self.key = key
     }
 
     enum CodingKeys: String, CodingKey {
-        case url, mediaType, sortOrder, title, coverUrl
+        case url, mediaType, sortOrder, title, coverUrl, bpm, key
     }
 
     init(from decoder: Decoder) throws {
@@ -164,18 +179,23 @@ struct MediaSlot: Codable, Equatable {
         sortOrder = try c.decode(Int.self, forKey: .sortOrder)
         title = try c.decodeIfPresent(String.self, forKey: .title)
         coverUrl = try c.decodeIfPresent(String.self, forKey: .coverUrl)
+        bpm = try c.decodeIfPresent(Int.self, forKey: .bpm)
+        key = try c.decodeIfPresent(String.self, forKey: .key)
     }
 
-    /// Returns a copy with a new sortOrder, preserving title + coverUrl.
-    /// Used by the reorder logic so optional fields don't get nuked when
-    /// slots swap positions.
+    /// Returns a copy with a new sortOrder, preserving every optional
+    /// field. Used by the reorder logic so user-entered metadata
+    /// (title / coverUrl / bpm / key) doesn't get nuked when slots swap
+    /// positions.
     func with(sortOrder newSortOrder: Int) -> MediaSlot {
         MediaSlot(
             url: url,
             mediaType: mediaType,
             sortOrder: newSortOrder,
             title: title,
-            coverUrl: coverUrl
+            coverUrl: coverUrl,
+            bpm: bpm,
+            key: key
         )
     }
 

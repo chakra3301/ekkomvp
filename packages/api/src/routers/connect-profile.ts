@@ -15,6 +15,9 @@ const mediaSlotSchema = z.object({
   title: z.string().max(100).optional(),
   // Optional cover image URL — used for audio slots (album art).
   coverUrl: z.string().max(500).optional(),
+  // Optional user-entered audio metadata (Music template).
+  bpm: z.number().int().min(20).max(400).optional(),
+  key: z.string().max(8).optional(),
 });
 
 const promptSchema = z.object({
