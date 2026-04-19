@@ -81,6 +81,7 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
     case `default` = "DEFAULT"
     case hero      = "HERO"
     case editorial = "EDITORIAL"
+    case stack     = "STACK"
 
     var id: String { rawValue }
 
@@ -89,6 +90,7 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
         case .default:   return "Default"
         case .hero:      return "Hero"
         case .editorial: return "Editorial"
+        case .stack:     return "Stack"
         }
     }
 
@@ -100,6 +102,8 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
             return "Full-bleed cover with a parallax effect and an oversized name overlay. Best for portfolio-forward creatives."
         case .editorial:
             return "Magazine-style masthead, drop-cap bio, and a 2-column work grid. Best for writers, designers, and feature-worthy work."
+        case .stack:
+            return "Swipeable card deck — one piece of work front-and-center at a time. Best when each piece deserves the spotlight."
         }
     }
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01D7EE7762A72ADB273C3B93 /* ConnectProfileStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76548A4B2DC105D6ABA1639 /* ConnectProfileStackView.swift */; };
 		042C8F5257012667CCA0605E /* Date+Relative.swift in Sources */ = {isa = PBXBuildFile; fileRef = C308161AFFEF25202B6ECF1F /* Date+Relative.swift */; };
 		059B52868D1C468D5B2DC47E /* SwipeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */; };
 		0BC9FED059C44D8E0F03BCED /* ArchesRegularItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7556E0055DF8FFC25312217 /* ArchesRegularItalic.ttf */; };
@@ -152,6 +153,7 @@
 		E45AFA2F36F18688B5B69096 /* UpgradeModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeModal.swift; sourceTree = "<group>"; };
 		E6C3DE4E19C55050385849AF /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		E7457FFE66BC891D4429F592 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		E76548A4B2DC105D6ABA1639 /* ConnectProfileStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileStackView.swift; sourceTree = "<group>"; };
 		E9B2983FEC60425BB2002CBB /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		EB9478C8C0DE104FC8483C57 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		F1E9E97572DF4DE816EE020F /* GlobeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeView.swift; sourceTree = "<group>"; };
@@ -475,6 +477,7 @@
 			children = (
 				377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */,
 				142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */,
+				E76548A4B2DC105D6ABA1639 /* ConnectProfileStackView.swift */,
 				937D6CD74F7827950B16C1F7 /* ProfileSectionEditors.swift */,
 				E6C3DE4E19C55050385849AF /* ProfileView.swift */,
 			);
@@ -580,6 +583,7 @@
 				88B70FED49166AF787F7C30A /* ConnectProfileCard.swift in Sources */,
 				B5D6F7AEACEF329BE2579BC4 /* ConnectProfileEditorialView.swift in Sources */,
 				CC0E8BF108397E0D0B28FE67 /* ConnectProfileHeroView.swift in Sources */,
+				01D7EE7762A72ADB273C3B93 /* ConnectProfileStackView.swift in Sources */,
 				6E90CDDD7C12D88CE6C5FDCD /* ConnectSwipe.swift in Sources */,
 				C438D5D8876115BB576FF8FE /* Constants.swift in Sources */,
 				D47C740DBB3650B711C976C8 /* CustomTabBar.swift in Sources */,

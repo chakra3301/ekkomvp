@@ -413,6 +413,7 @@ struct TemplatePreviewCard: View {
         case .default:   defaultPreview
         case .hero:      heroPreview
         case .editorial: editorialPreview
+        case .stack:     stackPreview
         }
     }
 
@@ -502,6 +503,56 @@ struct TemplatePreviewCard: View {
                 .padding(.horizontal, 16)
             }
             .padding(.bottom, 8)
+        }
+    }
+
+    /// Schematic of ConnectProfileStackView: tiny header + 3-card stack
+    /// with prev/Open/next controls.
+    private var stackPreview: some View {
+        ZStack {
+            Color(.systemBackground)
+            VStack(spacing: 6) {
+                // Compact header — circle avatar + 2 name bars
+                HStack(spacing: 6) {
+                    Circle().fill(EKKOTheme.primary.opacity(0.4)).frame(width: 16, height: 16)
+                    VStack(alignment: .leading, spacing: 2) {
+                        RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
+                        RoundedRectangle(cornerRadius: 1).fill(.secondary.opacity(0.4)).frame(width: 32, height: 2)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 14)
+                .padding(.top, 10)
+
+                // 3-card stack — back two slightly offset behind front
+                ZStack {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(.secondary.opacity(0.15))
+                        .frame(width: 90, height: 60)
+                        .offset(y: 12)
+                        .scaleEffect(0.92)
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(.secondary.opacity(0.25))
+                        .frame(width: 90, height: 60)
+                        .offset(y: 6)
+                        .scaleEffect(0.96)
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(EKKOTheme.primary.opacity(0.5))
+                        .frame(width: 90, height: 60)
+                        .shadow(color: .black.opacity(0.3), radius: 6, y: 4)
+                }
+                .padding(.top, 4)
+
+                // Controls — left arrow, Open pill, right arrow
+                HStack(spacing: 4) {
+                    Capsule().fill(.secondary.opacity(0.25)).frame(width: 14, height: 8)
+                    Capsule().fill(EKKOTheme.primary).frame(width: 50, height: 8)
+                    Capsule().fill(.secondary.opacity(0.25)).frame(width: 14, height: 8)
+                }
+                .padding(.top, 12)
+
+                Spacer()
+            }
         }
     }
 
