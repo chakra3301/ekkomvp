@@ -72,6 +72,7 @@
 		C2398567163841428B28F77A /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 871BC70E098C57BEE2436D76 /* StorageService.swift */; };
 		C438D5D8876115BB576FF8FE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 462F15F81C0442317081C5EB /* Constants.swift */; };
 		C61666E3C2DAD3E467C97B61 /* JPLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 723A91A9A7864B5532F7A751 /* JPLabels.swift */; };
+		CB435209EB40203CA7B0F8DE /* ConnectProfileVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0D70B1A8956D3C537DF6621 /* ConnectProfileVideoView.swift */; };
 		CC0E8BF108397E0D0B28FE67 /* ConnectProfileHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */; };
 		CEE35E6D319FC5335AAD0D74 /* MatchesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2976395A3932307E2D2B960 /* MatchesView.swift */; };
 		D47C740DBB3650B711C976C8 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9279051290A85527FE8F6A /* CustomTabBar.swift */; };
@@ -152,6 +153,7 @@
 		CE5E3FA89419F1E6D935732C /* LegalLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalLinks.swift; sourceTree = "<group>"; };
 		CE6293A856B21826507BDAAD /* MediaSlotGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSlotGrid.swift; sourceTree = "<group>"; };
 		D08B3118FD262A697877D048 /* Products.storekit */ = {isa = PBXFileReference; path = Products.storekit; sourceTree = "<group>"; };
+		D0D70B1A8956D3C537DF6621 /* ConnectProfileVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileVideoView.swift; sourceTree = "<group>"; };
 		D2B61B9994A7B2E2DFB0D5A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D7556E0055DF8FFC25312217 /* ArchesRegularItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ArchesRegularItalic.ttf; sourceTree = "<group>"; };
 		DD9F5F79C21AB212732A7643 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
@@ -490,6 +492,7 @@
 				48BD9923DAEDAA8B026A45DF /* ConnectProfileSplitView.swift */,
 				E76548A4B2DC105D6ABA1639 /* ConnectProfileStackView.swift */,
 				7D5729266ADD7D748C1D8DC0 /* ConnectProfileTerminalView.swift */,
+				D0D70B1A8956D3C537DF6621 /* ConnectProfileVideoView.swift */,
 				937D6CD74F7827950B16C1F7 /* ProfileSectionEditors.swift */,
 				E6C3DE4E19C55050385849AF /* ProfileView.swift */,
 			);
@@ -599,6 +602,7 @@
 				1478CF35F13616A28953BE62 /* ConnectProfileSplitView.swift in Sources */,
 				01D7EE7762A72ADB273C3B93 /* ConnectProfileStackView.swift in Sources */,
 				578A9AD7845C249D6C59D746 /* ConnectProfileTerminalView.swift in Sources */,
+				CB435209EB40203CA7B0F8DE /* ConnectProfileVideoView.swift in Sources */,
 				6E90CDDD7C12D88CE6C5FDCD /* ConnectSwipe.swift in Sources */,
 				C438D5D8876115BB576FF8FE /* Constants.swift in Sources */,
 				D47C740DBB3650B711C976C8 /* CustomTabBar.swift in Sources */,

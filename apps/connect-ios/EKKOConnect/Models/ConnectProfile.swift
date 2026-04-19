@@ -85,6 +85,7 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
     case split     = "SPLIT"
     case terminal  = "TERMINAL"
     case photo     = "PHOTO"
+    case video     = "VIDEO"
 
     var id: String { rawValue }
 
@@ -97,6 +98,7 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
         case .split:     return "Split"
         case .terminal:  return "Terminal"
         case .photo:     return "Photo"
+        case .video:     return "Video"
         }
     }
 
@@ -116,6 +118,8 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
             return "Monospace command-line aesthetic — your profile rendered as $ whoami, ls, grep output. Best for devs, hackers, and zine-y looks."
         case .photo:
             return "Featured 3:4 frame + 4-column contact sheet. Best for photographers — your photos get the spotlight, others swappable below."
+        case .video:
+            return "Cinemascope 2.39:1 player with REC / TC HUD and a horizontal reel carousel. Best for filmmakers and motion artists."
         }
     }
 

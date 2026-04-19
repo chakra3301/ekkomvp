@@ -417,6 +417,7 @@ struct TemplatePreviewCard: View {
         case .split:     splitPreview
         case .terminal:  terminalPreview
         case .photo:     photoPreview
+        case .video:     videoPreview
         }
     }
 
@@ -506,6 +507,59 @@ struct TemplatePreviewCard: View {
                 .padding(.horizontal, 16)
             }
             .padding(.bottom, 8)
+        }
+    }
+
+    /// Schematic of ConnectProfileVideoView: tiny header, cinemascope
+    /// 2.39:1 player with REC HUD, scrubber, horizontal reel of clips.
+    private var videoPreview: some View {
+        ZStack {
+            Color(.systemBackground)
+            VStack(spacing: 4) {
+                // Tiny header
+                HStack(spacing: 4) {
+                    Circle().fill(EKKOTheme.primary.opacity(0.4)).frame(width: 12, height: 12)
+                    RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
+                    Spacer()
+                }
+
+                // Cinemascope player (very wide, low)
+                ZStack(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(Color.black)
+                        .aspectRatio(2.39, contentMode: .fit)
+                    HStack(spacing: 2) {
+                        Circle().fill(.red).frame(width: 3, height: 3)
+                        RoundedRectangle(cornerRadius: 0.5).fill(.white).frame(width: 8, height: 2)
+                    }
+                    .padding(3)
+                }
+                .padding(.top, 6)
+
+                // Scrubber
+                ZStack(alignment: .leading) {
+                    Capsule().fill(.secondary.opacity(0.2)).frame(height: 1.5)
+                    Capsule().fill(EKKOTheme.primary).frame(width: 28, height: 1.5)
+                }
+                .padding(.top, 4)
+
+                // Horizontal reel
+                HStack(spacing: 3) {
+                    ForEach(0..<4, id: \.self) { i in
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(i == 0 ? EKKOTheme.primary.opacity(0.5) : .secondary.opacity(0.3))
+                            .frame(height: 22)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 2)
+                                    .stroke(i == 0 ? EKKOTheme.primary : Color.clear, lineWidth: 1)
+                            )
+                    }
+                }
+                .padding(.top, 6)
+
+                Spacer()
+            }
+            .padding(8)
         }
     }
 

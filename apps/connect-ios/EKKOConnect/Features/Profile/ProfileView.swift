@@ -261,6 +261,27 @@ struct ProfileView: View {
                 editActions: editActions
             )
 
+        case .video:
+            ConnectProfileVideoView(
+                displayName: displayName,
+                avatarUrl: avatarUrl,
+                username: appState.currentProfile?.username,
+                headline: headline,
+                location: location,
+                lookingFor: lookingFor,
+                bio: bio,
+                mediaSlots: mediaSlots,
+                prompts: prompts,
+                instagramHandle: instagram,
+                twitterHandle: twitter,
+                websiteUrl: website,
+                connectTier: profile.connectTier,
+                likesReceivedCount: profile.likesReceivedCount,
+                matchesCount: profile.matchesCount,
+                isAdmin: appState.isAdmin,
+                editActions: editActions
+            )
+
         case .default:
             ConnectProfileCard(
                 displayName: displayName,

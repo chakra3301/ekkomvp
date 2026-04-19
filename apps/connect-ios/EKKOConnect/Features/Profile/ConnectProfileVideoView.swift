@@ -1,17 +1,18 @@
 import SwiftUI
 import Kingfisher
 
-/// Photo variant of the Connect profile (template = "PHOTO").
-/// Featured 3:4 frame with EXIF-style overlays + 4-column contact sheet
-/// of all photo slots. Mirrors Variant 9 from the design handoff using
-/// EKKOTheme + Arches font.
+/// Video variant of the Connect profile (template = "VIDEO").
+/// Cinemascope 2.39:1 featured player + horizontal reel carousel.
+/// Mirrors Variant 8 from the design handoff.
 ///
-/// Connect doesn't carry real EXIF metadata on MediaSlots, so the
-/// "EXIF stripe" surfaces what we DO have — frame number, slot title
-/// (used as the caption), and the slot's media kind. When a user has
-/// no photo-type slots, we fall back to all media so video/3D-only
-/// creatives still see something coherent.
-struct ConnectProfilePhotoView: View {
+/// HUD overlays (REC indicator, aspect tag, synthetic timecode) wrap the
+/// featured player. Connect doesn't store real video duration/frame-rate
+/// metadata so the timecode/scrubber are aesthetic — they show what we
+/// can derive (slot index, kind, custom title).
+///
+/// Falls back to all media when the user has no video-typed slots so
+/// photo-only creatives still see something coherent.
+struct ConnectProfileVideoView: View {
     let displayName: String
     var avatarUrl: String?
     var username: String?
@@ -35,19 +36,20 @@ struct ConnectProfilePhotoView: View {
     @State private var selectedIndex: Int = 0
     @State private var presentedMedia: PresentedMedia?
 
-    /// Photo-type slots if the user has any, otherwise fall back to all
-    /// media so the template still renders something useful.
-    private var frames: [MediaSlot] {
+    /// Video-type slots if the user has any, else fall back to all media.
+    private var reel: [MediaSlot] {
         let sorted = mediaSlots.sorted { $0.sortOrder < $1.sortOrder }
-        let photoOnly = sorted.filter { !$0.isAudio && !$0.isModel && !$0.isVideo }
-        return photoOnly.isEmpty ? sorted : photoOnly
+        let videoOnly = sorted.filter { $0.isVideo }
+        return videoOnly.isEmpty ? sorted : videoOnly
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             compactHeader
-            featuredFrame
-            contactSheet
+            cinemascopePlayer
+            scrubber
+            reelCarousel
+            statsRow
             bioBlock
             promptsBlock
             lookingForBlock
@@ -122,63 +124,39 @@ struct ConnectProfilePhotoView: View {
             .clipShape(Capsule())
     }
 
-    // MARK: - Featured frame (big 3:4)
+    // MARK: - Cinemascope player (2.39:1)
 
-    private var featuredFrame: some View {
+    private var cinemascopePlayer: some View {
         Group {
-            if frames.isEmpty {
+            if reel.isEmpty {
                 EditableSection(action: editActions?.onTapMedia) {
-                    emptyFramePlaceholder
+                    emptyPlayerPlaceholder
                 }
                 .padding(.horizontal, 16)
             } else {
-                let safeIndex = min(selectedIndex, frames.count - 1)
-                let cur = frames[safeIndex]
+                let safeIndex = min(selectedIndex, reel.count - 1)
+                let cur = reel[safeIndex]
 
-                // Aspect-locked container: a clear Rectangle defines the
-                // 3:4 frame, the actual photo (or video/3D/audio) overlays
-                // and fills it. The photo area uses .onTapGesture for
-                // fullscreen so the caption inside the bottom stripe can
-                // be its own Button without conflicting with the outer tap.
                 Rectangle()
-                    .fill(Color.clear)
-                    .aspectRatio(3.0 / 4.0, contentMode: .fit)
+                    .fill(Color.black)
+                    .aspectRatio(2.39 / 1.0, contentMode: .fit)
                     .overlay {
-                        framePhoto(slot: cur)
+                        playerContent(slot: cur)
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 4, style: .continuous)
-                            .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+                            .stroke(Color.white.opacity(0.12), lineWidth: 0.5)
                     )
                     .overlay(alignment: .top) {
-                        HStack {
-                            Text("● \(slotKindLabel(cur))")
-                            Spacer()
-                            Text(frameCounter(safeIndex))
-                        }
-                        .font(.custom(mono, size: 9))
-                        .tracking(1.2)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 12)
-                        .padding(.top, 10)
-                        .padding(.bottom, 24)
-                        .frame(maxWidth: .infinity, alignment: .top)
-                        .background(
-                            LinearGradient(
-                                colors: [.black.opacity(0.65), .clear],
-                                startPoint: .top, endPoint: .bottom
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
-                        .allowsHitTesting(false)
+                        topHUD(slot: cur, index: safeIndex)
                     }
                     .overlay(alignment: .bottom) {
-                        bottomStripe(slot: cur, index: safeIndex)
+                        bottomHUD(slot: cur, index: safeIndex)
                     }
                     .contentShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
                     .onTapGesture {
-                        let title = cur.title ?? "frame \(safeIndex + 1)"
+                        let title = cur.title ?? "shot \(safeIndex + 1)"
                         presentedMedia = PresentedMedia(slot: cur, displayTitle: title)
                     }
                     .padding(.horizontal, 16)
@@ -187,9 +165,9 @@ struct ConnectProfilePhotoView: View {
     }
 
     @ViewBuilder
-    private func framePhoto(slot: MediaSlot) -> some View {
+    private func playerContent(slot: MediaSlot) -> some View {
         if slot.isAudio {
-            CoverAudioPlayerView(urlString: slot.url, controlSize: 64)
+            CoverAudioPlayerView(urlString: slot.url, controlSize: 56)
         } else if slot.isModel {
             ModelViewerView(urlString: slot.url)
         } else if slot.isVideo {
@@ -199,14 +177,47 @@ struct ConnectProfilePhotoView: View {
         }
     }
 
-    private func bottomStripe(slot: MediaSlot, index: Int) -> some View {
+    private func topHUD(slot: MediaSlot, index: Int) -> some View {
+        HStack(spacing: 8) {
+            // REC indicator
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(.red)
+                    .frame(width: 6, height: 6)
+                Text("REC")
+            }
+            .padding(.horizontal, 6)
+            .padding(.vertical, 3)
+            .background(.black.opacity(0.55), in: Capsule())
+
+            Text("2.39:1")
+                .padding(.horizontal, 6)
+                .padding(.vertical, 3)
+                .background(.black.opacity(0.55), in: Capsule())
+
+            Spacer()
+
+            Text("TC \(syntheticTimecode(for: slot, index: index))")
+                .padding(.horizontal, 6)
+                .padding(.vertical, 3)
+                .background(.black.opacity(0.55), in: Capsule())
+        }
+        .font(.custom(mono, size: 9))
+        .tracking(1.0)
+        .foregroundStyle(.white.opacity(0.85))
+        .padding(.horizontal, 10)
+        .padding(.top, 10)
+        .allowsHitTesting(false)
+    }
+
+    private func bottomHUD(slot: MediaSlot, index: Int) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text("№ \(String(format: "%02d", slot.sortOrder + 1))")
+                Text("CLIP \(String(format: "%02d", index + 1)) / \(String(format: "%02d", reel.count))")
                 Spacer()
                 Text(slotKindLabel(slot))
                 Spacer()
-                Text("frame \(index + 1)")
+                Text("№ \(String(format: "%02d", slot.sortOrder + 1))")
             }
             .font(.custom(mono, size: 9))
             .tracking(1.0)
@@ -216,8 +227,8 @@ struct ConnectProfilePhotoView: View {
             captionRow(slot: slot, index: index)
         }
         .padding(.horizontal, 12)
-        .padding(.top, 22)
-        .padding(.bottom, 12)
+        .padding(.top, 18)
+        .padding(.bottom, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             LinearGradient(
@@ -229,15 +240,10 @@ struct ConnectProfilePhotoView: View {
         )
     }
 
-    /// Italic caption row at the bottom of the featured frame. In edit mode
-    /// it becomes a Button that opens the per-slot title editor, with a
-    /// pencil glyph as the affordance. Outside edit mode it's a static Text
-    /// so it doesn't intercept the photo's fullscreen tap.
     @ViewBuilder
     private func captionRow(slot: MediaSlot, index: Int) -> some View {
-        let display = captionText(for: slot, index: index)
-        let isCustom = (slot.title?.isEmpty == false)
-        let textColor: Color = isCustom ? .white : .white.opacity(0.75)
+        let display = slot.title ?? "shot \(index + 1)"
+        let textColor: Color = slot.title?.isEmpty == false ? .white : .white.opacity(0.75)
 
         if let onEditTitle = editActions?.onEditMediaTitle {
             Button {
@@ -245,10 +251,9 @@ struct ConnectProfilePhotoView: View {
             } label: {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(display)
-                        .font(.custom(EKKOFont.italic, size: 17))
+                        .font(.custom(EKKOFont.regular, size: 17))
                         .foregroundStyle(textColor)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.leading)
+                        .lineLimit(1)
                     Spacer(minLength: 0)
                     Image(systemName: "pencil")
                         .font(.caption2.weight(.semibold))
@@ -261,35 +266,24 @@ struct ConnectProfilePhotoView: View {
             .buttonStyle(.plain)
         } else {
             Text(display)
-                .font(.custom(EKKOFont.italic, size: 17))
+                .font(.custom(EKKOFont.regular, size: 17))
                 .foregroundStyle(.white)
-                .lineLimit(2)
+                .lineLimit(1)
                 .allowsHitTesting(false)
         }
     }
 
-    /// Map a `MediaSlot` back to its index in the SORTED full mediaSlots
-    /// array so `onEditMediaTitle(_:)` updates the right draft entry. The
-    /// `frames` list might be filtered (photo-only) so frame indices won't
-    /// match the sorted-storage indices ProfileView expects.
-    private func storageIndex(for slot: MediaSlot) -> Int {
-        let sorted = mediaSlots.sorted { $0.sortOrder < $1.sortOrder }
-        return sorted.firstIndex(where: {
-            $0.url == slot.url && $0.sortOrder == slot.sortOrder
-        }) ?? 0
-    }
-
-    private var emptyFramePlaceholder: some View {
+    private var emptyPlayerPlaceholder: some View {
         VStack(spacing: 10) {
-            Image(systemName: "camera.aperture")
+            Image(systemName: "play.rectangle")
                 .font(.system(size: 36))
                 .foregroundStyle(EKKOTheme.primary)
-            Text("Add photos to fill the frame")
+            Text("Add videos to fill the reel")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
-        .aspectRatio(3.0 / 4.0, contentMode: .fit)
+        .aspectRatio(2.39 / 1.0, contentMode: .fit)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 4))
         .overlay(
             RoundedRectangle(cornerRadius: 4)
@@ -297,74 +291,147 @@ struct ConnectProfilePhotoView: View {
         )
     }
 
-    // MARK: - Contact sheet (4-column)
+    // MARK: - Scrubber (visual only)
+
+    private var scrubber: some View {
+        Group {
+            if !reel.isEmpty {
+                VStack(spacing: 6) {
+                    GeometryReader { geo in
+                        let safeIndex = min(selectedIndex, reel.count - 1)
+                        let progress = reel.count > 1
+                            ? CGFloat(safeIndex) / CGFloat(reel.count - 1)
+                            : 0
+                        ZStack(alignment: .leading) {
+                            Capsule()
+                                .fill(Color.secondary.opacity(0.18))
+                                .frame(height: 2)
+                            Capsule()
+                                .fill(EKKOTheme.primary)
+                                .frame(width: max(2, geo.size.width * progress), height: 2)
+                            Circle()
+                                .fill(EKKOTheme.primary)
+                                .frame(width: 8, height: 8)
+                                .offset(x: max(0, geo.size.width * progress - 4))
+                                .animation(.spring(response: 0.3, dampingFraction: 0.85), value: selectedIndex)
+                        }
+                        .frame(maxHeight: .infinity, alignment: .center)
+                    }
+                    .frame(height: 14)
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
+            }
+        }
+    }
+
+    // MARK: - Reel carousel (horizontal)
 
     @ViewBuilder
-    private var contactSheet: some View {
-        if !frames.isEmpty {
+    private var reelCarousel: some View {
+        if !reel.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .firstTextBaseline) {
-                    sectionLabel("CONTACT SHEET")
+                    sectionLabel("REEL")
                     Spacer()
-                    Text("ROLL #\(String(format: "%03d", frames.count))")
+                    Text("\(String(format: "%02d", reel.count)) clips")
                         .font(.custom(mono, size: 9))
                         .tracking(1.5)
                         .foregroundStyle(.secondary)
                 }
+                .padding(.horizontal, 16)
 
-                LazyVGrid(
-                    columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 4),
-                    spacing: 4
-                ) {
-                    ForEach(Array(frames.enumerated()), id: \.offset) { i, slot in
-                        contactSheetCell(slot: slot, index: i, isSelected: i == selectedIndex)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(Array(reel.enumerated()), id: \.offset) { i, slot in
+                            reelCell(slot: slot, index: i, isSelected: i == selectedIndex)
+                        }
                     }
+                    .padding(.horizontal, 16)
                 }
-                .padding(6)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 4))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 4)
-                        .stroke(Color.secondary.opacity(0.25), lineWidth: 0.5)
-                )
             }
-            .padding(.horizontal, 16)
             .padding(.top, 18)
         }
     }
 
-    private func contactSheetCell(slot: MediaSlot, index: Int, isSelected: Bool) -> some View {
+    private func reelCell(slot: MediaSlot, index: Int, isSelected: Bool) -> some View {
         Button {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
                 selectedIndex = index
             }
         } label: {
-            // Same aspect-locked pattern as the featured frame so the
-            // grid cells stay perfectly square within the column width.
-            Rectangle()
-                .fill(Color.clear)
-                .aspectRatio(1, contentMode: .fit)
-                .overlay {
-                    framePhoto(slot: slot)
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
-                .overlay(alignment: .topLeading) {
-                    Text(String(format: "%02d", index + 1))
-                        .font(.custom(mono, size: 8))
-                        .tracking(0.5)
-                        .foregroundStyle(.white)
-                        .shadow(color: .black.opacity(0.8), radius: 1, y: 1)
-                        .padding(.horizontal, 3)
-                        .padding(.top, 2)
-                }
-                .overlay(
-                    RoundedRectangle(cornerRadius: 2, style: .continuous)
-                        .stroke(isSelected ? EKKOTheme.primary : Color.clear, lineWidth: 2)
-                )
+            VStack(alignment: .leading, spacing: 4) {
+                Rectangle()
+                    .fill(Color.black)
+                    .aspectRatio(16.0 / 9.0, contentMode: .fit)
+                    .overlay {
+                        playerContent(slot: slot)
+                    }
+                    .frame(width: 140)
+                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            .stroke(isSelected ? EKKOTheme.primary : Color.white.opacity(0.1), lineWidth: isSelected ? 2 : 0.5)
+                    )
+                    .overlay(alignment: .topLeading) {
+                        Text(String(format: "%02d", index + 1))
+                            .font(.custom(mono, size: 9))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(.black.opacity(0.55), in: Capsule())
+                            .padding(6)
+                    }
+
+                Text(slot.title ?? "shot \(index + 1)")
+                    .font(.caption)
+                    .foregroundStyle(slot.title != nil ? .primary : .secondary)
+                    .lineLimit(1)
+                    .frame(width: 140, alignment: .leading)
+            }
         }
         .buttonStyle(.plain)
     }
 
-    // MARK: - Bio + Prompts + Looking For + Socials
+    // MARK: - Stats
+
+    private var statsRow: some View {
+        HStack(spacing: 0) {
+            statCell(value: "\(likesReceivedCount)", label: "LIKES")
+            divider
+            statCell(value: "\(matchesCount)", label: "MATCHES")
+            divider
+            statCell(value: "\(reel.count)", label: "CLIPS")
+            divider
+            statCell(value: "\(prompts.count)", label: "PROMPTS")
+        }
+        .padding(.vertical, 14)
+        .padding(.horizontal, 20)
+        .padding(.top, 18)
+        .overlay(Rectangle().fill(Color.secondary.opacity(0.18)).frame(height: 0.5), alignment: .top)
+        .overlay(Rectangle().fill(Color.secondary.opacity(0.18)).frame(height: 0.5), alignment: .bottom)
+    }
+
+    private func statCell(value: String, label: String) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.custom(EKKOFont.regular, size: 22))
+                .foregroundStyle(.primary)
+            Text(label)
+                .font(.custom(mono, size: 9))
+                .tracking(1.5)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var divider: some View {
+        Rectangle()
+            .fill(Color.secondary.opacity(0.18))
+            .frame(width: 0.5, height: 28)
+    }
+
+    // MARK: - Bio / Prompts / Looking For / Socials
 
     @ViewBuilder
     private var bioBlock: some View {
@@ -378,67 +445,42 @@ struct ConnectProfilePhotoView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
             .padding(.top, 22)
         } else if editActions != nil {
             EditableSection(action: editActions?.onTapBio) {
                 placeholderRow(label: "About", hint: "Add a short bio")
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
             .padding(.top, 22)
         }
     }
 
-    /// Prompts shown as a "series" list — italic title + question, framed
-    /// like a list view to match the handoff's series block aesthetic.
     @ViewBuilder
     private var promptsBlock: some View {
         if !prompts.isEmpty {
             EditableSection(action: editActions?.onTapPrompts) {
-                VStack(alignment: .leading, spacing: 10) {
-                    sectionLabel("SERIES")
-                    VStack(spacing: 0) {
-                        ForEach(Array(prompts.enumerated()), id: \.offset) { i, prompt in
-                            promptListRow(prompt: prompt, index: i, last: i == prompts.count - 1)
+                VStack(alignment: .leading, spacing: 12) {
+                    sectionLabel("◉ PROMPTS")
+                    VStack(spacing: 10) {
+                        ForEach(Array(prompts.enumerated()), id: \.offset) { _, prompt in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(prompt.question)
+                                    .font(.caption.weight(.medium))
+                                    .foregroundStyle(.secondary)
+                                Text(prompt.answer)
+                                    .font(.subheadline.weight(.medium))
+                                    .foregroundStyle(.primary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(14)
+                            .glassCard()
                         }
                     }
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .stroke(Color.secondary.opacity(0.25), lineWidth: 0.5)
-                    )
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
             .padding(.top, 22)
-        }
-    }
-
-    private func promptListRow(prompt: PromptEntry, index: Int, last: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(prompt.answer)
-                        .font(.custom(EKKOFont.italic, size: 18))
-                        .foregroundStyle(.primary)
-                        .lineLimit(2)
-                    Text(prompt.question.uppercased())
-                        .font(.custom(mono, size: 9))
-                        .tracking(1.4)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                Text("→")
-                    .foregroundStyle(.secondary)
-            }
-            .padding(14)
-        }
-        .overlay(alignment: .bottom) {
-            if !last {
-                Rectangle()
-                    .fill(Color.secondary.opacity(0.18))
-                    .frame(height: 0.5)
-            }
         }
     }
 
@@ -446,8 +488,8 @@ struct ConnectProfilePhotoView: View {
     private var lookingForBlock: some View {
         if let lookingFor, !lookingFor.isEmpty {
             EditableSection(action: editActions?.onTapLookingFor) {
-                VStack(alignment: .leading, spacing: 10) {
-                    sectionLabel("LOOKING FOR")
+                VStack(alignment: .leading, spacing: 12) {
+                    sectionLabel("◉ LOOKING FOR")
                     Text(lookingFor)
                         .font(.body)
                         .foregroundStyle(.primary)
@@ -456,13 +498,13 @@ struct ConnectProfilePhotoView: View {
                         .glassCard()
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
             .padding(.top, 22)
         } else if editActions != nil {
             EditableSection(action: editActions?.onTapLookingFor) {
                 placeholderRow(label: "Looking for", hint: "Add what you're looking for")
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
             .padding(.top, 22)
         }
     }
@@ -474,9 +516,9 @@ struct ConnectProfilePhotoView: View {
                      (websiteUrl?.isEmpty == false)
 
         if hasAny || editActions != nil {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 12) {
                 EditableSection(action: editActions?.onTapSocials) {
-                    sectionLabel("ELSEWHERE")
+                    sectionLabel("⌁ ELSEWHERE")
                 }
 
                 if hasAny {
@@ -497,7 +539,7 @@ struct ConnectProfilePhotoView: View {
                     }
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
             .padding(.top, 22)
         }
     }
@@ -527,10 +569,15 @@ struct ConnectProfilePhotoView: View {
     // MARK: - Helpers
 
     private func sectionLabel(_ text: String) -> some View {
-        Text(text)
-            .font(.custom(mono, size: 10))
-            .tracking(2.5)
-            .foregroundStyle(EKKOTheme.primary)
+        HStack(alignment: .center, spacing: 12) {
+            Text(text)
+                .font(.custom(mono, size: 11))
+                .tracking(2.5)
+                .foregroundStyle(EKKOTheme.primary)
+            Rectangle()
+                .fill(Color.secondary.opacity(0.2))
+                .frame(height: 0.5)
+        }
     }
 
     private func placeholderRow(label: String, hint: String) -> some View {
@@ -556,13 +603,22 @@ struct ConnectProfilePhotoView: View {
         return "PHOTO"
     }
 
-    private func frameCounter(_ index: Int) -> String {
-        "\(String(format: "%03d", index + 1)) / \(String(format: "%03d", frames.count))"
+    /// Synthetic timecode (HH:MM:SS:FF) derived from sortOrder so each
+    /// slot gets a stable, plausible-looking value. Connect doesn't store
+    /// real video duration — this is HUD garnish.
+    private func syntheticTimecode(for slot: MediaSlot, index: Int) -> String {
+        let total = (slot.sortOrder * 137 + index * 53) % 7200
+        let mins = total / 60
+        let secs = total % 60
+        let frames = (slot.sortOrder * 7 + index * 3) % 24
+        return String(format: "00:%02d:%02d:%02d", mins, secs, frames)
     }
 
-    private func captionText(for slot: MediaSlot, index: Int) -> String {
-        if let t = slot.title, !t.isEmpty { return t }
-        return "frame \(index + 1)"
+    private func storageIndex(for slot: MediaSlot) -> Int {
+        let sorted = mediaSlots.sorted { $0.sortOrder < $1.sortOrder }
+        return sorted.firstIndex(where: {
+            $0.url == slot.url && $0.sortOrder == slot.sortOrder
+        }) ?? 0
     }
 
     private func cleanDisplayURL(_ url: String) -> String {
