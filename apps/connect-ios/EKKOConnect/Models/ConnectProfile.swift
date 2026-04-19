@@ -79,14 +79,16 @@ struct ConnectProfile: Codable, Identifiable {
 
 enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
     case `default` = "DEFAULT"
-    case hero = "HERO"
+    case hero      = "HERO"
+    case editorial = "EDITORIAL"
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .default: return "Default"
-        case .hero:    return "Hero"
+        case .default:   return "Default"
+        case .hero:      return "Hero"
+        case .editorial: return "Editorial"
         }
     }
 
@@ -96,6 +98,8 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
             return "The standard Connect card — clean, balanced, with media gallery and prompts."
         case .hero:
             return "Full-bleed cover with a parallax effect and an oversized name overlay. Best for portfolio-forward creatives."
+        case .editorial:
+            return "Magazine-style masthead, drop-cap bio, and a 2-column work grid. Best for writers, designers, and feature-worthy work."
         }
     }
 

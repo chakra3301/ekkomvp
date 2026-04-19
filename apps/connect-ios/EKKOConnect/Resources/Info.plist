@@ -65,6 +65,7 @@
 	<array>
 		<string>ArchesRegular.ttf</string>
 		<string>ArchesRegularItalic.ttf</string>
+		<string>NotoSansJP.ttf</string>
 	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>

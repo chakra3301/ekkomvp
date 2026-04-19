@@ -25,8 +25,7 @@ struct MatchesView: View {
                 matchesList
             }
         }
-        .navigationTitle("Matches")
-        .navigationBarTitleDisplayMode(.inline)
+        .furiganaTitle("Matches", JPLabels.screens.matches)
         .task { await loadMatches() }
         .navigationDestination(item: $activeChat) { route in
             ChatView(matchId: route.id)

@@ -50,6 +50,9 @@ struct ProfileSetupView: View {
 
                 // Step title + description
                 VStack(alignment: .leading, spacing: 4) {
+                    if let jp = JPLabels.step(steps[currentStep]) {
+                        JPSubLabel(text: jp, size: 11)
+                    }
                     Text(steps[currentStep])
                         .font(.title3.bold())
                     Text(stepDescription)
@@ -120,8 +123,10 @@ struct ProfileSetupView: View {
                 .padding(.bottom, 16)
             }
         }
-        .navigationTitle(isEditing ? "Edit Profile" : "Profile Setup")
-        .navigationBarTitleDisplayMode(.inline)
+        .furiganaTitle(
+            isEditing ? "Edit Profile" : "Profile Setup",
+            isEditing ? JPLabels.screens.editProfile : JPLabels.screens.profileSetup
+        )
         .task { await loadExistingProfile() }
         .alert("Error", isPresented: .init(
             get: { errorMessage != nil },
@@ -405,10 +410,9 @@ struct TemplatePreviewCard: View {
     @ViewBuilder
     private var preview: some View {
         switch template {
-        case .default:
-            defaultPreview
-        case .hero:
-            heroPreview
+        case .default:   defaultPreview
+        case .hero:      heroPreview
+        case .editorial: editorialPreview
         }
     }
 
@@ -498,6 +502,55 @@ struct TemplatePreviewCard: View {
                 .padding(.horizontal, 16)
             }
             .padding(.bottom, 8)
+        }
+    }
+
+    /// Schematic of ConnectProfileEditorialView: mono masthead, big serif
+    /// name, drop-cap bio, 2-column work grid.
+    private var editorialPreview: some View {
+        ZStack {
+            Color(.systemBackground)
+
+            VStack(alignment: .leading, spacing: 6) {
+                // Masthead bar
+                HStack {
+                    RoundedRectangle(cornerRadius: 1).fill(.secondary.opacity(0.7)).frame(width: 32, height: 3)
+                    Spacer()
+                    RoundedRectangle(cornerRadius: 1).fill(.secondary.opacity(0.7)).frame(width: 18, height: 3)
+                }
+                .overlay(alignment: .bottom) {
+                    Rectangle().fill(.secondary.opacity(0.4)).frame(height: 0.5).offset(y: 4)
+                }
+                .padding(.bottom, 6)
+
+                // Big name
+                RoundedRectangle(cornerRadius: 2).fill(.primary).frame(width: 110, height: 14)
+                RoundedRectangle(cornerRadius: 2).fill(.primary).frame(width: 80, height: 14)
+
+                // Drop-cap row
+                HStack(alignment: .top, spacing: 4) {
+                    Text("A")
+                        .font(.system(size: 22, weight: .regular))
+                        .foregroundStyle(EKKOTheme.primary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        ForEach(0..<3, id: \.self) { _ in
+                            RoundedRectangle(cornerRadius: 1).fill(.secondary.opacity(0.4)).frame(height: 2)
+                        }
+                    }
+                }
+                .padding(.top, 4)
+
+                // 2-col work grid
+                HStack(spacing: 4) {
+                    RoundedRectangle(cornerRadius: 2).fill(.secondary.opacity(0.45)).aspectRatio(1, contentMode: .fit)
+                    RoundedRectangle(cornerRadius: 2).fill(.secondary.opacity(0.35)).aspectRatio(1, contentMode: .fit)
+                }
+                .padding(.top, 2)
+
+                Spacer()
+            }
+            .padding(.horizontal, 14)
+            .padding(.top, 12)
         }
     }
 }

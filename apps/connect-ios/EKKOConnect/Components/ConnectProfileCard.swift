@@ -22,6 +22,9 @@ struct ConnectProfileCard: View {
     /// When true, the name gets a "GM" badge instead of the Infinite icon.
     var isAdmin: Bool = false
     var editableAvatar: Bool = false
+    /// When non-nil, the card renders in inline-edit mode: each section becomes
+    /// tappable, calls the matching closure, and gets a dashed edit affordance.
+    var editActions: ProfileEditActions? = nil
 
     /// Media beyond the hero, sorted by sortOrder
     private var extraMedia: [MediaSlot] {
@@ -59,7 +62,9 @@ struct ConnectProfileCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // 1. Hero media (first slot, full width)
-            heroMedia
+            EditableSection(action: editActions?.onTapMedia) {
+                heroMedia
+            }
 
             // Avatar overlapping hero — half on, half off
             Group {
@@ -80,28 +85,47 @@ struct ConnectProfileCard: View {
 
             VStack(alignment: .leading, spacing: 20) {
                 // 2. Name + headline + location
-                infoSection
-                    .padding(.top, 8)
+                EditableSection(action: editActions?.onTapHeadlineLocation) {
+                    infoSection
+                }
+                .padding(.top, 8)
 
                 // 3. Bio
                 if let bio, !bio.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("About")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        Text(bio)
-                            .font(.subheadline)
+                    EditableSection(action: editActions?.onTapBio) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            JPSectionHeader(english: "About", japanese: JPLabels.sections.about)
+                            Text(bio)
+                                .font(.subheadline)
+                        }
+                    }
+                } else if editActions != nil {
+                    EditableSection(action: editActions?.onTapBio) {
+                        placeholderRow(label: "About", japanese: JPLabels.sections.about, hint: "Add a short bio")
                     }
                 }
 
                 // 4. Looking for
                 if let lookingFor, !lookingFor.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Looking for")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        Text(lookingFor)
-                            .font(.subheadline)
+                    EditableSection(action: editActions?.onTapLookingFor) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            JPSectionHeader(english: "Looking for", japanese: JPLabels.sections.lookingFor)
+                            Text(lookingFor)
+                                .font(.subheadline)
+                        }
+                    }
+                } else if editActions != nil {
+                    EditableSection(action: editActions?.onTapLookingFor) {
+                        placeholderRow(label: "Looking for", japanese: JPLabels.sections.lookingFor, hint: "Add what you're looking for")
+                    }
+                }
+
+                // Edit-mode affordance for prompts (since interleaved layout
+                // makes per-prompt tap targets awkward, surface a single
+                // explicit "Edit prompts" entry point).
+                if editActions != nil {
+                    EditableSection(action: editActions?.onTapPrompts) {
+                        placeholderRow(label: "Prompts", japanese: JPLabels.sections.prompts, hint: "\(prompts.count) prompt\(prompts.count == 1 ? "" : "s")")
                     }
                 }
             }
@@ -112,19 +136,47 @@ struct ConnectProfileCard: View {
             interleavedContent
 
             // 6. Social previews — stacked, each in their own glass card
-            VStack(spacing: 12) {
-                if let ig = instagramHandle, !ig.isEmpty {
-                    InstagramPreview(handle: ig)
-                }
-                if let tw = twitterHandle, !tw.isEmpty {
-                    TwitterPreview(handle: tw)
-                }
-                if let web = websiteUrl, !web.isEmpty {
-                    websitePreview(url: web)
+            EditableSection(action: editActions?.onTapSocials) {
+                VStack(spacing: 12) {
+                    if let ig = instagramHandle, !ig.isEmpty {
+                        InstagramPreview(handle: ig)
+                    }
+                    if let tw = twitterHandle, !tw.isEmpty {
+                        TwitterPreview(handle: tw)
+                    }
+                    if let web = websiteUrl, !web.isEmpty {
+                        websitePreview(url: web)
+                    }
+                    if editActions != nil &&
+                        (instagramHandle?.isEmpty ?? true) &&
+                        (twitterHandle?.isEmpty ?? true) &&
+                        (websiteUrl?.isEmpty ?? true) {
+                        placeholderRow(label: "Socials", japanese: JPLabels.sections.socials, hint: "Add Instagram, X, or website")
+                    }
                 }
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 24)
+        }
+    }
+
+    private func placeholderRow(label: String, japanese: String? = nil, hint: String) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                if let japanese {
+                    JPSectionHeader(english: label, japanese: japanese)
+                } else {
+                    Text(label)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                Text(hint)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary.opacity(0.7))
+            }
+            Spacer()
+            Image(systemName: "plus.circle")
+                .foregroundStyle(EKKOTheme.primary)
         }
     }
 

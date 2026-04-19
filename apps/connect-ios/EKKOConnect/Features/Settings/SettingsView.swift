@@ -190,6 +190,9 @@ struct SettingsView: View {
                         )
                     }
                 }
+
+                // Japanese sub-labels — purely aesthetic, default on.
+                JapaneseSubLabelsToggle()
             } header: {
                 Text("Appearance")
             }
@@ -400,7 +403,7 @@ struct SettingsView: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .navigationTitle("Settings")
+        .furiganaTitle("Settings", JPLabels.screens.settings)
         .task { await loadData() }
         .sheet(isPresented: $showUpgradeSheet) {
             UpgradeModal(isPresented: $showUpgradeSheet)

@@ -53,8 +53,7 @@ struct LikesView: View {
                 }
             }
         }
-        .navigationTitle("Likes")
-        .navigationBarTitleDisplayMode(.inline)
+        .furiganaTitle("Likes", JPLabels.screens.likes)
         .task { await loadLikes() }
         .sheet(isPresented: $showUpgradeSheet) {
             UpgradeModal(isPresented: $showUpgradeSheet)

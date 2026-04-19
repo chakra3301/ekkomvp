@@ -96,8 +96,7 @@ struct DiscoverView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.matchData != nil)
-        .navigationTitle("Discover")
-        .navigationBarTitleDisplayMode(.inline)
+        .furiganaTitle("Discover", JPLabels.screens.discover)
         .task {
             viewModel.setup(trpc: appState.trpc, appState: appState)
             await viewModel.loadQueue()

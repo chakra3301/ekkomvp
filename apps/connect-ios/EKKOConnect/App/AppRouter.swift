@@ -82,44 +82,67 @@ struct MainTabView: View {
 
     @State private var unreadRefreshTimer: Timer?
     @State private var showWelcome = false
+    @AppStorage(JPSettings.storageKey) private var showJapanese = JPSettings.defaultValue
 
     var body: some View {
         @Bindable var state = appState
-        TabView(selection: $state.selectedTab) {
-            NavigationStack {
-                DiscoverView()
-            }
-            .tabItem {
-                Label("Discover", systemImage: "safari")
-            }
-            .tag(0)
+        // When JP is on we hide the system tab bar and overlay a custom
+        // floating-pill tab bar that shows JP+EN labels (no icons). When
+        // JP is off we let the standard UIKit tab bar render — that's the
+        // app's normal look.
+        // `.toolbar(.hidden, for: .tabBar)` only takes effect when applied
+        // INSIDE a tab's content (not on the TabView itself), so each
+        // NavigationStack wears the modifier directly.
+        let tabBarVisibility: Visibility = showJapanese ? .hidden : .visible
 
-            NavigationStack {
-                LikesView()
-            }
-            .tabItem {
-                Label("Likes", systemImage: "heart")
-            }
-            .tag(1)
+        ZStack(alignment: .bottom) {
+            TabView(selection: $state.selectedTab) {
+                NavigationStack {
+                    DiscoverView()
+                        .toolbar(tabBarVisibility, for: .tabBar)
+                }
+                .tabItem {
+                    Label("Discover", systemImage: "safari")
+                }
+                .tag(0)
 
-            NavigationStack {
-                MatchesView()
-            }
-            .tabItem {
-                Label("Matches", systemImage: "message")
-            }
-            .badge(appState.totalUnreadCount)
-            .tag(2)
+                NavigationStack {
+                    LikesView()
+                        .toolbar(tabBarVisibility, for: .tabBar)
+                }
+                .tabItem {
+                    Label("Likes", systemImage: "heart")
+                }
+                .tag(1)
 
-            NavigationStack {
-                ProfileView()
+                NavigationStack {
+                    MatchesView()
+                        .toolbar(tabBarVisibility, for: .tabBar)
+                }
+                .tabItem {
+                    Label("Matches", systemImage: "message")
+                }
+                .badge(showJapanese ? 0 : appState.totalUnreadCount)
+                .tag(2)
+
+                NavigationStack {
+                    ProfileView()
+                        .toolbar(tabBarVisibility, for: .tabBar)
+                }
+                .tabItem {
+                    Label("Profile", systemImage: "person")
+                }
+                .tag(3)
             }
-            .tabItem {
-                Label("Profile", systemImage: "person")
+            .tint(EKKOTheme.primary)
+
+            if showJapanese {
+                CustomTabBar(
+                    selection: $state.selectedTab,
+                    unreadCount: appState.totalUnreadCount
+                )
             }
-            .tag(3)
         }
-        .tint(EKKOTheme.primary)
         .task {
             // Initial load + periodic refresh of unread counts
             await appState.refreshUnreadCounts()

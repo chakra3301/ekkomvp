@@ -5,10 +5,26 @@ struct ProfileView: View {
     @State private var isLoading = true
     @State private var isTogglingActive = false
 
+    // MARK: - Edit mode state
+    @State private var isEditMode = false
+    @State private var isSaving = false
+    @State private var activeEditor: ProfileEditSection?
+    @State private var showLeaveConfirmation = false
+    @State private var saveError: String?
+
+    /// Local mirror of the profile while editing. Updated by inline sheets.
+    /// Compared to `originalSnapshot` for the unsaved-changes guard.
+    @State private var draft: ProfileDraft = .init()
+    @State private var originalSnapshot: ProfileDraft = .init()
+
     /// Read through to AppState so tier changes from a purchase propagate
     /// automatically — no local copy to go stale.
     private var connectProfile: ConnectProfile? {
         appState.currentConnectProfile
+    }
+
+    private var hasUnsavedChanges: Bool {
+        draft != originalSnapshot
     }
 
     var body: some View {
@@ -21,122 +37,326 @@ struct ProfileView: View {
                 emptyState
             }
         }
-        .navigationTitle("Profile")
-        .navigationBarTitleDisplayMode(.inline)
+        .furiganaTitle("Profile", JPLabels.screens.profile)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink(destination: SettingsView()) {
-                    Image(systemName: "gearshape")
-                        .foregroundStyle(.secondary)
+            // Hide the gear in edit mode so users can't navigate away accidentally.
+            if !isEditMode {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape")
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
         }
         .task { await loadProfile() }
+        .confirmationDialog(
+            "Discard changes?",
+            isPresented: $showLeaveConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Discard changes", role: .destructive) {
+                exitEditMode(discardChanges: true)
+            }
+            Button("Keep editing", role: .cancel) {}
+        } message: {
+            Text("Your unsaved changes will be lost.")
+        }
+        .alert("Couldn't save", isPresented: .init(
+            get: { saveError != nil },
+            set: { if !$0 { saveError = nil } }
+        )) {
+            Button("OK") { saveError = nil }
+        } message: {
+            if let saveError { Text(saveError) }
+        }
     }
 
     // MARK: - Profile Content
 
     @ViewBuilder
     private func profileContent(_ profile: ConnectProfile) -> some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                // Action bar
-                HStack {
-                    // Status
-                    HStack(spacing: 6) {
-                        Image(systemName: profile.isActive ? "eye.fill" : "eye.slash.fill")
-                            .font(.caption)
-                        Text(profile.isActive ? "Active" : "Paused")
-                            .font(.subheadline.weight(.medium))
+        let template: ConnectProfileTemplate = isEditMode
+            ? (ConnectProfileTemplate(rawValue: draft.profileTemplate) ?? .default)
+            : ConnectProfileTemplate.from(profile.profileTemplate)
+
+        VStack(spacing: 0) {
+            if isEditMode {
+                editToolbar
+                    .padding(.top, 8)
+                    .padding(.bottom, 12)
+                    .background(.ultraThinMaterial)
+                    .overlay(alignment: .bottom) {
+                        Rectangle()
+                            .fill(Color.secondary.opacity(0.15))
+                            .frame(height: 0.5)
                     }
-                    .foregroundStyle(profile.isActive ? .green : .secondary)
+                    .zIndex(1)
+            }
 
-                    Spacer()
-
-                    // Actions
-                    HStack(spacing: 8) {
-                        Button {
-                            Task { await toggleActive() }
-                        } label: {
-                            Text(profile.isActive ? "Pause" : "Activate")
-                                .font(.subheadline)
-                        }
-                        .buttonStyle(.glass)
-                        .disabled(isTogglingActive)
-
-                        NavigationLink(destination: ProfileSetupView()) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "pencil")
-                                    .font(.caption)
-                                Text("Edit")
-                                    .font(.subheadline)
-                            }
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(EKKOTheme.primary)
-                            .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
-                        }
-                    }
+            // ZStack so the view-mode toolbar can float IN FRONT of the
+            // Hero cover (which starts at the very top of the scroll).
+            ZStack(alignment: .top) {
+                ScrollView {
+                    templateBody(template, profile: profile)
+                        .padding(.bottom, 24)
                 }
-                .padding(.horizontal, 16)
+                .coordinateSpace(name: "heroScroll")
+                .refreshable {
+                    guard !isEditMode else { return }
+                    await loadProfile()
+                }
 
-                // Profile body — Hero variant or Default card
-                switch ConnectProfileTemplate.from(profile.profileTemplate) {
-                case .hero:
-                    ConnectProfileHeroView(
-                        displayName: appState.currentProfile?.displayName ?? "Your Name",
-                        avatarUrl: appState.currentProfile?.avatarUrl,
-                        headline: profile.headline,
-                        location: profile.location,
-                        lookingFor: profile.lookingFor,
-                        bio: profile.bio,
-                        mediaSlots: profile.mediaSlots,
-                        prompts: profile.prompts,
-                        instagramHandle: profile.instagramHandle,
-                        twitterHandle: profile.twitterHandle,
-                        websiteUrl: profile.websiteUrl,
-                        connectTier: profile.connectTier,
-                        likesReceivedCount: profile.likesReceivedCount,
-                        matchesCount: profile.matchesCount,
-                        isAdmin: appState.isAdmin
-                    )
-
-                case .default:
-                    ConnectProfileCard(
-                        displayName: appState.currentProfile?.displayName ?? "Your Name",
-                        avatarUrl: appState.currentProfile?.avatarUrl,
-                        headline: profile.headline,
-                        location: profile.location,
-                        lookingFor: profile.lookingFor,
-                        bio: profile.bio,
-                        mediaSlots: profile.mediaSlots,
-                        prompts: profile.prompts,
-                        instagramHandle: profile.instagramHandle,
-                        twitterHandle: profile.twitterHandle,
-                        websiteUrl: profile.websiteUrl,
-                        connectTier: profile.connectTier,
-                        isAdmin: appState.isAdmin,
-                        editableAvatar: true
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.cardRadius))
-
-                    // Stats card pair — only shown for the default card; the
-                    // Hero view has its own inline stats row.
-                    HStack(spacing: 12) {
-                        StatCard(value: profile.likesReceivedCount, label: "Likes Received")
-                        StatCard(value: profile.matchesCount, label: "Matches")
-                    }
-                    .padding(.horizontal, 16)
+                if !isEditMode {
+                    viewToolbar(profile)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 8)
                 }
             }
-            .padding(.bottom, 24)
         }
-        .coordinateSpace(name: "heroScroll")
-        .refreshable { await loadProfile() }
+        .sheet(item: $activeEditor) { section in
+            sheetForSection(section)
+        }
     }
 
-    // MARK: - Empty State
+    @ViewBuilder
+    private func templateBody(_ template: ConnectProfileTemplate, profile: ConnectProfile) -> some View {
+        let editActions = isEditMode ? makeEditActions() : nil
+
+        // Pull live values from `draft` while in edit mode so template
+        // switching previews real data.
+        let displayName = appState.currentProfile?.displayName ?? "Your Name"
+        let avatarUrl   = appState.currentProfile?.avatarUrl
+        let headline    = isEditMode ? trimmedOrNil(draft.headline) : profile.headline
+        let location    = isEditMode ? trimmedOrNil(draft.location) : profile.location
+        let lookingFor  = isEditMode ? trimmedOrNil(draft.lookingFor) : profile.lookingFor
+        let bio         = isEditMode ? trimmedOrNil(draft.bio) : profile.bio
+        let mediaSlots  = isEditMode ? draft.mediaSlots : profile.mediaSlots
+        let prompts     = isEditMode ? draft.prompts : profile.prompts
+        let instagram   = isEditMode ? trimmedOrNil(draft.instagramHandle) : profile.instagramHandle
+        let twitter     = isEditMode ? trimmedOrNil(draft.twitterHandle) : profile.twitterHandle
+        let website     = isEditMode ? trimmedOrNil(draft.websiteUrl) : profile.websiteUrl
+
+        switch template {
+        case .hero:
+            ConnectProfileHeroView(
+                displayName: displayName,
+                avatarUrl: avatarUrl,
+                headline: headline,
+                location: location,
+                lookingFor: lookingFor,
+                bio: bio,
+                mediaSlots: mediaSlots,
+                prompts: prompts,
+                instagramHandle: instagram,
+                twitterHandle: twitter,
+                websiteUrl: website,
+                connectTier: profile.connectTier,
+                likesReceivedCount: profile.likesReceivedCount,
+                matchesCount: profile.matchesCount,
+                isAdmin: appState.isAdmin,
+                editActions: editActions
+            )
+
+        case .editorial:
+            ConnectProfileEditorialView(
+                displayName: displayName,
+                avatarUrl: avatarUrl,
+                headline: headline,
+                location: location,
+                lookingFor: lookingFor,
+                bio: bio,
+                mediaSlots: mediaSlots,
+                prompts: prompts,
+                instagramHandle: instagram,
+                twitterHandle: twitter,
+                websiteUrl: website,
+                connectTier: profile.connectTier,
+                likesReceivedCount: profile.likesReceivedCount,
+                matchesCount: profile.matchesCount,
+                isAdmin: appState.isAdmin,
+                editActions: editActions
+            )
+
+        case .default:
+            ConnectProfileCard(
+                displayName: displayName,
+                avatarUrl: avatarUrl,
+                headline: headline,
+                location: location,
+                lookingFor: lookingFor,
+                bio: bio,
+                mediaSlots: mediaSlots,
+                prompts: prompts,
+                instagramHandle: instagram,
+                twitterHandle: twitter,
+                websiteUrl: website,
+                connectTier: profile.connectTier,
+                isAdmin: appState.isAdmin,
+                editableAvatar: !isEditMode,
+                editActions: editActions
+            )
+            .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.cardRadius))
+
+            // Stats only outside edit mode (Hero has its own inline stats).
+            if !isEditMode {
+                HStack(spacing: 12) {
+                    StatCard(value: profile.likesReceivedCount, label: "Likes Received")
+                    StatCard(value: profile.matchesCount, label: "Matches")
+                }
+                .padding(.horizontal, 16)
+            }
+        }
+    }
+
+    private func trimmedOrNil(_ s: String) -> String? {
+        let t = s.trimmingCharacters(in: .whitespacesAndNewlines)
+        return t.isEmpty ? nil : t
+    }
+
+    // MARK: - View toolbar (display mode)
+
+    private func viewToolbar(_ profile: ConnectProfile) -> some View {
+        HStack {
+            // Status chip — glass background so it reads over the Hero cover.
+            HStack(spacing: 6) {
+                Image(systemName: profile.isActive ? "eye.fill" : "eye.slash.fill")
+                    .font(.caption)
+                VStack(alignment: .leading, spacing: 0) {
+                    JPSubLabel(
+                        text: profile.isActive ? JPLabels.status.active : JPLabels.status.paused,
+                        size: 7
+                    )
+                    Text(profile.isActive ? "Active" : "Paused")
+                        .font(.subheadline.weight(.medium))
+                }
+            }
+            .foregroundStyle(profile.isActive ? .green : .secondary)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(.ultraThinMaterial)
+            .clipShape(Capsule())
+
+            Spacer()
+
+            HStack(spacing: 8) {
+                Button {
+                    Task { await toggleActive() }
+                } label: {
+                    Text(profile.isActive ? "Pause" : "Activate")
+                        .font(.subheadline)
+                }
+                .buttonStyle(.glass)
+                .disabled(isTogglingActive)
+
+                Button {
+                    enterEditMode()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "pencil").font(.caption)
+                        Text("Edit profile").font(.subheadline)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(EKKOTheme.primary)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
+                    .shadow(color: .black.opacity(0.2), radius: 6, y: 2)
+                }
+            }
+        }
+    }
+
+    // MARK: - Edit toolbar
+
+    private var editToolbar: some View {
+        VStack(spacing: 10) {
+            HStack {
+                templateMenu
+                Spacer()
+                Button {
+                    attemptExitEditMode()
+                } label: {
+                    Text("Cancel").font(.subheadline)
+                }
+                .buttonStyle(.glass)
+                .disabled(isSaving)
+
+                Button {
+                    Task { await save() }
+                } label: {
+                    HStack(spacing: 4) {
+                        if isSaving {
+                            ProgressView().tint(.white).controlSize(.small)
+                        } else {
+                            Image(systemName: "checkmark").font(.caption)
+                        }
+                        Text("Save").font(.subheadline.weight(.semibold))
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(EKKOTheme.primary)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
+                    .opacity(isSaving ? 0.7 : 1.0)
+                }
+                .disabled(isSaving)
+            }
+            .padding(.horizontal, 16)
+
+            // Subtle "Editing" banner so it's obvious the page is in edit mode.
+            HStack(spacing: 6) {
+                Image(systemName: "pencil.circle.fill")
+                    .foregroundStyle(EKKOTheme.primary)
+                Text("Editing — tap any section to change it")
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if hasUnsavedChanges {
+                    Text("Unsaved changes")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.orange)
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+    }
+
+    private var templateMenu: some View {
+        Menu {
+            ForEach(ConnectProfileTemplate.allCases) { template in
+                Button {
+                    draft.profileTemplate = template.rawValue
+                } label: {
+                    if draft.profileTemplate == template.rawValue {
+                        Label(template.title, systemImage: "checkmark")
+                    } else {
+                        Text(template.title)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "rectangle.3.group")
+                    .font(.caption.weight(.medium))
+                Text("Template: \(currentTemplateTitle)")
+                    .font(.subheadline.weight(.medium))
+                Image(systemName: "chevron.down")
+                    .font(.caption2)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial)
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(Color.white.opacity(0.15), lineWidth: 0.5))
+        }
+    }
+
+    private var currentTemplateTitle: String {
+        ConnectProfileTemplate(rawValue: draft.profileTemplate)?.title ?? "Default"
+    }
+
+    // MARK: - Empty State (first-time setup keeps using ProfileSetupView)
 
     private var emptyState: some View {
         VStack(spacing: 16) {
@@ -164,7 +384,87 @@ struct ProfileView: View {
         }
     }
 
-    // MARK: - Actions
+    // MARK: - Edit mode lifecycle
+
+    private func enterEditMode() {
+        guard let profile = connectProfile else { return }
+        let snap = ProfileDraft.from(profile)
+        draft = snap
+        originalSnapshot = snap
+        isEditMode = true
+    }
+
+    private func attemptExitEditMode() {
+        if hasUnsavedChanges {
+            showLeaveConfirmation = true
+        } else {
+            exitEditMode(discardChanges: false)
+        }
+    }
+
+    private func exitEditMode(discardChanges: Bool) {
+        if discardChanges {
+            draft = originalSnapshot
+        }
+        isEditMode = false
+    }
+
+    // MARK: - Sheet dispatch
+
+    @ViewBuilder
+    private func sheetForSection(_ section: ProfileEditSection) -> some View {
+        switch section {
+        case .media:
+            ProfileMediaSheet(
+                mediaSlots: $draft.mediaSlots,
+                userId: appState.session?.user.id.uuidString ?? ""
+            )
+        case .headlineHeadlineLocation:
+            ProfileHeadlineLocationSheet(
+                headline: $draft.headline,
+                location: $draft.location
+            )
+        case .bio:
+            ProfileTextEditorSheet(
+                title: "About",
+                japaneseTitle: JPLabels.sections.about,
+                placeholder: "Tell others about yourself…",
+                charLimit: ConnectLimits.bioMax,
+                multiline: true,
+                text: $draft.bio
+            )
+        case .lookingFor:
+            ProfileTextEditorSheet(
+                title: "Looking For",
+                japaneseTitle: JPLabels.sections.lookingFor,
+                placeholder: "What are you looking for?",
+                charLimit: ConnectLimits.lookingForMax,
+                multiline: true,
+                text: $draft.lookingFor
+            )
+        case .prompts:
+            ProfilePromptsSheet(prompts: $draft.prompts)
+        case .socials:
+            ProfileSocialsSheet(
+                instagramHandle: $draft.instagramHandle,
+                twitterHandle: $draft.twitterHandle,
+                websiteUrl: $draft.websiteUrl
+            )
+        }
+    }
+
+    private func makeEditActions() -> ProfileEditActions {
+        ProfileEditActions(
+            onTapMedia:            { activeEditor = .media },
+            onTapHeadlineLocation: { activeEditor = .headlineHeadlineLocation },
+            onTapBio:              { activeEditor = .bio },
+            onTapLookingFor:       { activeEditor = .lookingFor },
+            onTapPrompts:          { activeEditor = .prompts },
+            onTapSocials:          { activeEditor = .socials }
+        )
+    }
+
+    // MARK: - Network actions
 
     private func loadProfile() async {
         do {
@@ -187,6 +487,37 @@ struct ProfileView: View {
         }
         isTogglingActive = false
     }
+
+    private func save() async {
+        guard connectProfile != nil else { return }
+        isSaving = true
+        defer { isSaving = false }
+
+        do {
+            let payload = ProfilePayload(
+                headline:        draft.headline.isEmpty ? nil : draft.headline,
+                lookingFor:      draft.lookingFor.isEmpty ? nil : draft.lookingFor,
+                bio:             draft.bio.isEmpty ? nil : draft.bio,
+                mediaSlots:      draft.mediaSlots,
+                prompts:         draft.prompts,
+                instagramHandle: draft.instagramHandle.isEmpty ? nil : draft.instagramHandle,
+                twitterHandle:   draft.twitterHandle.isEmpty ? nil : draft.twitterHandle,
+                websiteUrl:      draft.websiteUrl.isEmpty ? nil : draft.websiteUrl,
+                location:        draft.location.isEmpty ? nil : draft.location,
+                profileTemplate: draft.profileTemplate
+            )
+            struct GenericResponse: Codable { let id: String }
+            let _: GenericResponse = try await appState.trpc.mutate(
+                "connectProfile.update",
+                input: payload
+            )
+            await appState.refreshConnectProfile()
+            originalSnapshot = draft
+            isEditMode = false
+        } catch {
+            saveError = error.localizedDescription
+        }
+    }
 }
 
 // MARK: - Stat Card
@@ -206,5 +537,38 @@ struct StatCard: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
         .glassCard()
+    }
+}
+
+// MARK: - ProfileDraft
+//
+// Local working copy of all editable fields. Equatable so we can detect
+// unsaved changes by simple comparison against the entry-time snapshot.
+
+struct ProfileDraft: Equatable {
+    var profileTemplate: String = ConnectProfileTemplate.default.rawValue
+    var headline: String = ""
+    var bio: String = ""
+    var lookingFor: String = ""
+    var location: String = ""
+    var instagramHandle: String = ""
+    var twitterHandle: String = ""
+    var websiteUrl: String = ""
+    var mediaSlots: [MediaSlot] = []
+    var prompts: [PromptEntry] = []
+
+    static func from(_ profile: ConnectProfile) -> ProfileDraft {
+        ProfileDraft(
+            profileTemplate: profile.profileTemplate ?? ConnectProfileTemplate.default.rawValue,
+            headline:        profile.headline ?? "",
+            bio:             profile.bio ?? "",
+            lookingFor:      profile.lookingFor ?? "",
+            location:        profile.location ?? "",
+            instagramHandle: profile.instagramHandle ?? "",
+            twitterHandle:   profile.twitterHandle ?? "",
+            websiteUrl:      profile.websiteUrl ?? "",
+            mediaSlots:      profile.mediaSlots,
+            prompts:         profile.prompts
+        )
     }
 }
