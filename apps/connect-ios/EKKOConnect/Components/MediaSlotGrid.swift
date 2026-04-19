@@ -14,6 +14,11 @@ struct MediaSlotGrid: View {
     @State private var errorMessage: String?
     @State private var draggingIndex: Int?
 
+    // Cover-image picker state (audio slots only).
+    @State private var coverPhotoSelection: PhotosPickerItem?
+    @State private var coverTargetIndex: Int?
+    @State private var uploadingCoverIndex: Int?
+
     @Environment(AppState.self) private var appState
 
     var body: some View {
@@ -56,6 +61,12 @@ struct MediaSlotGrid: View {
                 Task { await uploadFile(url, index: idx) }
             }
             activeSlotIndex = nil
+        }
+        .onChange(of: coverPhotoSelection) { _, item in
+            guard let item, let idx = coverTargetIndex else { return }
+            Task { await uploadCover(item, index: idx) }
+            coverPhotoSelection = nil
+            coverTargetIndex = nil
         }
         .alert("Error", isPresented: .init(
             get: { errorMessage != nil },
@@ -123,8 +134,21 @@ struct MediaSlotGrid: View {
     private func filledContent(slot: MediaSlot, index: Int) -> some View {
         ZStack(alignment: .topTrailing) {
             if slot.isAudio {
-                LinearGradient(colors: [.purple.opacity(0.15), .pink.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
-                    .overlay {
+                ZStack {
+                    // Use the uploaded cover as background when set; fall
+                    // back to the gradient + waveform otherwise.
+                    if let coverStr = slot.coverUrl, let coverURL = URL(string: coverStr) {
+                        KFImage(coverURL)
+                            .resizable()
+                            .scaledToFill()
+                        // Subtle dim so the cover-action button stays legible.
+                        Color.black.opacity(0.18)
+                    } else {
+                        LinearGradient(
+                            colors: [.purple.opacity(0.15), .pink.opacity(0.15)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
                         VStack(spacing: 4) {
                             Image(systemName: "waveform")
                                 .font(.title3)
@@ -134,6 +158,16 @@ struct MediaSlotGrid: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
+
+                    // Loading spinner while a cover is uploading.
+                    if uploadingCoverIndex == index {
+                        Color.black.opacity(0.4)
+                        ProgressView().tint(.white)
+                    }
+                }
+                .overlay(alignment: .bottomLeading) {
+                    coverPickerPill(slot: slot, index: index)
+                }
             } else if slot.isModel {
                 Color.gray.opacity(0.08)
                     .overlay {
@@ -237,6 +271,34 @@ struct MediaSlotGrid: View {
         }
     }
 
+    /// Small pill button at the bottom-left of an audio cell. Lets the user
+    /// pick a cover image to display behind that audio file (album art).
+    private func coverPickerPill(slot: MediaSlot, index: Int) -> some View {
+        let label = slot.coverUrl == nil ? "Add cover" : "Change"
+        return PhotosPicker(
+            selection: Binding(
+                get: { coverPhotoSelection },
+                set: { item in
+                    coverTargetIndex = index
+                    coverPhotoSelection = item
+                }
+            ),
+            matching: .images
+        ) {
+            HStack(spacing: 4) {
+                Image(systemName: "photo")
+                    .font(.system(size: 9, weight: .semibold))
+                Text(label)
+                    .font(.system(size: 10, weight: .semibold))
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(.black.opacity(0.55), in: Capsule())
+        }
+        .padding(5)
+    }
+
     // MARK: - File Types
 
     private var audioAndModelTypes: [UTType] {
@@ -321,11 +383,13 @@ struct MediaSlotGrid: View {
         updated.removeAll { $0.sortOrder == from }
 
         if let target = slots.first(where: { $0.sortOrder == to }) {
-            // Swap: target takes source's old slot
+            // Swap: target takes source's old slot. `with(sortOrder:)`
+            // preserves title + coverUrl across the move so optional
+            // fields don't get nuked.
             updated.removeAll { $0.sortOrder == to }
-            updated.append(MediaSlot(url: target.url, mediaType: target.mediaType, sortOrder: from))
+            updated.append(target.with(sortOrder: from))
         }
-        updated.append(MediaSlot(url: source.url, mediaType: source.mediaType, sortOrder: to))
+        updated.append(source.with(sortOrder: to))
         updated.sort { $0.sortOrder < $1.sortOrder }
 
         withAnimation(.spring(response: 0.3)) { slots = updated }
@@ -338,6 +402,34 @@ struct MediaSlotGrid: View {
         updated.append(slot)
         updated.sort { $0.sortOrder < $1.sortOrder }
         withAnimation(.spring(response: 0.25)) { slots = updated }
+    }
+
+    // MARK: - Cover upload
+
+    private func uploadCover(_ item: PhotosPickerItem, index: Int) async {
+        uploadingCoverIndex = index
+        defer { uploadingCoverIndex = nil }
+        do {
+            guard let data = try await item.loadTransferable(type: Data.self) else {
+                errorMessage = "Failed to load cover image"
+                return
+            }
+            let storage = StorageService(supabase: appState.supabase)
+            let url = try await storage.uploadConnectMedia(
+                userId: userId,
+                data: data,
+                fileExtension: "jpg",
+                isVideo: false
+            )
+            // Mutate the matching slot in place so title + sortOrder are preserved.
+            if let i = slots.firstIndex(where: { $0.sortOrder == index }) {
+                var updated = slots
+                updated[i].coverUrl = url
+                slots = updated
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 }
 

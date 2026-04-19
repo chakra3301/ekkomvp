@@ -86,6 +86,7 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
     case terminal  = "TERMINAL"
     case photo     = "PHOTO"
     case video     = "VIDEO"
+    case music     = "MUSIC"
 
     var id: String { rawValue }
 
@@ -99,6 +100,7 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
         case .terminal:  return "Terminal"
         case .photo:     return "Photo"
         case .video:     return "Video"
+        case .music:     return "Music"
         }
     }
 
@@ -120,6 +122,8 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
             return "Featured 3:4 frame + 4-column contact sheet. Best for photographers — your photos get the spotlight, others swappable below."
         case .video:
             return "Cinemascope 2.39:1 player with REC / TC HUD and a horizontal reel carousel. Best for filmmakers and motion artists."
+        case .music:
+            return "Now-playing card with waveform + transport, plus a track list with mini-waveforms. Best for producers, sound designers, musicians."
         }
     }
 
@@ -137,16 +141,20 @@ struct MediaSlot: Codable, Equatable {
     /// like Editorial. Older slots may not have one — encode/decode treats
     /// it as missing rather than nil.
     var title: String?
+    /// Optional cover image for audio slots (album art). Falls back to the
+    /// gradient + waveform glyph when nil.
+    var coverUrl: String?
 
-    init(url: String, mediaType: String, sortOrder: Int, title: String? = nil) {
+    init(url: String, mediaType: String, sortOrder: Int, title: String? = nil, coverUrl: String? = nil) {
         self.url = url
         self.mediaType = mediaType
         self.sortOrder = sortOrder
         self.title = title
+        self.coverUrl = coverUrl
     }
 
     enum CodingKeys: String, CodingKey {
-        case url, mediaType, sortOrder, title
+        case url, mediaType, sortOrder, title, coverUrl
     }
 
     init(from decoder: Decoder) throws {
@@ -155,6 +163,20 @@ struct MediaSlot: Codable, Equatable {
         mediaType = try c.decode(String.self, forKey: .mediaType)
         sortOrder = try c.decode(Int.self, forKey: .sortOrder)
         title = try c.decodeIfPresent(String.self, forKey: .title)
+        coverUrl = try c.decodeIfPresent(String.self, forKey: .coverUrl)
+    }
+
+    /// Returns a copy with a new sortOrder, preserving title + coverUrl.
+    /// Used by the reorder logic so optional fields don't get nuked when
+    /// slots swap positions.
+    func with(sortOrder newSortOrder: Int) -> MediaSlot {
+        MediaSlot(
+            url: url,
+            mediaType: mediaType,
+            sortOrder: newSortOrder,
+            title: title,
+            coverUrl: coverUrl
+        )
     }
 
     var isVideo: Bool {

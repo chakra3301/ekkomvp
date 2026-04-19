@@ -259,7 +259,7 @@ struct ConnectProfileHeroView: View {
     private func coverContent(for slot: MediaSlot) -> some View {
         if slot.isAudio {
             // Tap-to-play overlay (loops on end, pauses on disappear).
-            CoverAudioPlayerView(urlString: slot.url, controlSize: 64)
+            CoverAudioPlayerView(urlString: slot.url, coverUrl: slot.coverUrl, controlSize: 64)
         } else if slot.isModel {
             // Real <model-viewer> — tappable, rotatable.
             ModelViewerView(urlString: slot.url)
@@ -387,7 +387,7 @@ struct ConnectProfileHeroView: View {
         ZStack(alignment: .bottomLeading) {
             Group {
                 if slot.isAudio {
-                    CoverAudioPlayerView(urlString: slot.url, controlSize: 36)
+                    CoverAudioPlayerView(urlString: slot.url, coverUrl: slot.coverUrl, controlSize: 36)
                 } else if slot.isModel {
                     ModelViewerView(urlString: slot.url)
                 } else if slot.isVideo {
@@ -630,6 +630,10 @@ private struct CoverVideoPlayerRepresentable: UIViewRepresentable {
 
 struct CoverAudioPlayerView: View {
     let urlString: String
+    /// Optional album-art URL. When set, replaces the gradient + waveform
+    /// glyph background with the actual image (dimmed slightly so the
+    /// play/pause control stays legible).
+    var coverUrl: String? = nil
     /// Diameter of the play/pause glyph (smaller for rail cards).
     var controlSize: CGFloat = 64
 
@@ -639,17 +643,24 @@ struct CoverAudioPlayerView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [.purple.opacity(0.55), .pink.opacity(0.4), .blue.opacity(0.25)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            if let coverUrl, let coverURL = URL(string: coverUrl) {
+                KFImage(coverURL)
+                    .resizable()
+                    .scaledToFill()
+                Color.black.opacity(0.35) // dim for control legibility
+            } else {
+                LinearGradient(
+                    colors: [.purple.opacity(0.55), .pink.opacity(0.4), .blue.opacity(0.25)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
 
-            // Soft waveform glyph behind the play control.
-            Image(systemName: "waveform")
-                .font(.system(size: controlSize * 1.4, weight: .light))
-                .foregroundStyle(.white.opacity(0.18))
-                .offset(y: -controlSize * 0.25)
+                // Soft waveform glyph behind the play control.
+                Image(systemName: "waveform")
+                    .font(.system(size: controlSize * 1.4, weight: .light))
+                    .foregroundStyle(.white.opacity(0.18))
+                    .offset(y: -controlSize * 0.25)
+            }
 
             Button(action: togglePlayback) {
                 Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")

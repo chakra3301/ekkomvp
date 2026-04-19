@@ -167,7 +167,7 @@ struct ConnectProfileVideoView: View {
     @ViewBuilder
     private func playerContent(slot: MediaSlot) -> some View {
         if slot.isAudio {
-            CoverAudioPlayerView(urlString: slot.url, controlSize: 56)
+            CoverAudioPlayerView(urlString: slot.url, coverUrl: slot.coverUrl, controlSize: 56)
         } else if slot.isModel {
             ModelViewerView(urlString: slot.url)
         } else if slot.isVideo {

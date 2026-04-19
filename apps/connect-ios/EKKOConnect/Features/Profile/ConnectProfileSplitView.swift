@@ -90,7 +90,7 @@ struct ConnectProfileSplitView: View {
     @ViewBuilder
     private func coverContent(for slot: MediaSlot) -> some View {
         if slot.isAudio {
-            CoverAudioPlayerView(urlString: slot.url, controlSize: 48)
+            CoverAudioPlayerView(urlString: slot.url, coverUrl: slot.coverUrl, controlSize: 48)
         } else if slot.isModel {
             ModelViewerView(urlString: slot.url)
         } else if slot.isVideo {
@@ -287,7 +287,7 @@ struct ConnectProfileSplitView: View {
             ZStack(alignment: .topLeading) {
                 Group {
                     if slot.isAudio {
-                        CoverAudioPlayerView(urlString: slot.url, controlSize: 28)
+                        CoverAudioPlayerView(urlString: slot.url, coverUrl: slot.coverUrl, controlSize: 28)
                     } else if slot.isModel {
                         ModelViewerView(urlString: slot.url)
                     } else if slot.isVideo {

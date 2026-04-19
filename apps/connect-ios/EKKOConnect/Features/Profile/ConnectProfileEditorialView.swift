@@ -268,7 +268,7 @@ struct ConnectProfileEditorialView: View {
             Group {
                 if slot.isAudio {
                     // Tap-to-play overlay — small control for grid context.
-                    CoverAudioPlayerView(urlString: slot.url, controlSize: 36)
+                    CoverAudioPlayerView(urlString: slot.url, coverUrl: slot.coverUrl, controlSize: 36)
                 } else if slot.isModel {
                     // Real <model-viewer> — interactive even at small size.
                     ModelViewerView(urlString: slot.url)

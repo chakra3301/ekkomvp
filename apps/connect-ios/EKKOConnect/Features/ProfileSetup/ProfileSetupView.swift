@@ -418,6 +418,7 @@ struct TemplatePreviewCard: View {
         case .terminal:  terminalPreview
         case .photo:     photoPreview
         case .video:     videoPreview
+        case .music:     musicPreview
         }
     }
 
@@ -507,6 +508,72 @@ struct TemplatePreviewCard: View {
                 .padding(.horizontal, 16)
             }
             .padding(.bottom, 8)
+        }
+    }
+
+    /// Schematic of ConnectProfileMusicView: tiny header, now-playing
+    /// card with thumbnail + waveform + transport, then a small track list.
+    private var musicPreview: some View {
+        ZStack {
+            Color(.systemBackground)
+            VStack(spacing: 4) {
+                // Header
+                HStack(spacing: 4) {
+                    Circle().fill(EKKOTheme.primary.opacity(0.4)).frame(width: 12, height: 12)
+                    RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
+                    Spacer()
+                }
+
+                // Now-playing card
+                VStack(spacing: 4) {
+                    HStack(spacing: 4) {
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(LinearGradient(colors: [.purple.opacity(0.6), .pink.opacity(0.4)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            .frame(width: 24, height: 24)
+                        VStack(alignment: .leading, spacing: 2) {
+                            RoundedRectangle(cornerRadius: 1).fill(EKKOTheme.primary).frame(width: 28, height: 2)
+                            RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 3)
+                            RoundedRectangle(cornerRadius: 1).fill(.secondary.opacity(0.4)).frame(width: 36, height: 2)
+                        }
+                        Spacer()
+                    }
+
+                    // Mini waveform
+                    HStack(spacing: 0.5) {
+                        ForEach(0..<24, id: \.self) { i in
+                            Capsule()
+                                .fill(i < 9 ? EKKOTheme.primary : .secondary.opacity(0.3))
+                                .frame(width: 1.5, height: CGFloat(2 + (i * 7) % 12))
+                        }
+                    }
+                    .padding(.top, 4)
+
+                    // Transport
+                    HStack(spacing: 6) {
+                        Circle().fill(.secondary.opacity(0.3)).frame(width: 8, height: 8)
+                        Circle().fill(EKKOTheme.primary).frame(width: 12, height: 12)
+                        Circle().fill(.secondary.opacity(0.3)).frame(width: 8, height: 8)
+                    }
+                    .padding(.top, 4)
+                }
+                .padding(8)
+                .background(EKKOTheme.primary.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
+
+                // Track list
+                VStack(spacing: 1.5) {
+                    ForEach(0..<3, id: \.self) { i in
+                        HStack(spacing: 4) {
+                            RoundedRectangle(cornerRadius: 0.5).fill(i == 0 ? EKKOTheme.primary : .secondary.opacity(0.5)).frame(width: 6, height: 2)
+                            RoundedRectangle(cornerRadius: 0.5).fill(.primary).frame(maxWidth: .infinity, maxHeight: 2)
+                            RoundedRectangle(cornerRadius: 0.5).fill(.secondary.opacity(0.4)).frame(width: 18, height: 2)
+                        }
+                    }
+                }
+                .padding(.top, 4)
+
+                Spacer()
+            }
+            .padding(8)
         }
     }
 

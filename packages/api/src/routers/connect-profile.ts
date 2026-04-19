@@ -13,6 +13,8 @@ const mediaSlotSchema = z.object({
   // Optional caption displayed by templates that use per-slot titles
   // (e.g. Editorial). Older slots without a title decode as undefined.
   title: z.string().max(100).optional(),
+  // Optional cover image URL — used for audio slots (album art).
+  coverUrl: z.string().max(500).optional(),
 });
 
 const promptSchema = z.object({
@@ -20,7 +22,7 @@ const promptSchema = z.object({
   answer: z.string().min(1).max(CONNECT_LIMITS.PROMPT_ANSWER_MAX),
 });
 
-const profileTemplateSchema = z.enum(["DEFAULT", "HERO", "EDITORIAL", "STACK", "SPLIT", "TERMINAL", "PHOTO", "VIDEO"]);
+const profileTemplateSchema = z.enum(["DEFAULT", "HERO", "EDITORIAL", "STACK", "SPLIT", "TERMINAL", "PHOTO", "VIDEO", "MUSIC"]);
 
 export const connectProfileRouter = router({
   getCurrent: protectedProcedure.query(async ({ ctx }) => {

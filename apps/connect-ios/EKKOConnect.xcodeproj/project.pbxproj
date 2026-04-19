@@ -53,6 +53,7 @@
 		8728D8D6C2547F839203D335 /* MatchCelebrationOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */; };
 		88B70FED49166AF787F7C30A /* ConnectProfileCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FE6C07E51E526F3BC4299A /* ConnectProfileCard.swift */; };
 		8D25123188F47A760ADBBDCD /* View+Glass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D4E206CAAC1783C689691E /* View+Glass.swift */; };
+		98998BBAD67DDF7881C4D8C0 /* ConnectProfileMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2954B95D97E4A99FE6ADD395 /* ConnectProfileMusicView.swift */; };
 		99F0D9CB3DF848E1E918D2C4 /* ConnectProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A8D108E3C1483EEB5F3C7D /* ConnectProfile.swift */; };
 		9F1625EB8D4E717444764FA1 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2EA2BD53985DE45F5B5447 /* User.swift */; };
 		9F660FD92B5AF6F09363B149 /* EditableAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB84A402676772345B26BDE /* EditableAvatarView.swift */; };
@@ -103,6 +104,7 @@
 		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		25464A7A6B8484A571408E6D /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
 		27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchCelebrationOverlay.swift; sourceTree = "<group>"; };
+		2954B95D97E4A99FE6ADD395 /* ConnectProfileMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileMusicView.swift; sourceTree = "<group>"; };
 		2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */ = {isa = PBXFileReference; path = coastlines.geojson; sourceTree = "<group>"; };
 		37599C761D0200DAE7F3FD8C /* CompleteProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteProfileView.swift; sourceTree = "<group>"; };
 		377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileEditorialView.swift; sourceTree = "<group>"; };
@@ -488,6 +490,7 @@
 			children = (
 				377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */,
 				142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */,
+				2954B95D97E4A99FE6ADD395 /* ConnectProfileMusicView.swift */,
 				A8430AAE30284282903E9D26 /* ConnectProfilePhotoView.swift */,
 				48BD9923DAEDAA8B026A45DF /* ConnectProfileSplitView.swift */,
 				E76548A4B2DC105D6ABA1639 /* ConnectProfileStackView.swift */,
@@ -598,6 +601,7 @@
 				88B70FED49166AF787F7C30A /* ConnectProfileCard.swift in Sources */,
 				B5D6F7AEACEF329BE2579BC4 /* ConnectProfileEditorialView.swift in Sources */,
 				CC0E8BF108397E0D0B28FE67 /* ConnectProfileHeroView.swift in Sources */,
+				98998BBAD67DDF7881C4D8C0 /* ConnectProfileMusicView.swift in Sources */,
 				7CA71178EC2ED530FB7120E2 /* ConnectProfilePhotoView.swift in Sources */,
 				1478CF35F13616A28953BE62 /* ConnectProfileSplitView.swift in Sources */,
 				01D7EE7762A72ADB273C3B93 /* ConnectProfileStackView.swift in Sources */,
