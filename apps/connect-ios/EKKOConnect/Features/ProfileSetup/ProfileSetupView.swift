@@ -415,6 +415,7 @@ struct TemplatePreviewCard: View {
         case .editorial: editorialPreview
         case .stack:     stackPreview
         case .split:     splitPreview
+        case .terminal:  terminalPreview
         }
     }
 
@@ -504,6 +505,65 @@ struct TemplatePreviewCard: View {
                 .padding(.horizontal, 16)
             }
             .padding(.bottom, 8)
+        }
+    }
+
+    /// Schematic of ConnectProfileTerminalView: mono boot line, bordered
+    /// header card, and a 4-row data table.
+    private var terminalPreview: some View {
+        ZStack {
+            Color(.systemBackground)
+            VStack(alignment: .leading, spacing: 4) {
+                // Boot line
+                HStack(spacing: 4) {
+                    Circle().fill(EKKOTheme.primary).frame(width: 4, height: 4)
+                    RoundedRectangle(cornerRadius: 0.5).fill(.secondary.opacity(0.5)).frame(width: 60, height: 2)
+                }
+                .padding(.bottom, 4)
+
+                // Bordered header card
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(.secondary.opacity(0.5), lineWidth: 1)
+                    .frame(height: 32)
+                    .overlay(alignment: .leading) {
+                        HStack(spacing: 4) {
+                            Circle().fill(EKKOTheme.primary.opacity(0.5)).frame(width: 12, height: 12)
+                            VStack(alignment: .leading, spacing: 2) {
+                                RoundedRectangle(cornerRadius: 1).fill(EKKOTheme.primary).frame(width: 18, height: 2)
+                                RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
+                            }
+                        }
+                        .padding(.leading, 4)
+                    }
+
+                // Stats bar
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(.secondary.opacity(0.5), lineWidth: 1)
+                    .frame(height: 14)
+                    .padding(.top, 2)
+
+                // Mono command label
+                RoundedRectangle(cornerRadius: 0.5).fill(EKKOTheme.primary).frame(width: 36, height: 2)
+
+                // Data table rows
+                VStack(spacing: 2) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        HStack(spacing: 4) {
+                            RoundedRectangle(cornerRadius: 0.5).fill(EKKOTheme.primary).frame(width: 8, height: 2)
+                            RoundedRectangle(cornerRadius: 0.5).fill(.primary).frame(maxWidth: .infinity, maxHeight: 2)
+                            RoundedRectangle(cornerRadius: 0.5).fill(.secondary.opacity(0.5)).frame(width: 16, height: 2)
+                        }
+                    }
+                }
+                .padding(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(.secondary.opacity(0.5), lineWidth: 1)
+                )
+
+                Spacer()
+            }
+            .padding(8)
         }
     }
 

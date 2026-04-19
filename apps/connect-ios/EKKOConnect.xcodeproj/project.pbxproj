@@ -31,6 +31,7 @@
 		4D4E8AB5F3404AF8016DB657 /* WelcomeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE72F841BC20E473494CA695 /* WelcomeSheet.swift */; };
 		563DB68F4C430E57C0DF582D /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C3DE4E19C55050385849AF /* ProfileView.swift */; };
 		574832EE21AD4003650B7EBF /* NotoSansJP.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8D9BB8A15D2DB67C9CC979C5 /* NotoSansJP.ttf */; };
+		578A9AD7845C249D6C59D746 /* ConnectProfileTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D5729266ADD7D748C1D8DC0 /* ConnectProfileTerminalView.swift */; };
 		587A36F34BB9F6D10F7F8C46 /* SkeletonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D2D8890B2231560DA21604 /* SkeletonView.swift */; };
 		59B4404A9D99ECE7E4C31F1B /* InstagramPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94763DBB8AE7EE82754BBDB6 /* InstagramPreview.swift */; };
 		5E53B57FFEEEC253793D4653 /* EKKOFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B5099770EB5143E66F61661 /* EKKOFont.swift */; };
@@ -116,6 +117,7 @@
 		723A91A9A7864B5532F7A751 /* JPLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPLabels.swift; sourceTree = "<group>"; };
 		7AB84A402676772345B26BDE /* EditableAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableAvatarView.swift; sourceTree = "<group>"; };
 		7CA70C2381F53D3DEEA3BE99 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
+		7D5729266ADD7D748C1D8DC0 /* ConnectProfileTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileTerminalView.swift; sourceTree = "<group>"; };
 		7F196972C0FE82EA4A7B9468 /* EKKOConnect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EKKOConnect.entitlements; sourceTree = "<group>"; };
 		7FA796FEFEEF21ACBD9272F1 /* ConnectSwipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSwipe.swift; sourceTree = "<group>"; };
 		811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -484,6 +486,7 @@
 				142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */,
 				48BD9923DAEDAA8B026A45DF /* ConnectProfileSplitView.swift */,
 				E76548A4B2DC105D6ABA1639 /* ConnectProfileStackView.swift */,
+				7D5729266ADD7D748C1D8DC0 /* ConnectProfileTerminalView.swift */,
 				937D6CD74F7827950B16C1F7 /* ProfileSectionEditors.swift */,
 				E6C3DE4E19C55050385849AF /* ProfileView.swift */,
 			);
@@ -591,6 +594,7 @@
 				CC0E8BF108397E0D0B28FE67 /* ConnectProfileHeroView.swift in Sources */,
 				1478CF35F13616A28953BE62 /* ConnectProfileSplitView.swift in Sources */,
 				01D7EE7762A72ADB273C3B93 /* ConnectProfileStackView.swift in Sources */,
+				578A9AD7845C249D6C59D746 /* ConnectProfileTerminalView.swift in Sources */,
 				6E90CDDD7C12D88CE6C5FDCD /* ConnectSwipe.swift in Sources */,
 				C438D5D8876115BB576FF8FE /* Constants.swift in Sources */,
 				D47C740DBB3650B711C976C8 /* CustomTabBar.swift in Sources */,
