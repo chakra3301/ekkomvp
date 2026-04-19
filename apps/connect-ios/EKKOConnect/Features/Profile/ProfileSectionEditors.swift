@@ -13,6 +13,7 @@ enum ProfileEditSection: Identifiable {
     case lookingFor
     case prompts
     case socials
+    case mediaTitle(Int) // edit one MediaSlot's caption
 
     var id: String {
         switch self {
@@ -22,6 +23,7 @@ enum ProfileEditSection: Identifiable {
         case .lookingFor: return "lookingFor"
         case .prompts: return "prompts"
         case .socials: return "socials"
+        case .mediaTitle(let i): return "mediaTitle-\(i)"
         }
     }
 
@@ -33,6 +35,7 @@ enum ProfileEditSection: Identifiable {
         case .lookingFor: return "Looking For"
         case .prompts: return "Prompts"
         case .socials: return "Socials"
+        case .mediaTitle: return "Caption"
         }
     }
 }
@@ -48,6 +51,8 @@ struct ProfileEditActions {
     var onTapLookingFor: () -> Void
     var onTapPrompts: () -> Void
     var onTapSocials: () -> Void
+    /// Per-slot caption editor. Optional — only Editorial uses captions.
+    var onEditMediaTitle: ((Int) -> Void)? = nil
 }
 
 // MARK: - Editable section wrapper

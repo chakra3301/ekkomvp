@@ -450,7 +450,41 @@ struct ProfileView: View {
                 twitterHandle: $draft.twitterHandle,
                 websiteUrl: $draft.websiteUrl
             )
+        case .mediaTitle(let index):
+            // Per-slot caption editor used by Editorial. Bind to the
+            // chosen slot's title via a derived Binding.
+            let titleBinding = Binding<String>(
+                get: { mediaTitleAt(index: index) },
+                set: { setMediaTitle(index: index, $0) }
+            )
+            ProfileTextEditorSheet(
+                title: "Caption",
+                japaneseTitle: nil,
+                placeholder: "Caption for № \(String(format: "%02d", index + 1))",
+                charLimit: 100,
+                multiline: false,
+                text: titleBinding
+            )
         }
+    }
+
+    private func mediaTitleAt(index: Int) -> String {
+        let sorted = draft.mediaSlots.sorted { $0.sortOrder < $1.sortOrder }
+        guard index < sorted.count else { return "" }
+        return sorted[index].title ?? ""
+    }
+
+    /// Update the title for the slot at `index` in the *sorted* media list.
+    /// We have to map back to draft.mediaSlots' actual position because
+    /// the Editorial view sees the sorted view, not the storage order.
+    private func setMediaTitle(index: Int, _ value: String) {
+        let sorted = draft.mediaSlots.sorted { $0.sortOrder < $1.sortOrder }
+        guard index < sorted.count else { return }
+        let target = sorted[index]
+        guard let storageIndex = draft.mediaSlots.firstIndex(where: {
+            $0.url == target.url && $0.sortOrder == target.sortOrder
+        }) else { return }
+        draft.mediaSlots[storageIndex].title = value.isEmpty ? nil : value
     }
 
     private func makeEditActions() -> ProfileEditActions {
@@ -460,7 +494,8 @@ struct ProfileView: View {
             onTapBio:              { activeEditor = .bio },
             onTapLookingFor:       { activeEditor = .lookingFor },
             onTapPrompts:          { activeEditor = .prompts },
-            onTapSocials:          { activeEditor = .socials }
+            onTapSocials:          { activeEditor = .socials },
+            onEditMediaTitle:      { idx in activeEditor = .mediaTitle(idx) }
         )
     }
 

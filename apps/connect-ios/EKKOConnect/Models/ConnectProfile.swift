@@ -113,6 +113,29 @@ struct MediaSlot: Codable, Equatable {
     let url: String
     let mediaType: String
     let sortOrder: Int
+    /// Optional editorial-style caption shown under the slot in templates
+    /// like Editorial. Older slots may not have one — encode/decode treats
+    /// it as missing rather than nil.
+    var title: String?
+
+    init(url: String, mediaType: String, sortOrder: Int, title: String? = nil) {
+        self.url = url
+        self.mediaType = mediaType
+        self.sortOrder = sortOrder
+        self.title = title
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case url, mediaType, sortOrder, title
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        url = try c.decode(String.self, forKey: .url)
+        mediaType = try c.decode(String.self, forKey: .mediaType)
+        sortOrder = try c.decode(Int.self, forKey: .sortOrder)
+        title = try c.decodeIfPresent(String.self, forKey: .title)
+    }
 
     var isVideo: Bool {
         mediaType == "VIDEO" || url.contains("/video-") ||

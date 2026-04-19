@@ -10,6 +10,9 @@ const mediaSlotSchema = z.object({
   url: z.string().min(1),
   mediaType: z.enum(["PHOTO", "VIDEO", "AUDIO", "MODEL"]),
   sortOrder: z.number().int().min(0).max(11),
+  // Optional caption displayed by templates that use per-slot titles
+  // (e.g. Editorial). Older slots without a title decode as undefined.
+  title: z.string().max(100).optional(),
 });
 
 const promptSchema = z.object({

@@ -297,10 +297,37 @@ struct ConnectProfileEditorialView: View {
             .foregroundStyle(.secondary)
             .textCase(.uppercase)
 
-            // Title is intentionally borrowed from the matching prompt
-            // when available — keeps the magazine "captioned image" feel
-            // without requiring a per-slot title field.
-            Text(captionFor(index: index, slot: slot))
+            // Editorial caption — uses slot.title if set, otherwise falls
+            // back to the matching prompt question, otherwise "Slot N".
+            // Tappable in edit mode to open a focused title editor.
+            captionView(index: index, slot: slot)
+        }
+    }
+
+    @ViewBuilder
+    private func captionView(index: Int, slot: MediaSlot) -> some View {
+        let display = slot.title ?? captionFor(index: index, slot: slot)
+
+        if let onEditTitle = editActions?.onEditMediaTitle {
+            Button {
+                onEditTitle(index)
+            } label: {
+                HStack(spacing: 6) {
+                    Text(display)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(slot.title == nil ? .secondary : .primary)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(2)
+                    Spacer(minLength: 0)
+                    Image(systemName: "pencil")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(EKKOTheme.primary)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        } else {
+            Text(display)
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.primary)
                 .lineLimit(2)
@@ -420,22 +447,33 @@ struct ConnectProfileEditorialView: View {
                      (websiteUrl?.isEmpty == false)
 
         if hasAny || editActions != nil {
-            EditableSection(action: editActions?.onTapSocials) {
-                VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 10) {
+                EditableSection(action: editActions?.onTapSocials) {
                     sectionLabel("ELSEWHERE")
-                    if hasAny {
-                        VStack(spacing: 0) {
-                            if let ig = instagramHandle, !ig.isEmpty {
-                                socialRow(label: "Instagram", value: "@\(ig)")
-                            }
-                            if let tw = twitterHandle, !tw.isEmpty {
-                                socialRow(label: "X", value: "@\(tw)")
-                            }
-                            if let web = websiteUrl, !web.isEmpty {
-                                socialRow(label: "Site", value: cleanDisplayURL(web))
-                            }
+                }
+
+                if hasAny {
+                    // Each row is its own button so taps go to the matching
+                    // app/URL — only the section label opens the editor.
+                    VStack(spacing: 0) {
+                        if let ig = instagramHandle, !ig.isEmpty {
+                            socialRow(label: "Instagram",
+                                      value: "@\(stripAt(ig))",
+                                      action: { openInstagram(handle: ig) })
                         }
-                    } else {
+                        if let tw = twitterHandle, !tw.isEmpty {
+                            socialRow(label: "X",
+                                      value: "@\(stripAt(tw))",
+                                      action: { openTwitter(handle: tw) })
+                        }
+                        if let web = websiteUrl, !web.isEmpty {
+                            socialRow(label: "Site",
+                                      value: cleanDisplayURL(web),
+                                      action: { openWebsite(url: web) })
+                        }
+                    }
+                } else {
+                    EditableSection(action: editActions?.onTapSocials) {
                         placeholderRow(label: "Socials", hint: "Add Instagram, X, or website")
                     }
                 }
@@ -444,23 +482,63 @@ struct ConnectProfileEditorialView: View {
         }
     }
 
-    private func socialRow(label: String, value: String) -> some View {
-        HStack {
-            Text(label.uppercased())
-                .font(.custom(mono, size: 10))
-                .tracking(1.4)
-                .foregroundStyle(.secondary)
-            Spacer()
-            Text(value)
-                .font(.custom(mono, size: 12))
-                .foregroundStyle(.primary)
+    private func socialRow(label: String, value: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(label.uppercased())
+                    .font(.custom(mono, size: 10))
+                    .tracking(1.4)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text(value)
+                    .font(.custom(mono, size: 12))
+                    .foregroundStyle(.primary)
+                Image(systemName: "arrow.up.right")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 10)
+            .contentShape(Rectangle())
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(Color.secondary.opacity(0.18))
+                    .frame(height: 0.5)
+            }
         }
-        .padding(.vertical, 10)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.secondary.opacity(0.18))
-                .frame(height: 0.5)
+        .buttonStyle(.plain)
+    }
+
+    private func stripAt(_ s: String) -> String {
+        s.trimmingCharacters(in: CharacterSet(charactersIn: "@"))
+    }
+
+    private func openInstagram(handle: String) {
+        let h = stripAt(handle)
+        if let appURL = URL(string: "instagram://user?username=\(h)"),
+           UIApplication.shared.canOpenURL(appURL) {
+            UIApplication.shared.open(appURL)
+            return
         }
+        if let web = URL(string: "https://www.instagram.com/\(h)") {
+            UIApplication.shared.open(web)
+        }
+    }
+
+    private func openTwitter(handle: String) {
+        let h = stripAt(handle)
+        if let appURL = URL(string: "twitter://user?screen_name=\(h)"),
+           UIApplication.shared.canOpenURL(appURL) {
+            UIApplication.shared.open(appURL)
+            return
+        }
+        if let web = URL(string: "https://x.com/\(h)") {
+            UIApplication.shared.open(web)
+        }
+    }
+
+    private func openWebsite(url: String) {
+        let str = url.hasPrefix("http") ? url : "https://\(url)"
+        if let u = URL(string: str) { UIApplication.shared.open(u) }
     }
 
     private func cleanDisplayURL(_ url: String) -> String {
