@@ -29,6 +29,7 @@ struct ConnectProfileStackView: View {
 
     @State private var deckIndex: Int = 0
     @State private var dragOffset: CGSize = .zero
+    @State private var presentedMedia: PresentedMedia?
 
     private var sortedMedia: [MediaSlot] {
         mediaSlots.sorted { $0.sortOrder < $1.sortOrder }
@@ -44,6 +45,9 @@ struct ConnectProfileStackView: View {
             lookingForBlock
             socialsBlock
             Spacer(minLength: 32)
+        }
+        .fullScreenCover(item: $presentedMedia) { presented in
+            MediaFullScreenViewer(slot: presented.slot, displayTitle: presented.displayTitle)
         }
     }
 
@@ -236,19 +240,8 @@ struct ConnectProfileStackView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .allowsHitTesting(false)
 
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(metaLine(for: slot))
-                        .font(.custom(mono, size: 10))
-                        .tracking(1.5)
-                        .foregroundStyle(EKKOTheme.primary)
-                        .textCase(.uppercase)
-
-                    Text(slot.title ?? fallbackTitle(for: slot))
-                        .font(.custom(EKKOFont.regular, size: 26))
-                        .lineLimit(2)
-                        .foregroundStyle(.white)
-                }
-                .padding(18)
+                frontCaption(slot: slot)
+                    .padding(18)
             }
         }
         .scaleEffect(scale)
@@ -258,6 +251,60 @@ struct ConnectProfileStackView: View {
         .opacity(opacity)
         .shadow(color: .black.opacity(isFront ? 0.4 : 0.2), radius: isFront ? 20 : 10, y: 14)
         .animation(.spring(response: 0.45, dampingFraction: 0.8), value: deckIndex)
+    }
+
+    /// Caption block on the front card. In edit mode the whole block is a
+    /// Button that opens the per-slot title editor for the deck's current
+    /// index. Pencil glyph is shown as the affordance.
+    @ViewBuilder
+    private func frontCaption(slot: MediaSlot) -> some View {
+        let captionText = slot.title ?? fallbackTitle(for: slot)
+        let captionColor: Color = slot.title == nil ? .white.opacity(0.75) : .white
+
+        if let onEditTitle = editActions?.onEditMediaTitle {
+            Button {
+                onEditTitle(deckIndex)
+            } label: {
+                HStack(alignment: .bottom, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(metaLine(for: slot))
+                            .font(.custom(mono, size: 10))
+                            .tracking(1.5)
+                            .foregroundStyle(EKKOTheme.primary)
+                            .textCase(.uppercase)
+
+                        Text(captionText)
+                            .font(.custom(EKKOFont.regular, size: 26))
+                            .lineLimit(2)
+                            .foregroundStyle(captionColor)
+                            .multilineTextAlignment(.leading)
+                    }
+                    Spacer(minLength: 0)
+                    Image(systemName: "pencil")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .padding(6)
+                        .background(Circle().fill(EKKOTheme.primary))
+                }
+                .contentShape(Rectangle())
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
+        } else {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(metaLine(for: slot))
+                    .font(.custom(mono, size: 10))
+                    .tracking(1.5)
+                    .foregroundStyle(EKKOTheme.primary)
+                    .textCase(.uppercase)
+
+                Text(captionText)
+                    .font(.custom(EKKOFont.regular, size: 26))
+                    .lineLimit(2)
+                    .foregroundStyle(.white)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 
     @ViewBuilder
@@ -306,9 +353,9 @@ struct ConnectProfileStackView: View {
 
     private var controls: some View {
         let canControl = !sortedMedia.isEmpty
-        let frontTitle = sortedMedia.indices.contains(deckIndex)
-            ? (sortedMedia[deckIndex].title ?? fallbackTitle(for: sortedMedia[deckIndex]))
-            : ""
+        let frontSlot: MediaSlot? = sortedMedia.indices.contains(deckIndex)
+            ? sortedMedia[deckIndex] : nil
+        let frontTitle = frontSlot.map { $0.title ?? fallbackTitle(for: $0) } ?? ""
 
         return HStack(spacing: 10) {
             Button { advance(-1) } label: { stackChip("←") }
@@ -316,7 +363,16 @@ struct ConnectProfileStackView: View {
                 .disabled(!canControl)
 
             Button {
-                editActions?.onTapMedia()
+                if let slot = frontSlot {
+                    // "Open" always opens fullscreen — editing happens via
+                    // the dashed-border edit affordances. Works in both
+                    // display and edit mode.
+                    presentedMedia = PresentedMedia(slot: slot, displayTitle: frontTitle)
+                } else {
+                    // No media yet — fall back to the media editor so the
+                    // user can add some.
+                    editActions?.onTapMedia()
+                }
             } label: {
                 Text(canControl ? "Open \(frontTitle)" : "Add media")
                     .font(.subheadline.weight(.semibold))

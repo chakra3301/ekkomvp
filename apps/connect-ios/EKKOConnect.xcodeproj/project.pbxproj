@@ -12,6 +12,7 @@
 		059B52868D1C468D5B2DC47E /* SwipeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */; };
 		0BC9FED059C44D8E0F03BCED /* ArchesRegularItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7556E0055DF8FFC25312217 /* ArchesRegularItalic.ttf */; };
 		10669041C45250A6A607B0CA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A698D4ADD418F1A28B37E /* LoginView.swift */; };
+		1478CF35F13616A28953BE62 /* ConnectProfileSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BD9923DAEDAA8B026A45DF /* ConnectProfileSplitView.swift */; };
 		182D176CDAFE74938414D202 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE831145F32102D043E1C487 /* Enums.swift */; };
 		1A8EF3890E4F06100109896F /* ReportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95847590D257E624076B08A2 /* ReportSheet.swift */; };
 		1B95F39D1C91D3BE049ED190 /* GlobeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E9E97572DF4DE816EE020F /* GlobeView.swift */; };
@@ -75,6 +76,7 @@
 		D5F751147C89C4445EC2752A /* DeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25464A7A6B8484A571408E6D /* DeepLinkHandler.swift */; };
 		DA0A56E24129ECE272A2D5AE /* ProfileSectionEditors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 937D6CD74F7827950B16C1F7 /* ProfileSectionEditors.swift */; };
 		DF6EF3259CC99F54FC6952EF /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E6159F8DBC428A2811B432 /* NetworkError.swift */; };
+		DF95D032139577F9E1616D0A /* MediaFullScreenViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38CF3D54B542DE50F33D2E /* MediaFullScreenViewer.swift */; };
 		E5F844B00857726110D04AE1 /* TRPCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB934980B1C0330A1FD48FA0 /* TRPCClient.swift */; };
 		E78566061BF105349FD37E2A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2B61B9994A7B2E2DFB0D5A3 /* Assets.xcassets */; };
 		F40646830061AA9AE034651C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7457FFE66BC891D4429F592 /* AppDelegate.swift */; };
@@ -89,6 +91,7 @@
 		015ABB13D19287E17C80378A /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		03CC0A84AB371130E6BC4B3B /* ConnectMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectMatch.swift; sourceTree = "<group>"; };
 		06E6159F8DBC428A2811B432 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		0C38CF3D54B542DE50F33D2E /* MediaFullScreenViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFullScreenViewer.swift; sourceTree = "<group>"; };
 		111182E0860949B7CD2A97E7 /* ProfileSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetupView.swift; sourceTree = "<group>"; };
 		112188F5EBEFDFFE01282BB2 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileHeroView.swift; sourceTree = "<group>"; };
@@ -104,6 +107,7 @@
 		3E8DACECBC06504D944E9928 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		4477E6AA1C95510FD0FE5B75 /* ConnectMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectMessage.swift; sourceTree = "<group>"; };
 		462F15F81C0442317081C5EB /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		48BD9923DAEDAA8B026A45DF /* ConnectProfileSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileSplitView.swift; sourceTree = "<group>"; };
 		51A8D108E3C1483EEB5F3C7D /* ConnectProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfile.swift; sourceTree = "<group>"; };
 		5878DD8F54AB84ECFA38FE67 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
 		61EE2C17CD4D7F311478E2D1 /* PromptEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptEditor.swift; sourceTree = "<group>"; };
@@ -310,6 +314,7 @@
 				94763DBB8AE7EE82754BBDB6 /* InstagramPreview.swift */,
 				228D601B5509AA4D2A790714 /* JapaneseLabel.swift */,
 				CE5E3FA89419F1E6D935732C /* LegalLinks.swift */,
+				0C38CF3D54B542DE50F33D2E /* MediaFullScreenViewer.swift */,
 				CE6293A856B21826507BDAAD /* MediaSlotGrid.swift */,
 				61EE2C17CD4D7F311478E2D1 /* PromptEditor.swift */,
 				95847590D257E624076B08A2 /* ReportSheet.swift */,
@@ -477,6 +482,7 @@
 			children = (
 				377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */,
 				142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */,
+				48BD9923DAEDAA8B026A45DF /* ConnectProfileSplitView.swift */,
 				E76548A4B2DC105D6ABA1639 /* ConnectProfileStackView.swift */,
 				937D6CD74F7827950B16C1F7 /* ProfileSectionEditors.swift */,
 				E6C3DE4E19C55050385849AF /* ProfileView.swift */,
@@ -583,6 +589,7 @@
 				88B70FED49166AF787F7C30A /* ConnectProfileCard.swift in Sources */,
 				B5D6F7AEACEF329BE2579BC4 /* ConnectProfileEditorialView.swift in Sources */,
 				CC0E8BF108397E0D0B28FE67 /* ConnectProfileHeroView.swift in Sources */,
+				1478CF35F13616A28953BE62 /* ConnectProfileSplitView.swift in Sources */,
 				01D7EE7762A72ADB273C3B93 /* ConnectProfileStackView.swift in Sources */,
 				6E90CDDD7C12D88CE6C5FDCD /* ConnectSwipe.swift in Sources */,
 				C438D5D8876115BB576FF8FE /* Constants.swift in Sources */,
@@ -610,6 +617,7 @@
 				10669041C45250A6A607B0CA /* LoginView.swift in Sources */,
 				8728D8D6C2547F839203D335 /* MatchCelebrationOverlay.swift in Sources */,
 				CEE35E6D319FC5335AAD0D74 /* MatchesView.swift in Sources */,
+				DF95D032139577F9E1616D0A /* MediaFullScreenViewer.swift in Sources */,
 				623C6D7EE80E2767294520C6 /* MediaSlotGrid.swift in Sources */,
 				A2588AD1E12B317E65FA3535 /* MeshBackground.swift in Sources */,
 				DF6EF3259CC99F54FC6952EF /* NetworkError.swift in Sources */,

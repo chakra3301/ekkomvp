@@ -414,6 +414,7 @@ struct TemplatePreviewCard: View {
         case .hero:      heroPreview
         case .editorial: editorialPreview
         case .stack:     stackPreview
+        case .split:     splitPreview
         }
     }
 
@@ -503,6 +504,64 @@ struct TemplatePreviewCard: View {
                 .padding(.horizontal, 16)
             }
             .padding(.bottom, 8)
+        }
+    }
+
+    /// Schematic of ConnectProfileSplitView: short cover, left avatar rail
+    /// + right name/NOW card, full-bleed 3-col grid.
+    private var splitPreview: some View {
+        ZStack {
+            Color(.systemBackground)
+            VStack(spacing: 0) {
+                // Short cover
+                Rectangle()
+                    .fill(EKKOTheme.primary.opacity(0.5))
+                    .frame(height: 36)
+
+                // Split row: avatar (rail) + content
+                HStack(alignment: .top, spacing: 6) {
+                    Circle()
+                        .fill(.white)
+                        .frame(width: 22, height: 22)
+                        .overlay(Circle().stroke(.white, lineWidth: 1.5))
+                        .offset(y: -8)
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        // Big name
+                        RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 60, height: 6)
+                        // NOW card
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(.secondary.opacity(0.2))
+                            .frame(height: 18)
+                            .overlay(alignment: .topLeading) {
+                                RoundedRectangle(cornerRadius: 1)
+                                    .fill(EKKOTheme.primary)
+                                    .frame(width: 14, height: 2)
+                                    .padding(4)
+                            }
+                        // Bio bars
+                        RoundedRectangle(cornerRadius: 1).fill(.secondary.opacity(0.4)).frame(height: 2)
+                        RoundedRectangle(cornerRadius: 1).fill(.secondary.opacity(0.4)).frame(width: 50, height: 2)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, 8)
+                .padding(.top, 4)
+
+                Spacer().frame(height: 8)
+
+                // 3-col grid
+                HStack(spacing: 1) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        Rectangle()
+                            .fill(.secondary.opacity(0.35))
+                            .aspectRatio(1, contentMode: .fit)
+                    }
+                }
+                .padding(.horizontal, 1)
+
+                Spacer()
+            }
         }
     }
 

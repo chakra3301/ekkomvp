@@ -20,7 +20,7 @@ const promptSchema = z.object({
   answer: z.string().min(1).max(CONNECT_LIMITS.PROMPT_ANSWER_MAX),
 });
 
-const profileTemplateSchema = z.enum(["DEFAULT", "HERO", "EDITORIAL", "STACK"]);
+const profileTemplateSchema = z.enum(["DEFAULT", "HERO", "EDITORIAL", "STACK", "SPLIT"]);
 
 export const connectProfileRouter = router({
   getCurrent: protectedProcedure.query(async ({ ctx }) => {
