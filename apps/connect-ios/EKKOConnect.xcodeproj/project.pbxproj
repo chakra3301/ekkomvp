@@ -48,6 +48,7 @@
 		73620589D2CFB383D2B3256C /* GlobePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A043BF395AB7DECF8934F57D /* GlobePin.swift */; };
 		73A430368D6FB4A5E9C3F2CB /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88755341BA620E386F3BB984 /* AvatarView.swift */; };
 		768BDA4A31ADE99DAFD8CDFB /* ArchesRegular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E086B38FCEDB58ADC9A2C558 /* ArchesRegular.ttf */; };
+		7CA71178EC2ED530FB7120E2 /* ConnectProfilePhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8430AAE30284282903E9D26 /* ConnectProfilePhotoView.swift */; };
 		8697DA9C62887B598633DE9F /* LikeNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05B535B091DE1E1D3B9E12B /* LikeNoteSheet.swift */; };
 		8728D8D6C2547F839203D335 /* MatchCelebrationOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */; };
 		88B70FED49166AF787F7C30A /* ConnectProfileCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FE6C07E51E526F3BC4299A /* ConnectProfileCard.swift */; };
@@ -135,6 +136,7 @@
 		95847590D257E624076B08A2 /* ReportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportSheet.swift; sourceTree = "<group>"; };
 		99D29F132143689C326F8305 /* LikesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikesView.swift; sourceTree = "<group>"; };
 		A043BF395AB7DECF8934F57D /* GlobePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobePin.swift; sourceTree = "<group>"; };
+		A8430AAE30284282903E9D26 /* ConnectProfilePhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfilePhotoView.swift; sourceTree = "<group>"; };
 		AFA357290B949894640624B9 /* GlobeSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeSceneView.swift; sourceTree = "<group>"; };
 		B05B535B091DE1E1D3B9E12B /* LikeNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeNoteSheet.swift; sourceTree = "<group>"; };
 		B0D2D8890B2231560DA21604 /* SkeletonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonView.swift; sourceTree = "<group>"; };
@@ -484,6 +486,7 @@
 			children = (
 				377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */,
 				142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */,
+				A8430AAE30284282903E9D26 /* ConnectProfilePhotoView.swift */,
 				48BD9923DAEDAA8B026A45DF /* ConnectProfileSplitView.swift */,
 				E76548A4B2DC105D6ABA1639 /* ConnectProfileStackView.swift */,
 				7D5729266ADD7D748C1D8DC0 /* ConnectProfileTerminalView.swift */,
@@ -592,6 +595,7 @@
 				88B70FED49166AF787F7C30A /* ConnectProfileCard.swift in Sources */,
 				B5D6F7AEACEF329BE2579BC4 /* ConnectProfileEditorialView.swift in Sources */,
 				CC0E8BF108397E0D0B28FE67 /* ConnectProfileHeroView.swift in Sources */,
+				7CA71178EC2ED530FB7120E2 /* ConnectProfilePhotoView.swift in Sources */,
 				1478CF35F13616A28953BE62 /* ConnectProfileSplitView.swift in Sources */,
 				01D7EE7762A72ADB273C3B93 /* ConnectProfileStackView.swift in Sources */,
 				578A9AD7845C249D6C59D746 /* ConnectProfileTerminalView.swift in Sources */,

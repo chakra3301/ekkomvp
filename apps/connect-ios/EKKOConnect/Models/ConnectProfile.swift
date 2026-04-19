@@ -84,6 +84,7 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
     case stack     = "STACK"
     case split     = "SPLIT"
     case terminal  = "TERMINAL"
+    case photo     = "PHOTO"
 
     var id: String { rawValue }
 
@@ -95,6 +96,7 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
         case .stack:     return "Stack"
         case .split:     return "Split"
         case .terminal:  return "Terminal"
+        case .photo:     return "Photo"
         }
     }
 
@@ -112,6 +114,8 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
             return "Split layout with a vertical-text left rail (avatar + handle) and a right column for name, NOW card, and about. Full-bleed 3-col media grid below."
         case .terminal:
             return "Monospace command-line aesthetic — your profile rendered as $ whoami, ls, grep output. Best for devs, hackers, and zine-y looks."
+        case .photo:
+            return "Featured 3:4 frame + 4-column contact sheet. Best for photographers — your photos get the spotlight, others swappable below."
         }
     }
 

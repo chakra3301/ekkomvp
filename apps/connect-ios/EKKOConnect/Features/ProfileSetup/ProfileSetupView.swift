@@ -416,6 +416,7 @@ struct TemplatePreviewCard: View {
         case .stack:     stackPreview
         case .split:     splitPreview
         case .terminal:  terminalPreview
+        case .photo:     photoPreview
         }
     }
 
@@ -505,6 +506,64 @@ struct TemplatePreviewCard: View {
                 .padding(.horizontal, 16)
             }
             .padding(.bottom, 8)
+        }
+    }
+
+    /// Schematic of ConnectProfilePhotoView: tiny header, big 3:4 frame
+    /// with EXIF stripes, 4-col contact sheet below.
+    private var photoPreview: some View {
+        ZStack {
+            Color(.systemBackground)
+            VStack(spacing: 4) {
+                // Tiny header
+                HStack(spacing: 4) {
+                    Circle().fill(EKKOTheme.primary.opacity(0.4)).frame(width: 12, height: 12)
+                    RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
+                    Spacer()
+                }
+                .padding(.bottom, 2)
+
+                // Big featured 3:4 frame with overlay stripes
+                ZStack(alignment: .top) {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(EKKOTheme.primary.opacity(0.4))
+                        .aspectRatio(3.0 / 4.0, contentMode: .fit)
+                        .frame(maxWidth: .infinity)
+
+                    // Top stripe
+                    HStack {
+                        RoundedRectangle(cornerRadius: 0.5).fill(.white).frame(width: 18, height: 2)
+                        Spacer()
+                        RoundedRectangle(cornerRadius: 0.5).fill(.white).frame(width: 14, height: 2)
+                    }
+                    .padding(4)
+                }
+                .overlay(alignment: .bottom) {
+                    HStack {
+                        RoundedRectangle(cornerRadius: 0.5).fill(.white).frame(width: 30, height: 2)
+                        Spacer()
+                    }
+                    .padding(4)
+                }
+
+                // Contact sheet 4×2 grid
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.flexible(), spacing: 1.5), count: 4),
+                    spacing: 1.5
+                ) {
+                    ForEach(0..<8, id: \.self) { _ in
+                        Rectangle()
+                            .fill(.secondary.opacity(0.35))
+                            .aspectRatio(1, contentMode: .fit)
+                    }
+                }
+                .padding(2)
+                .background(.secondary.opacity(0.1), in: RoundedRectangle(cornerRadius: 2))
+                .padding(.top, 4)
+
+                Spacer()
+            }
+            .padding(8)
         }
     }
 
