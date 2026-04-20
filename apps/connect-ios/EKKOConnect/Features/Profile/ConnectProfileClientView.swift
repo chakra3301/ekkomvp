@@ -26,6 +26,9 @@ struct ConnectProfileClientView: View {
     var isAdmin: Bool = false
     var clientData: ClientData?
     var editActions: ProfileEditActions? = nil
+    /// Set when a non-owner is viewing this profile. Tapping Apply Now
+    /// opens the application form sheet on the host.
+    var inquiryActions: ProfileInquiryActions? = nil
 
     private let mono = "Menlo"
 
@@ -253,7 +256,12 @@ struct ConnectProfileClientView: View {
             }
             .buttonStyle(.plain)
 
-            secondaryIconButton(systemName: "star")
+            // Bookmark button only renders for the owner today (no
+            // bookmark API yet). Visitors get the website launcher
+            // alongside Apply Now if a site is set.
+            if editActions?.onTapClientData != nil {
+                secondaryIconButton(systemName: "star")
+            }
             if let site = data.website, !site.isEmpty {
                 secondaryIconButton(systemName: "arrow.up.right") {
                     let str = site.hasPrefix("http") ? site : "https://\(site)"
@@ -292,12 +300,16 @@ struct ConnectProfileClientView: View {
     }
 
     private func applyTapped() {
+        // Edit mode → open the Client editor; visitor → open the apply
+        // form sheet; otherwise the CTA is inert (matches the old
+        // self-only behavior).
         if let onTap = editActions?.onTapClientData {
             onTap()
+            return
         }
-        // No real apply flow on the user's own profile — in display mode
-        // this would open an apply sheet on someone else's profile, but
-        // here it's a no-op.
+        if let inquiryActions {
+            inquiryActions.onTapApplyNow()
+        }
     }
 
     // MARK: - Open briefs

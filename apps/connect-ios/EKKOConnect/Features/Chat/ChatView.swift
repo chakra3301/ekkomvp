@@ -19,6 +19,23 @@ struct ChatView: View {
     @State private var showEmojiPicker = false
     @State private var audioRecorder = AudioRecorder()
     @State private var showReportSheet = false
+    /// Full ConnectProfile fetched lazily when the user taps "View
+    /// Profile" — needed to render the right template (Hire / Client /
+    /// etc.) since the match payload only carries a thin slice.
+    @State private var sheetProfile: ConnectProfile?
+    @State private var sheetIsLoading = false
+    /// Inquiry CTA state for the profile sheet (matches the LikesView
+    /// pattern). Hire / Client templates fire this on Book a Call /
+    /// Apply Now.
+    @State private var pendingInquiry: PendingChatInquiry?
+
+    private struct PendingChatInquiry: Identifiable {
+        let id = UUID()
+        let type: ConnectInquiryType
+        let toUserId: String
+        let recipientName: String?
+        let briefs: [ClientBrief]
+    }
 
     // Realtime (typing indicators + live messages + read receipts)
     @State private var realtimeService: RealtimeService?
@@ -447,7 +464,24 @@ struct ChatView: View {
     private var profileSheet: some View {
         NavigationStack {
             ScrollView {
-                if let other = otherUser {
+                if let profile = sheetProfile {
+                    ConnectProfileViewer(
+                        profile: profile,
+                        viewerIsOwner: false,
+                        onTapInquiryCTA: { type in
+                            pendingInquiry = PendingChatInquiry(
+                                type: type,
+                                toUserId: profile.userId,
+                                recipientName: profile.user?.profile?.displayName,
+                                briefs: profile.clientData?.briefs ?? []
+                            )
+                        }
+                    )
+                } else if sheetIsLoading {
+                    ProgressView().padding(.top, 80)
+                } else if let other = otherUser {
+                    // No Connect profile (or fetch failed) — fall back to
+                    // a thin display so the sheet isn't empty.
                     ConnectProfileCard(
                         displayName: other.profile?.displayName ?? "User",
                         avatarUrl: other.profile?.avatarUrl,
@@ -461,9 +495,51 @@ struct ChatView: View {
                     Button("Done") { showProfileSheet = false }
                 }
             }
+            .task {
+                guard sheetProfile == nil, let userId = otherUser?.id else { return }
+                sheetIsLoading = true
+                defer { sheetIsLoading = false }
+                do {
+                    let p: ConnectProfile = try await appState.trpc.query(
+                        "connectProfile.getByUserId",
+                        input: userId
+                    )
+                    sheetProfile = p
+                } catch {
+                    // Swallow — the fallback ConnectProfileCard renders.
+                }
+            }
+            .sheet(item: $pendingInquiry) { p in
+                inquirySheetForChat(p)
+            }
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
+    }
+
+    @ViewBuilder
+    private func inquirySheetForChat(_ p: PendingChatInquiry) -> some View {
+        switch p.type {
+        case .BOOKING_REQUEST:
+            BookCallSheet(
+                toUserId: p.toUserId,
+                recipientName: p.recipientName,
+                onSent: { appState.showSuccess("Sent — they'll see it under Requests.") }
+            )
+        case .APPLICATION:
+            ApplyNowSheet(
+                toUserId: p.toUserId,
+                recipientBrand: p.recipientName,
+                briefs: p.briefs,
+                onSent: { appState.showSuccess("Sent — they'll see it under Requests.") }
+            )
+        case .NOTE:
+            BookCallSheet(
+                toUserId: p.toUserId,
+                recipientName: p.recipientName,
+                onSent: { appState.showSuccess("Sent.") }
+            )
+        }
     }
 
     // MARK: - Actions

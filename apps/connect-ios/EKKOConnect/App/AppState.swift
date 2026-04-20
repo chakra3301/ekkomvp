@@ -65,6 +65,8 @@ final class AppState {
 
     var totalUnreadCount: Int = 0
     var unreadByMatch: [String: Int] = [:]
+    /// Drives the badge on the Likes → Requests segment.
+    var inquiryUnreadCount: Int = 0
 
     // MARK: - Discovery filters (shared between Settings + Discover)
 
@@ -108,6 +110,14 @@ final class AppState {
         }
         if let perMatch: [PerMatch] = try? await trpc.query("connectChat.getUnreadCountsByMatch") {
             unreadByMatch = Dictionary(uniqueKeysWithValues: perMatch.map { ($0.matchId, $0.count) })
+        }
+        await refreshInquiryUnreadCount()
+    }
+
+    func refreshInquiryUnreadCount() async {
+        struct Count: Codable { let count: Int }
+        if let result: Count = try? await trpc.query("connectInquiry.getUnreadCount") {
+            inquiryUnreadCount = result.count
         }
     }
 

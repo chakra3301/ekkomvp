@@ -109,6 +109,7 @@ enum NotificationType {
   CONNECT_LIKE
   CONNECT_MATCH
   CONNECT_MESSAGE
+  CONNECT_INQUIRY
 }
 
 // ============ CONNECT ENUMS ============
@@ -258,6 +259,8 @@ model User {
   connectMatchesAsUser1  ConnectMatch[]    @relation("ConnectMatchUser1")
   connectMatchesAsUser2  ConnectMatch[]    @relation("ConnectMatchUser2")
   connectMessagesSent    ConnectMessage[]  @relation("ConnectMessageSender")
+  connectInquiriesSent   ConnectInquiry[]  @relation("ConnectInquirySender")
+  connectInquiriesReceived ConnectInquiry[] @relation("ConnectInquiryReceiver")
 
   @@map("users")
 }
@@ -1089,4 +1092,46 @@ model ConnectMessage {
   @@index([matchId, createdAt])
   @@index([senderId])
   @@map("connect_messages")
+}
+
+// Inquiries are unsolicited "notes" sent from a discovering user to a
+// profile owner — typically via the Hire template's "Book a call" CTA
+// or the Client template's "Apply now" CTA. They live separately from
+// matches so the recipient can review them before opting into a chat,
+// and so applying / booking doesn't get mixed in with the match grid.
+enum ConnectInquiryType {
+  BOOKING_REQUEST   // sent from a Hire profile's "Book a call"
+  APPLICATION       // sent from a Client profile's "Apply now"
+  NOTE              // generic note (future: attach to a swipe like Hinge)
+}
+
+enum ConnectInquiryStatus {
+  PENDING
+  ACCEPTED          // recipient turned the inquiry into a chat
+  DECLINED          // recipient explicitly dismissed it
+}
+
+model ConnectInquiry {
+  id          String               @id @default(uuid()) @db.Uuid
+  fromUserId  String               @map("from_user_id") @db.Uuid
+  toUserId    String               @map("to_user_id") @db.Uuid
+  type        ConnectInquiryType
+  status      ConnectInquiryStatus @default(PENDING)
+  // Form payload — fields vary by type (project / budget / brief index /
+  // message etc.). Single JSON column so the form can iterate without a
+  // migration per change.
+  payload     Json
+  // First-line summary derived at send time (so the inbox can render a
+  // preview without parsing the payload).
+  preview     String               @db.VarChar(200)
+  readAt      DateTime?            @map("read_at")
+  createdAt   DateTime             @default(now()) @map("created_at")
+
+  fromUser User @relation("ConnectInquirySender",   fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User @relation("ConnectInquiryReceiver", fields: [toUserId],   references: [id], onDelete: Cascade)
+
+  @@index([toUserId, readAt])
+  @@index([toUserId, createdAt(sort: Desc)])
+  @@index([fromUserId, createdAt(sort: Desc)])
+  @@map("connect_inquiries")
 }

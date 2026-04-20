@@ -1,9 +1,15 @@
 import SwiftUI
 import Kingfisher
 
+enum LikesTab: String, Hashable {
+    case likes
+    case requests
+}
+
 struct LikesView: View {
     @Environment(AppState.self) private var appState
     @Environment(PurchaseManager.self) private var purchaseManager
+    @State private var selectedTab: LikesTab = .likes
     @State private var likes: [ConnectSwipe] = []
     @State private var isLoading = true
     @State private var isSwiping = false
@@ -11,6 +17,17 @@ struct LikesView: View {
     @State private var showUpgradeSheet = false
     @State private var expandedProfile: ConnectProfile?
     @State private var isLoadingExpanded = false
+    /// Inquiry CTA state. The expanded profile sheet sets this when the
+    /// visitor taps Book a Call / Apply Now on a Hire / Client template.
+    @State private var pendingInquiry: PendingInquiry?
+
+    private struct PendingInquiry: Identifiable {
+        let id = UUID()
+        let type: ConnectInquiryType
+        let toUserId: String
+        let recipientName: String?
+        let briefs: [ClientBrief]
+    }
 
     private var isPremium: Bool {
         appState.hasInfiniteAccess
@@ -29,32 +46,24 @@ struct LikesView: View {
     ]
 
     var body: some View {
-        Group {
-            if isLoading {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        SkeletonView(width: 180, height: 20)
-                            .padding(.horizontal, 16)
-                        SkeletonGrid(rows: 3)
-                    }
-                    .padding(.top, 8)
-                }
-            } else if likes.isEmpty {
-                emptyState
-            } else {
-                ZStack {
-                    likesGrid
-                        .blur(radius: isPremium ? 0 : 22)
-                        .disabled(!isPremium)
-                        .allowsHitTesting(isPremium)
-                    if !isPremium {
-                        premiumGate
-                    }
+        VStack(spacing: 0) {
+            tabBar
+                .padding(.top, 8)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 12)
+
+            Group {
+                switch selectedTab {
+                case .likes: likesTabContent
+                case .requests: RequestsView()
                 }
             }
         }
         .furiganaTitle("Likes", JPLabels.screens.likes)
-        .task { await loadLikes() }
+        .task {
+            await loadLikes()
+            await appState.refreshInquiryUnreadCount()
+        }
         .sheet(isPresented: $showUpgradeSheet) {
             UpgradeModal(isPresented: $showUpgradeSheet)
                 .environment(purchaseManager)
@@ -84,6 +93,80 @@ struct LikesView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: matchData != nil)
+    }
+
+    // MARK: - Tab bar (Likes / Requests)
+
+    @ViewBuilder
+    private var tabBar: some View {
+        HStack(spacing: 8) {
+            tabButton(.likes, label: "Likes", badge: nil)
+            tabButton(.requests, label: "Requests", badge: appState.inquiryUnreadCount)
+            Spacer(minLength: 0)
+        }
+    }
+
+    private func tabButton(_ tab: LikesTab, label: String, badge: Int?) -> some View {
+        let isActive = selectedTab == tab
+        return Button {
+            withAnimation(.easeInOut(duration: 0.18)) {
+                selectedTab = tab
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Text(label)
+                    .font(.subheadline.weight(isActive ? .semibold : .medium))
+                    .foregroundStyle(isActive ? .primary : .secondary)
+                if let badge, badge > 0 {
+                    Text("\(badge)")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.white)
+                        .frame(minWidth: 16)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Color.accentColor, in: Capsule())
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(
+                Capsule()
+                    .fill(isActive ? Color.secondary.opacity(0.15) : Color.clear)
+            )
+            .overlay(
+                Capsule()
+                    .stroke(Color.secondary.opacity(isActive ? 0.0 : 0.2), lineWidth: 0.5)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Likes tab content
+
+    @ViewBuilder
+    private var likesTabContent: some View {
+        if isLoading {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    SkeletonView(width: 180, height: 20)
+                        .padding(.horizontal, 16)
+                    SkeletonGrid(rows: 3)
+                }
+                .padding(.top, 8)
+            }
+        } else if likes.isEmpty {
+            emptyState
+        } else {
+            ZStack {
+                likesGrid
+                    .blur(radius: isPremium ? 0 : 22)
+                    .disabled(!isPremium)
+                    .allowsHitTesting(isPremium)
+                if !isPremium {
+                    premiumGate
+                }
+            }
+        }
     }
 
     // MARK: - Likes Grid
@@ -358,20 +441,17 @@ struct LikesView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 0) {
-                    ConnectProfileCard(
-                        displayName: profile.user?.profile?.displayName ?? "Creative",
-                        avatarUrl: profile.user?.profile?.avatarUrl,
-                        headline: profile.headline,
-                        location: profile.location,
-                        lookingFor: profile.lookingFor,
-                        bio: profile.bio,
-                        mediaSlots: profile.mediaSlots,
-                        prompts: profile.prompts,
-                        instagramHandle: profile.instagramHandle,
-                        twitterHandle: profile.twitterHandle,
-                        websiteUrl: profile.websiteUrl,
-                        connectTier: profile.connectTier,
-                        isAdmin: profile.user?.role == .ADMIN
+                    ConnectProfileViewer(
+                        profile: profile,
+                        viewerIsOwner: false,
+                        onTapInquiryCTA: { type in
+                            pendingInquiry = PendingInquiry(
+                                type: type,
+                                toUserId: profile.userId,
+                                recipientName: profile.user?.profile?.displayName,
+                                briefs: profile.clientData?.briefs ?? []
+                            )
+                        }
                     )
 
                     // Pass / Like Back actions (same flow as the grid card)
@@ -416,6 +496,36 @@ struct LikesView: View {
                     Button("Done") { expandedProfile = nil }
                 }
             }
+            .sheet(item: $pendingInquiry) { p in
+                inquirySheet(p)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func inquirySheet(_ p: PendingInquiry) -> some View {
+        switch p.type {
+        case .BOOKING_REQUEST:
+            BookCallSheet(
+                toUserId: p.toUserId,
+                recipientName: p.recipientName,
+                onSent: { appState.showSuccess("Sent — they'll see it under Requests.") }
+            )
+        case .APPLICATION:
+            ApplyNowSheet(
+                toUserId: p.toUserId,
+                recipientBrand: p.recipientName,
+                briefs: p.briefs,
+                onSent: { appState.showSuccess("Sent — they'll see it under Requests.") }
+            )
+        case .NOTE:
+            // Reuse the booking sheet's payload until we have a dedicated
+            // generic-note CTA in the UI.
+            BookCallSheet(
+                toUserId: p.toUserId,
+                recipientName: p.recipientName,
+                onSent: { appState.showSuccess("Sent.") }
+            )
         }
     }
 }

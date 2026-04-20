@@ -192,6 +192,45 @@ export const connectProfileRouter = router({
       return profile;
     }),
 
+  // Same shape as getById but resolved from a user id. Used by surfaces
+  // that have the userId already (chat header, inquiry inbox) and want
+  // to render the full template viewer without a second hop.
+  getByUserId: protectedProcedure
+    .input(z.string().uuid())
+    .query(async ({ ctx, input: userId }) => {
+      const profile = await prisma.connectProfile.findUnique({
+        where: { userId },
+        include: {
+          user: {
+            include: {
+              profile: {
+                select: {
+                  username: true,
+                  displayName: true,
+                  avatarUrl: true,
+                  bannerUrl: true,
+                  bio: true,
+                  headline: true,
+                  location: true,
+                  verificationStatus: true,
+                  subscriptionTier: true,
+                  disciplines: {
+                    include: { discipline: true },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!profile) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Profile not found" });
+      }
+
+      return profile;
+    }),
+
   create: protectedProcedure
     .input(
       z.object({

@@ -23,6 +23,7 @@ import { connectProfileRouter } from "./routers/connect-profile";
 import { connectDiscoverRouter } from "./routers/connect-discover";
 import { connectMatchRouter } from "./routers/connect-match";
 import { connectChatRouter } from "./routers/connect-chat";
+import { connectInquiryRouter } from "./routers/connect-inquiry";
 
 export const appRouter = router({
   auth: authRouter,
@@ -49,6 +50,7 @@ export const appRouter = router({
   connectDiscover: connectDiscoverRouter,
   connectMatch: connectMatchRouter,
   connectChat: connectChatRouter,
+  connectInquiry: connectInquiryRouter,
 });
 
 export type AppRouter = typeof appRouter;

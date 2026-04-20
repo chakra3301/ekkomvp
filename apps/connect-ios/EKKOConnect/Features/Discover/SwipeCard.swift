@@ -13,6 +13,17 @@ struct SwipeCard: View {
     @State private var offset: CGSize = .zero
     @State private var isExpanded = false
     @State private var showMenu = false
+    @State private var pendingInquiry: PendingSwipeInquiry?
+
+    @Environment(AppState.self) private var appState
+
+    private struct PendingSwipeInquiry: Identifiable {
+        let id = UUID()
+        let type: ConnectInquiryType
+        let toUserId: String
+        let recipientName: String?
+        let briefs: [ClientBrief]
+    }
 
     private let swipeThreshold: CGFloat = 100
     private let velocityThreshold: CGFloat = 500
@@ -246,20 +257,17 @@ struct SwipeCard: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 0) {
-                    ConnectProfileCard(
-                        displayName: displayName,
-                        avatarUrl: profile.user?.profile?.avatarUrl,
-                        headline: profile.headline,
-                        location: profile.location,
-                        lookingFor: profile.lookingFor,
-                        bio: profile.bio,
-                        mediaSlots: profile.mediaSlots,
-                        prompts: profile.prompts,
-                        instagramHandle: profile.instagramHandle,
-                        twitterHandle: profile.twitterHandle,
-                        websiteUrl: profile.websiteUrl,
-                        connectTier: profile.connectTier,
-                        isAdmin: profile.user?.role == .ADMIN
+                    ConnectProfileViewer(
+                        profile: profile,
+                        viewerIsOwner: false,
+                        onTapInquiryCTA: { type in
+                            pendingInquiry = PendingSwipeInquiry(
+                                type: type,
+                                toUserId: profile.userId,
+                                recipientName: profile.user?.profile?.displayName,
+                                briefs: profile.clientData?.briefs ?? []
+                            )
+                        }
                     )
 
                     // Action buttons
@@ -310,8 +318,36 @@ struct SwipeCard: View {
                     }
                 }
             }
+            .sheet(item: $pendingInquiry) { p in
+                inquirySheetForSwipe(p)
+            }
         }
         .presentationDragIndicator(.visible)
+    }
+
+    @ViewBuilder
+    private func inquirySheetForSwipe(_ p: PendingSwipeInquiry) -> some View {
+        switch p.type {
+        case .BOOKING_REQUEST:
+            BookCallSheet(
+                toUserId: p.toUserId,
+                recipientName: p.recipientName,
+                onSent: { appState.showSuccess("Sent — they'll see it under Requests.") }
+            )
+        case .APPLICATION:
+            ApplyNowSheet(
+                toUserId: p.toUserId,
+                recipientBrand: p.recipientName,
+                briefs: p.briefs,
+                onSent: { appState.showSuccess("Sent — they'll see it under Requests.") }
+            )
+        case .NOTE:
+            BookCallSheet(
+                toUserId: p.toUserId,
+                recipientName: p.recipientName,
+                onSent: { appState.showSuccess("Sent.") }
+            )
+        }
     }
 
     // MARK: - Drag Handling

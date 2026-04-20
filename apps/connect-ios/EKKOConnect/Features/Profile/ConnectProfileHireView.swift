@@ -27,6 +27,9 @@ struct ConnectProfileHireView: View {
     var isAdmin: Bool = false
     var hireData: HireData?
     var editActions: ProfileEditActions? = nil
+    /// Set when a non-owner is viewing this profile. Tapping the
+    /// CTA opens the booking form sheet on the host.
+    var inquiryActions: ProfileInquiryActions? = nil
 
     private let mono = "Menlo"
 
@@ -225,11 +228,18 @@ struct ConnectProfileHireView: View {
     }
 
     private func startProjectTapped() {
-        // In edit mode the CTA opens the Hire editor; in display mode it
-        // mails the contact address if one is configured, otherwise it's a
-        // no-op visual.
+        // Priority order:
+        //   1. Edit mode → open the Hire editor.
+        //   2. Visitor + form available → open the booking form sheet.
+        //   3. Visitor + only contact email set → open mailto: as a
+        //      lightweight fallback (legacy path before the form).
+        //   4. Owner without an editor (shouldn't happen) → no-op.
         if let onTap = editActions?.onTapHireData {
             onTap()
+            return
+        }
+        if let inquiryActions {
+            inquiryActions.onTapBookCall()
             return
         }
         if let email = availability.contactEmail, !email.isEmpty,
