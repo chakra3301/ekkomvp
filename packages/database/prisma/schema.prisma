@@ -1005,6 +1005,16 @@ model ConnectProfile {
   // Optional / advanced; not selectable during initial setup.
   profileTemplate String? @map("profile_template") @db.VarChar(50)
 
+  // User-chosen accent color (hex like "#FF3D9A"). Applied app-wide via
+  // SwiftUI .tint() at the root.
+  accentColor String? @map("accent_color") @db.VarChar(7)
+
+  // Hire-template payload. Optional JSON blob holding availability,
+  // services / rate card, past clients, testimonials, and process.
+  // Single JSON column so the template can iterate on its own data
+  // shape without a migration per change.
+  hireData    Json?   @map("hire_data")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

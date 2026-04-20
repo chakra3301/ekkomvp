@@ -16,7 +16,7 @@ struct AppRouter: View {
                     VStack(spacing: 12) {
                         Image(systemName: "eye.fill")
                             .font(.system(size: 48))
-                            .foregroundStyle(EKKOTheme.primary)
+                            .foregroundStyle(Color.accentColor)
                         Text("EKKO Connect")
                             .font(.title2.bold())
                     }
@@ -134,7 +134,7 @@ struct MainTabView: View {
                 }
                 .tag(3)
             }
-            .tint(EKKOTheme.primary)
+            .tint(Color.accentColor)
 
             if showJapanese {
                 CustomTabBar(

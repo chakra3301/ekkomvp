@@ -64,8 +64,8 @@ struct ConnectProfileSplitView: View {
                         coverContent(for: slot)
                     } else {
                         LinearGradient(
-                            colors: [EKKOTheme.primary.opacity(0.45),
-                                     EKKOTheme.primary.opacity(0.1),
+                            colors: [Color.accentColor.opacity(0.45),
+                                     Color.accentColor.opacity(0.1),
                                      .black.opacity(0.85)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -136,7 +136,7 @@ struct ConnectProfileSplitView: View {
             // Vertical works count — large accent display.
             Text("\(sortedMedia.count) works")
                 .font(.custom(EKKOFont.regular, size: 28))
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
                 .lineLimit(1)
                 .fixedSize()
                 .rotationEffect(.degrees(-90))
@@ -160,7 +160,7 @@ struct ConnectProfileSplitView: View {
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
                                 .font(.callout.weight(.semibold))
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                         }
                     }
 
@@ -211,7 +211,7 @@ struct ConnectProfileSplitView: View {
                 Text("NOW →")
                     .font(.custom(mono, size: 10))
                     .tracking(2.0)
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
                     .textCase(.uppercase)
 
                 if let now = nowProject {
@@ -245,7 +245,7 @@ struct ConnectProfileSplitView: View {
             .padding(.vertical, 3)
             .background(
                 LinearGradient(
-                    colors: [EKKOTheme.primary, .purple],
+                    colors: [Color.accentColor, .purple],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
@@ -303,7 +303,7 @@ struct ConnectProfileSplitView: View {
                 Text(String(format: "%02d", index + 1))
                     .font(.custom(mono, size: 9))
                     .tracking(1.4)
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
                     .padding(.horizontal, 6)
                     .padding(.top, 6)
             }
@@ -482,7 +482,7 @@ struct ConnectProfileSplitView: View {
             Text(label)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -495,7 +495,7 @@ struct ConnectProfileSplitView: View {
             Text(label)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -514,7 +514,7 @@ struct ConnectProfileSplitView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
         }
     }
 }

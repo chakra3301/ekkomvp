@@ -88,7 +88,7 @@ struct ReportSheet: View {
                         HStack(spacing: 12) {
                             Image(systemName: option.icon)
                                 .font(.subheadline)
-                                .foregroundStyle(reason == option ? EKKOTheme.primary : .secondary)
+                                .foregroundStyle(reason == option ? Color.accentColor : .secondary)
                                 .frame(width: 24)
                             Text(option.label)
                                 .foregroundStyle(.primary)
@@ -96,7 +96,7 @@ struct ReportSheet: View {
                             if reason == option {
                                 Image(systemName: "checkmark")
                                     .font(.caption.bold())
-                                    .foregroundStyle(EKKOTheme.primary)
+                                    .foregroundStyle(Color.accentColor)
                             }
                         }
                     }
@@ -152,7 +152,7 @@ struct ReportSheet: View {
             Spacer()
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 56))
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
             Text("Thanks — we'll take it from here")
                 .font(.headline)
             Text("Our moderation team reviews reports within 24 hours. If we take action, you'll see fewer profiles like this.")
@@ -169,7 +169,7 @@ struct ReportSheet: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(EKKOTheme.primary)
+                    .background(Color.accentColor)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             }
             .padding(.horizontal, 24)

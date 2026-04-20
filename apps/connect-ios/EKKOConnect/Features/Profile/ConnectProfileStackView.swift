@@ -71,7 +71,7 @@ struct ConnectProfileStackView: View {
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
                                 .font(.callout.weight(.semibold))
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                         }
                     }
 
@@ -107,7 +107,7 @@ struct ConnectProfileStackView: View {
             .padding(.vertical, 3)
             .background(
                 LinearGradient(
-                    colors: [EKKOTheme.primary, .purple],
+                    colors: [Color.accentColor, .purple],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
@@ -146,7 +146,7 @@ struct ConnectProfileStackView: View {
                 Text(progressLabel)
                     .font(.custom(mono, size: 10))
                     .tracking(2.0)
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
                 Spacer()
                 dotIndicator
             }
@@ -270,7 +270,7 @@ struct ConnectProfileStackView: View {
                         Text(metaLine(for: slot))
                             .font(.custom(mono, size: 10))
                             .tracking(1.5)
-                            .foregroundStyle(EKKOTheme.primary)
+                            .foregroundStyle(Color.accentColor)
                             .textCase(.uppercase)
 
                         Text(captionText)
@@ -284,7 +284,7 @@ struct ConnectProfileStackView: View {
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.white)
                         .padding(6)
-                        .background(Circle().fill(EKKOTheme.primary))
+                        .background(Circle().fill(Color.accentColor))
                 }
                 .contentShape(Rectangle())
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -295,7 +295,7 @@ struct ConnectProfileStackView: View {
                 Text(metaLine(for: slot))
                     .font(.custom(mono, size: 10))
                     .tracking(1.5)
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
                     .textCase(.uppercase)
 
                 Text(captionText)
@@ -319,7 +319,7 @@ struct ConnectProfileStackView: View {
             KFImage(url).resizable().scaledToFill()
         } else {
             LinearGradient(
-                colors: [EKKOTheme.primary.opacity(0.4), .black],
+                colors: [Color.accentColor.opacity(0.4), .black],
                 startPoint: .topLeading, endPoint: .bottomTrailing
             )
         }
@@ -330,7 +330,7 @@ struct ConnectProfileStackView: View {
             VStack(spacing: 12) {
                 Image(systemName: "rectangle.stack.badge.plus")
                     .font(.system(size: 36))
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
                 Text("Add media to build your deck")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -344,7 +344,7 @@ struct ConnectProfileStackView: View {
         HStack(spacing: 4) {
             ForEach(0..<sortedMedia.count, id: \.self) { i in
                 Capsule()
-                    .fill(i == deckIndex ? EKKOTheme.primary : Color.secondary.opacity(0.25))
+                    .fill(i == deckIndex ? Color.accentColor : Color.secondary.opacity(0.25))
                     .frame(width: i == deckIndex ? 14 : 4, height: 4)
                     .animation(.spring(response: 0.3, dampingFraction: 0.8), value: deckIndex)
             }
@@ -379,7 +379,7 @@ struct ConnectProfileStackView: View {
                     .foregroundStyle(.black)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(EKKOTheme.primary, in: Capsule())
+                    .background(Color.accentColor, in: Capsule())
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
@@ -608,7 +608,7 @@ struct ConnectProfileStackView: View {
             Text(label)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -627,7 +627,7 @@ struct ConnectProfileStackView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
         }
     }
 }

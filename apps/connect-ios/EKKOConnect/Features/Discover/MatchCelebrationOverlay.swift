@@ -55,7 +55,7 @@ struct MatchCelebrationOverlay: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(EKKOTheme.primary)
+                        .background(Color.accentColor)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                     }
 

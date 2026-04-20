@@ -181,7 +181,7 @@ private struct FullscreenAudioPlayer: View {
         VStack(spacing: 32) {
             Spacer()
 
-            AudioVisualizer(isPlaying: isPlaying, accent: EKKOTheme.primary)
+            AudioVisualizer(isPlaying: isPlaying, accent: Color.accentColor)
                 .frame(height: 140)
                 .padding(.horizontal, 32)
 
@@ -191,7 +191,7 @@ private struct FullscreenAudioPlayer: View {
                 Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
                     .font(.system(size: 96, weight: .regular))
                     .foregroundStyle(.white)
-                    .shadow(color: EKKOTheme.primary.opacity(0.5), radius: 24)
+                    .shadow(color: Color.accentColor.opacity(0.5), radius: 24)
                     .contentShape(Circle())
             }
             .buttonStyle(.plain)

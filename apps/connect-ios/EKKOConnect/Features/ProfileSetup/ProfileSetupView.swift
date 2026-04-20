@@ -384,7 +384,7 @@ struct TemplatePreviewCard: View {
                                 Text("Selected")
                                     .font(.caption.weight(.medium))
                             }
-                            .foregroundStyle(EKKOTheme.primary)
+                            .foregroundStyle(Color.accentColor)
                         }
                     }
                     Text(template.summary)
@@ -399,7 +399,7 @@ struct TemplatePreviewCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(isSelected ? EKKOTheme.primary : Color.white.opacity(0.1),
+                    .stroke(isSelected ? Color.accentColor : Color.white.opacity(0.1),
                             lineWidth: isSelected ? 2 : 0.5)
             )
             .shadow(color: .black.opacity(isSelected ? 0.2 : 0.08), radius: 12, y: 6)
@@ -419,6 +419,67 @@ struct TemplatePreviewCard: View {
         case .photo:     photoPreview
         case .video:     videoPreview
         case .music:     musicPreview
+        case .threeD:    threeDPreview
+        case .hire:      hirePreview
+        }
+    }
+
+    /// Schematic of ConnectProfileHireView: status pill header card with
+    /// availability grid, an accent CTA bar, and a two-column rate card.
+    private var hirePreview: some View {
+        ZStack {
+            Color(.systemBackground)
+            VStack(spacing: 4) {
+                // Status header card
+                VStack(spacing: 4) {
+                    HStack(spacing: 4) {
+                        Circle().fill(Color.green).frame(width: 4, height: 4)
+                        RoundedRectangle(cornerRadius: 0.5).fill(.primary).frame(width: 32, height: 2)
+                        Spacer()
+                    }
+                    HStack(spacing: 4) {
+                        Circle().fill(Color.accentColor.opacity(0.5)).frame(width: 16, height: 16)
+                        VStack(alignment: .leading, spacing: 1) {
+                            RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
+                            RoundedRectangle(cornerRadius: 1).fill(.secondary.opacity(0.5)).frame(width: 32, height: 2)
+                        }
+                        Spacer()
+                    }
+                    HStack(spacing: 4) {
+                        ForEach(0..<4, id: \.self) { _ in
+                            VStack(alignment: .leading, spacing: 1) {
+                                RoundedRectangle(cornerRadius: 0.5).fill(.secondary.opacity(0.5)).frame(width: 8, height: 2)
+                                RoundedRectangle(cornerRadius: 0.5).fill(.primary).frame(width: 12, height: 3)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                }
+                .padding(6)
+                .background(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(Color.accentColor.opacity(0.5), lineWidth: 0.5)
+                )
+
+                // CTA bar
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(Color.accentColor)
+                    .frame(height: 14)
+
+                // Rate card rows
+                VStack(spacing: 1.5) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        HStack(spacing: 4) {
+                            RoundedRectangle(cornerRadius: 0.5).fill(.primary).frame(maxWidth: .infinity, maxHeight: 2)
+                            RoundedRectangle(cornerRadius: 0.5).fill(Color.accentColor.opacity(0.7)).frame(width: 16, height: 3)
+                        }
+                    }
+                }
+                .padding(.top, 4)
+
+                Spacer()
+            }
+            .padding(8)
         }
     }
 
@@ -434,7 +495,7 @@ struct TemplatePreviewCard: View {
             VStack(spacing: 6) {
                 // Hero block
                 RoundedRectangle(cornerRadius: 6)
-                    .fill(EKKOTheme.primary.opacity(0.35))
+                    .fill(Color.accentColor.opacity(0.35))
                     .frame(height: 60)
                     .overlay(alignment: .bottomLeading) {
                         Circle()
@@ -467,7 +528,7 @@ struct TemplatePreviewCard: View {
         ZStack(alignment: .bottom) {
             // Full-bleed cover
             LinearGradient(
-                colors: [EKKOTheme.primary.opacity(0.6), EKKOTheme.primary.opacity(0.15), .black.opacity(0.85)],
+                colors: [Color.accentColor.opacity(0.6), Color.accentColor.opacity(0.15), .black.opacity(0.85)],
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -477,7 +538,7 @@ struct TemplatePreviewCard: View {
                 RoundedRectangle(cornerRadius: 2)
                     .fill(.white)
                     .frame(width: 110, height: 10)
-                    .shadow(color: EKKOTheme.primary.opacity(0.6), radius: 6)
+                    .shadow(color: Color.accentColor.opacity(0.6), radius: 6)
                 RoundedRectangle(cornerRadius: 2)
                     .fill(.white.opacity(0.7))
                     .frame(width: 70, height: 4)
@@ -511,6 +572,90 @@ struct TemplatePreviewCard: View {
         }
     }
 
+    /// Schematic of ConnectProfileThreeDView: tiny header, viewport card
+    /// with grid + wireframe + HUD, then a small asset list.
+    private var threeDPreview: some View {
+        ZStack {
+            Color(.systemBackground)
+            VStack(spacing: 4) {
+                // Header
+                HStack(spacing: 4) {
+                    Circle().fill(Color.accentColor.opacity(0.4)).frame(width: 12, height: 12)
+                    RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
+                    Spacer()
+                }
+
+                // Viewport
+                ZStack {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.black)
+                        .aspectRatio(16.0 / 11.0, contentMode: .fit)
+
+                    // Grid suggestion
+                    Canvas { ctx, size in
+                        let color = Color.accentColor.opacity(0.3)
+                        let spacing: CGFloat = 8
+                        var y: CGFloat = 0
+                        while y < size.height {
+                            var p = Path()
+                            p.move(to: CGPoint(x: 0, y: y))
+                            p.addLine(to: CGPoint(x: size.width, y: y))
+                            ctx.stroke(p, with: .color(color), lineWidth: 0.3)
+                            y += spacing
+                        }
+                    }
+
+                    // Wireframe icosahedron silhouette
+                    Canvas { ctx, size in
+                        let cx = size.width / 2
+                        let cy = size.height / 2
+                        let r = min(size.width, size.height) / 4
+                        let pts: [CGPoint] = [
+                            CGPoint(x: cx, y: cy - r),
+                            CGPoint(x: cx + r * 0.85, y: cy - r * 0.3),
+                            CGPoint(x: cx + r * 0.5, y: cy + r * 0.7),
+                            CGPoint(x: cx - r * 0.5, y: cy + r * 0.7),
+                            CGPoint(x: cx - r * 0.85, y: cy - r * 0.3),
+                        ]
+                        var hex = Path()
+                        hex.addLines(pts)
+                        hex.closeSubpath()
+                        ctx.stroke(hex, with: .color(Color.accentColor), lineWidth: 0.6)
+                    }
+                }
+                .overlay(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 0.5).fill(Color.accentColor).frame(width: 16, height: 2).padding(3)
+                }
+                .overlay(alignment: .topTrailing) {
+                    RoundedRectangle(cornerRadius: 0.5).fill(.white.opacity(0.5)).frame(width: 12, height: 2).padding(3)
+                }
+
+                // Stats
+                HStack(spacing: 2) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        RoundedRectangle(cornerRadius: 2).fill(.secondary.opacity(0.2)).frame(height: 14)
+                    }
+                }
+                .padding(.top, 4)
+
+                // Asset rows
+                VStack(spacing: 1.5) {
+                    ForEach(0..<3, id: \.self) { _ in
+                        HStack(spacing: 4) {
+                            RoundedRectangle(cornerRadius: 1.5).fill(Color.accentColor.opacity(0.4)).frame(width: 8, height: 8)
+                            RoundedRectangle(cornerRadius: 0.5).fill(.primary).frame(maxWidth: .infinity, maxHeight: 2)
+                            RoundedRectangle(cornerRadius: 0.5).fill(.secondary.opacity(0.4)).frame(width: 14, height: 2)
+                        }
+                    }
+                }
+                .padding(.top, 4)
+
+                Spacer()
+            }
+            .padding(8)
+        }
+    }
+
     /// Schematic of ConnectProfileMusicView: tiny header, now-playing
     /// card with thumbnail + waveform + transport, then a small track list.
     private var musicPreview: some View {
@@ -519,7 +664,7 @@ struct TemplatePreviewCard: View {
             VStack(spacing: 4) {
                 // Header
                 HStack(spacing: 4) {
-                    Circle().fill(EKKOTheme.primary.opacity(0.4)).frame(width: 12, height: 12)
+                    Circle().fill(Color.accentColor.opacity(0.4)).frame(width: 12, height: 12)
                     RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
                     Spacer()
                 }
@@ -531,7 +676,7 @@ struct TemplatePreviewCard: View {
                             .fill(LinearGradient(colors: [.purple.opacity(0.6), .pink.opacity(0.4)], startPoint: .topLeading, endPoint: .bottomTrailing))
                             .frame(width: 24, height: 24)
                         VStack(alignment: .leading, spacing: 2) {
-                            RoundedRectangle(cornerRadius: 1).fill(EKKOTheme.primary).frame(width: 28, height: 2)
+                            RoundedRectangle(cornerRadius: 1).fill(Color.accentColor).frame(width: 28, height: 2)
                             RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 3)
                             RoundedRectangle(cornerRadius: 1).fill(.secondary.opacity(0.4)).frame(width: 36, height: 2)
                         }
@@ -542,7 +687,7 @@ struct TemplatePreviewCard: View {
                     HStack(spacing: 0.5) {
                         ForEach(0..<24, id: \.self) { i in
                             Capsule()
-                                .fill(i < 9 ? EKKOTheme.primary : .secondary.opacity(0.3))
+                                .fill(i < 9 ? Color.accentColor : .secondary.opacity(0.3))
                                 .frame(width: 1.5, height: CGFloat(2 + (i * 7) % 12))
                         }
                     }
@@ -551,19 +696,19 @@ struct TemplatePreviewCard: View {
                     // Transport
                     HStack(spacing: 6) {
                         Circle().fill(.secondary.opacity(0.3)).frame(width: 8, height: 8)
-                        Circle().fill(EKKOTheme.primary).frame(width: 12, height: 12)
+                        Circle().fill(Color.accentColor).frame(width: 12, height: 12)
                         Circle().fill(.secondary.opacity(0.3)).frame(width: 8, height: 8)
                     }
                     .padding(.top, 4)
                 }
                 .padding(8)
-                .background(EKKOTheme.primary.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
+                .background(Color.accentColor.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
 
                 // Track list
                 VStack(spacing: 1.5) {
                     ForEach(0..<3, id: \.self) { i in
                         HStack(spacing: 4) {
-                            RoundedRectangle(cornerRadius: 0.5).fill(i == 0 ? EKKOTheme.primary : .secondary.opacity(0.5)).frame(width: 6, height: 2)
+                            RoundedRectangle(cornerRadius: 0.5).fill(i == 0 ? Color.accentColor : .secondary.opacity(0.5)).frame(width: 6, height: 2)
                             RoundedRectangle(cornerRadius: 0.5).fill(.primary).frame(maxWidth: .infinity, maxHeight: 2)
                             RoundedRectangle(cornerRadius: 0.5).fill(.secondary.opacity(0.4)).frame(width: 18, height: 2)
                         }
@@ -585,7 +730,7 @@ struct TemplatePreviewCard: View {
             VStack(spacing: 4) {
                 // Tiny header
                 HStack(spacing: 4) {
-                    Circle().fill(EKKOTheme.primary.opacity(0.4)).frame(width: 12, height: 12)
+                    Circle().fill(Color.accentColor.opacity(0.4)).frame(width: 12, height: 12)
                     RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
                     Spacer()
                 }
@@ -606,7 +751,7 @@ struct TemplatePreviewCard: View {
                 // Scrubber
                 ZStack(alignment: .leading) {
                     Capsule().fill(.secondary.opacity(0.2)).frame(height: 1.5)
-                    Capsule().fill(EKKOTheme.primary).frame(width: 28, height: 1.5)
+                    Capsule().fill(Color.accentColor).frame(width: 28, height: 1.5)
                 }
                 .padding(.top, 4)
 
@@ -614,11 +759,11 @@ struct TemplatePreviewCard: View {
                 HStack(spacing: 3) {
                     ForEach(0..<4, id: \.self) { i in
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(i == 0 ? EKKOTheme.primary.opacity(0.5) : .secondary.opacity(0.3))
+                            .fill(i == 0 ? Color.accentColor.opacity(0.5) : .secondary.opacity(0.3))
                             .frame(height: 22)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 2)
-                                    .stroke(i == 0 ? EKKOTheme.primary : Color.clear, lineWidth: 1)
+                                    .stroke(i == 0 ? Color.accentColor : Color.clear, lineWidth: 1)
                             )
                     }
                 }
@@ -638,7 +783,7 @@ struct TemplatePreviewCard: View {
             VStack(spacing: 4) {
                 // Tiny header
                 HStack(spacing: 4) {
-                    Circle().fill(EKKOTheme.primary.opacity(0.4)).frame(width: 12, height: 12)
+                    Circle().fill(Color.accentColor.opacity(0.4)).frame(width: 12, height: 12)
                     RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
                     Spacer()
                 }
@@ -647,7 +792,7 @@ struct TemplatePreviewCard: View {
                 // Big featured 3:4 frame with overlay stripes
                 ZStack(alignment: .top) {
                     RoundedRectangle(cornerRadius: 2)
-                        .fill(EKKOTheme.primary.opacity(0.4))
+                        .fill(Color.accentColor.opacity(0.4))
                         .aspectRatio(3.0 / 4.0, contentMode: .fit)
                         .frame(maxWidth: .infinity)
 
@@ -696,7 +841,7 @@ struct TemplatePreviewCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 // Boot line
                 HStack(spacing: 4) {
-                    Circle().fill(EKKOTheme.primary).frame(width: 4, height: 4)
+                    Circle().fill(Color.accentColor).frame(width: 4, height: 4)
                     RoundedRectangle(cornerRadius: 0.5).fill(.secondary.opacity(0.5)).frame(width: 60, height: 2)
                 }
                 .padding(.bottom, 4)
@@ -707,9 +852,9 @@ struct TemplatePreviewCard: View {
                     .frame(height: 32)
                     .overlay(alignment: .leading) {
                         HStack(spacing: 4) {
-                            Circle().fill(EKKOTheme.primary.opacity(0.5)).frame(width: 12, height: 12)
+                            Circle().fill(Color.accentColor.opacity(0.5)).frame(width: 12, height: 12)
                             VStack(alignment: .leading, spacing: 2) {
-                                RoundedRectangle(cornerRadius: 1).fill(EKKOTheme.primary).frame(width: 18, height: 2)
+                                RoundedRectangle(cornerRadius: 1).fill(Color.accentColor).frame(width: 18, height: 2)
                                 RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
                             }
                         }
@@ -723,13 +868,13 @@ struct TemplatePreviewCard: View {
                     .padding(.top, 2)
 
                 // Mono command label
-                RoundedRectangle(cornerRadius: 0.5).fill(EKKOTheme.primary).frame(width: 36, height: 2)
+                RoundedRectangle(cornerRadius: 0.5).fill(Color.accentColor).frame(width: 36, height: 2)
 
                 // Data table rows
                 VStack(spacing: 2) {
                     ForEach(0..<3, id: \.self) { _ in
                         HStack(spacing: 4) {
-                            RoundedRectangle(cornerRadius: 0.5).fill(EKKOTheme.primary).frame(width: 8, height: 2)
+                            RoundedRectangle(cornerRadius: 0.5).fill(Color.accentColor).frame(width: 8, height: 2)
                             RoundedRectangle(cornerRadius: 0.5).fill(.primary).frame(maxWidth: .infinity, maxHeight: 2)
                             RoundedRectangle(cornerRadius: 0.5).fill(.secondary.opacity(0.5)).frame(width: 16, height: 2)
                         }
@@ -755,7 +900,7 @@ struct TemplatePreviewCard: View {
             VStack(spacing: 0) {
                 // Short cover
                 Rectangle()
-                    .fill(EKKOTheme.primary.opacity(0.5))
+                    .fill(Color.accentColor.opacity(0.5))
                     .frame(height: 36)
 
                 // Split row: avatar (rail) + content
@@ -775,7 +920,7 @@ struct TemplatePreviewCard: View {
                             .frame(height: 18)
                             .overlay(alignment: .topLeading) {
                                 RoundedRectangle(cornerRadius: 1)
-                                    .fill(EKKOTheme.primary)
+                                    .fill(Color.accentColor)
                                     .frame(width: 14, height: 2)
                                     .padding(4)
                             }
@@ -813,7 +958,7 @@ struct TemplatePreviewCard: View {
             VStack(spacing: 6) {
                 // Compact header — circle avatar + 2 name bars
                 HStack(spacing: 6) {
-                    Circle().fill(EKKOTheme.primary.opacity(0.4)).frame(width: 16, height: 16)
+                    Circle().fill(Color.accentColor.opacity(0.4)).frame(width: 16, height: 16)
                     VStack(alignment: .leading, spacing: 2) {
                         RoundedRectangle(cornerRadius: 1).fill(.primary).frame(width: 50, height: 4)
                         RoundedRectangle(cornerRadius: 1).fill(.secondary.opacity(0.4)).frame(width: 32, height: 2)
@@ -836,7 +981,7 @@ struct TemplatePreviewCard: View {
                         .offset(y: 6)
                         .scaleEffect(0.96)
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(EKKOTheme.primary.opacity(0.5))
+                        .fill(Color.accentColor.opacity(0.5))
                         .frame(width: 90, height: 60)
                         .shadow(color: .black.opacity(0.3), radius: 6, y: 4)
                 }
@@ -845,7 +990,7 @@ struct TemplatePreviewCard: View {
                 // Controls — left arrow, Open pill, right arrow
                 HStack(spacing: 4) {
                     Capsule().fill(.secondary.opacity(0.25)).frame(width: 14, height: 8)
-                    Capsule().fill(EKKOTheme.primary).frame(width: 50, height: 8)
+                    Capsule().fill(Color.accentColor).frame(width: 50, height: 8)
                     Capsule().fill(.secondary.opacity(0.25)).frame(width: 14, height: 8)
                 }
                 .padding(.top, 12)
@@ -881,7 +1026,7 @@ struct TemplatePreviewCard: View {
                 HStack(alignment: .top, spacing: 4) {
                     Text("A")
                         .font(.system(size: 22, weight: .regular))
-                        .foregroundStyle(EKKOTheme.primary)
+                        .foregroundStyle(Color.accentColor)
                     VStack(alignment: .leading, spacing: 2) {
                         ForEach(0..<3, id: \.self) { _ in
                             RoundedRectangle(cornerRadius: 1).fill(.secondary.opacity(0.4)).frame(height: 2)

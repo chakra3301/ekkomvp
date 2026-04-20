@@ -79,7 +79,7 @@ struct ConnectProfilePhotoView: View {
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
                                 .font(.callout.weight(.semibold))
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                         }
                     }
 
@@ -114,7 +114,7 @@ struct ConnectProfilePhotoView: View {
             .padding(.vertical, 3)
             .background(
                 LinearGradient(
-                    colors: [EKKOTheme.primary, .purple],
+                    colors: [Color.accentColor, .purple],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
@@ -254,7 +254,7 @@ struct ConnectProfilePhotoView: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(.white)
                         .padding(5)
-                        .background(Circle().fill(EKKOTheme.primary))
+                        .background(Circle().fill(Color.accentColor))
                 }
                 .contentShape(Rectangle())
             }
@@ -283,7 +283,7 @@ struct ConnectProfilePhotoView: View {
         VStack(spacing: 10) {
             Image(systemName: "camera.aperture")
                 .font(.system(size: 36))
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
             Text("Add photos to fill the frame")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -358,7 +358,7 @@ struct ConnectProfilePhotoView: View {
                 }
                 .overlay(
                     RoundedRectangle(cornerRadius: 2, style: .continuous)
-                        .stroke(isSelected ? EKKOTheme.primary : Color.clear, lineWidth: 2)
+                        .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
                 )
         }
         .buttonStyle(.plain)
@@ -530,7 +530,7 @@ struct ConnectProfilePhotoView: View {
         Text(text)
             .font(.custom(mono, size: 10))
             .tracking(2.5)
-            .foregroundStyle(EKKOTheme.primary)
+            .foregroundStyle(Color.accentColor)
     }
 
     private func placeholderRow(label: String, hint: String) -> some View {
@@ -545,7 +545,7 @@ struct ConnectProfilePhotoView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
         }
     }
 

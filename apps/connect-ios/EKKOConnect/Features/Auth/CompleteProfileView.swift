@@ -20,7 +20,7 @@ struct CompleteProfileView: View {
             VStack(spacing: 4) {
                 Text("EKKO")
                     .font(.title2.bold())
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
                 + Text(" Connect")
                     .font(.title2.bold())
                 Text("Set up your profile to get started")
@@ -286,13 +286,13 @@ struct StepIndicator: View {
                 HStack(spacing: 8) {
                     ZStack {
                         Circle()
-                            .fill(i == currentStep ? EKKOTheme.primary : i < currentStep ? EKKOTheme.primary.opacity(0.2) : Color.gray.opacity(0.15))
+                            .fill(i == currentStep ? Color.accentColor : i < currentStep ? Color.accentColor.opacity(0.2) : Color.gray.opacity(0.15))
                             .frame(width: 32, height: 32)
 
                         if i < currentStep {
                             Image(systemName: "checkmark")
                                 .font(.caption.bold())
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                         } else {
                             Text("\(i + 1)")
                                 .font(.caption.bold())
@@ -302,7 +302,7 @@ struct StepIndicator: View {
 
                     if i < steps.count - 1 {
                         Rectangle()
-                            .fill(i < currentStep ? EKKOTheme.primary : Color.gray.opacity(0.15))
+                            .fill(i < currentStep ? Color.accentColor : Color.gray.opacity(0.15))
                             .frame(width: 32, height: 2)
                     }
                 }
@@ -325,7 +325,7 @@ struct RoleCard: View {
             HStack(spacing: 12) {
                 ZStack {
                     Circle()
-                        .fill(isSelected ? EKKOTheme.primary : Color.gray.opacity(0.15))
+                        .fill(isSelected ? Color.accentColor : Color.gray.opacity(0.15))
                         .frame(width: 44, height: 44)
                     Image(systemName: icon)
                         .font(.title3)
@@ -346,11 +346,11 @@ struct RoleCard: View {
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(isSelected ? EKKOTheme.primary : Color.gray.opacity(0.25), lineWidth: isSelected ? 2 : 1)
+                    .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.25), lineWidth: isSelected ? 2 : 1)
             )
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(isSelected ? EKKOTheme.primary.opacity(0.05) : .clear)
+                    .fill(isSelected ? Color.accentColor.opacity(0.05) : .clear)
             )
         }
         .buttonStyle(.plain)

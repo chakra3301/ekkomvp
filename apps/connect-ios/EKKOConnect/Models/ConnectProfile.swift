@@ -26,6 +26,14 @@ struct ConnectProfile: Codable, Identifiable {
     /// "DEFAULT" (or nil) renders ConnectProfileCard. "HERO" renders ConnectProfileHeroView.
     /// Advanced option — only exposed in the edit flow, not initial setup.
     var profileTemplate: String?
+    /// Optional user-chosen accent color (hex, e.g. "#FF3D9A"). nil falls
+    /// back to the app default. Applied via SwiftUI .tint() at the root
+    /// so every Color.accentColor downstream picks it up.
+    var accentColor: String?
+    /// Optional payload for the Hire template — availability, services,
+    /// clients, testimonials, process. Lives in a single JSON column
+    /// server-side so this struct can grow without a migration.
+    var hireData: HireData?
     let createdAt: Date?
     let updatedAt: Date?
 
@@ -60,6 +68,8 @@ struct ConnectProfile: Codable, Identifiable {
         isActive = (try? container.decode(Bool.self, forKey: .isActive)) ?? true
         connectTier = (try? container.decode(ConnectTier.self, forKey: .connectTier)) ?? .FREE
         profileTemplate = try container.decodeIfPresent(String.self, forKey: .profileTemplate)
+        accentColor = try container.decodeIfPresent(String.self, forKey: .accentColor)
+        hireData = try? container.decodeIfPresent(HireData.self, forKey: .hireData)
         createdAt = try? container.decodeIfPresent(Date.self, forKey: .createdAt)
         updatedAt = try? container.decodeIfPresent(Date.self, forKey: .updatedAt)
         user = try container.decodeIfPresent(UserWithProfile.self, forKey: .user)
@@ -72,7 +82,8 @@ struct ConnectProfile: Codable, Identifiable {
         case instagramAccessToken, instagramTokenExpiry, instagramUserId
         case disciplineIds, location, latitude, longitude
         case likesReceivedCount, matchesCount, isActive, connectTier
-        case profileTemplate
+        case profileTemplate, accentColor
+        case hireData
         case createdAt, updatedAt, user
     }
 }
@@ -87,6 +98,8 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
     case photo     = "PHOTO"
     case video     = "VIDEO"
     case music     = "MUSIC"
+    case threeD    = "THREED"
+    case hire      = "HIRE"
 
     var id: String { rawValue }
 
@@ -101,6 +114,8 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
         case .photo:     return "Photo"
         case .video:     return "Video"
         case .music:     return "Music"
+        case .threeD:    return "3D"
+        case .hire:      return "Hire Me"
         }
     }
 
@@ -124,6 +139,10 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
             return "Cinemascope 2.39:1 player with REC / TC HUD and a horizontal reel carousel. Best for filmmakers and motion artists."
         case .music:
             return "Now-playing card with waveform + transport, plus a track list with mini-waveforms. Best for producers, sound designers, musicians."
+        case .threeD:
+            return "Live wireframe viewport with FPS / coord HUD and an asset library of your model files. Best for 3D artists and technical creatives."
+        case .hire:
+            return "Client-facing rate card — availability, services, past clients, testimonials, and process. Best when you're open for work."
         }
     }
 
@@ -235,4 +254,61 @@ struct ProfilePayload: Codable {
     var latitude: Double?
     var longitude: Double?
     var profileTemplate: String?
+    var accentColor: String?
+    var hireData: HireData?
+}
+
+// MARK: - Hire template payload
+//
+// Single struct that backs the "Hire Me" template. Lives in a JSON column
+// server-side so we can iterate on the data shape without a migration.
+// Every field is optional; the view falls back to placeholders when a
+// section is empty so a brand-new Hire profile still has structure.
+
+struct HireData: Codable, Equatable {
+    var availability: HireAvailability?
+    var services: [HireService]?
+    var clients: [String]?
+    var testimonials: [HireTestimonial]?
+    var process: [HireProcessStep]?
+    /// Optional one-liner under the closing CTA (e.g. "Let's make
+    /// something strange."). Falls back to a default when empty.
+    var ctaTagline: String?
+}
+
+struct HireAvailability: Codable, Equatable {
+    var status: String?      // "BOOKING" | "LIMITED" | "CLOSED"
+    var next: String?        // free-form, e.g. "MAY 12"
+    var capacity: String?    // e.g. "2 slots"
+    var timezone: String?    // e.g. "PST"
+    var replyTime: String?   // e.g. "< 24h"
+    var contactEmail: String?
+}
+
+struct HireService: Codable, Equatable, Identifiable {
+    var name: String
+    var from: String?        // price, e.g. "$8k"
+    var unit: String?        // e.g. "/ project"
+    var tag: String?         // e.g. "flagship" / "popular"
+    var lead: String?        // e.g. "3 wks"
+
+    /// Identifier derived from the (name, unit) pair so SwiftUI lists
+    /// don't crash when two services have the same name accidentally.
+    var id: String { name + "·" + (unit ?? "") }
+}
+
+struct HireTestimonial: Codable, Equatable, Identifiable {
+    var by: String           // "Maya K."
+    var role: String?        // "CD @ Hyundai"
+    var quote: String
+
+    var id: String { by + "·" + quote.prefix(16) }
+}
+
+struct HireProcessStep: Codable, Equatable, Identifiable {
+    var title: String        // "DISCOVERY"
+    var detail: String?      // "30-min call · scope, refs, fit check"
+    var length: String?      // "3 days"
+
+    var id: String { title }
 }

@@ -23,7 +23,10 @@ struct EKKOConnectApp: App {
                 .environment(pushManager)
                 .environment(purchaseManager)
                 .preferredColorScheme(appState.colorSchemeOverride)
-                .tint(EKKOTheme.primary)
+                // Reads @AppStorage("connectAccentHex") and applies .tint
+                // app-wide so every Color.accentColor downstream picks up
+                // the user's chosen accent.
+                .ekkoAccentTint()
                 .onAppear {
                     // Wire managers
                     AppDelegate.pushManager = pushManager

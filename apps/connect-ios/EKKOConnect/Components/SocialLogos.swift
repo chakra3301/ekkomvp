@@ -39,7 +39,7 @@ struct WebsiteLogo: View {
             RoundedRectangle(cornerRadius: corner, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: [EKKOTheme.primary, Color.cyan],
+                        colors: [Color.accentColor, Color.cyan],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )

@@ -100,7 +100,7 @@ struct MediaSlotGrid: View {
         .overlay {
             if draggingIndex == index {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(EKKOTheme.primary, lineWidth: 2)
+                    .stroke(Color.accentColor, lineWidth: 2)
             }
         }
         .scaleEffect(draggingIndex == index ? 0.96 : 1)
@@ -152,7 +152,7 @@ struct MediaSlotGrid: View {
                         VStack(spacing: 4) {
                             Image(systemName: "waveform")
                                 .font(.title3)
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                             Text("Audio")
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
@@ -174,7 +174,7 @@ struct MediaSlotGrid: View {
                         VStack(spacing: 4) {
                             Image(systemName: "cube")
                                 .font(.title3)
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                             Text("3D")
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
@@ -262,7 +262,7 @@ struct MediaSlotGrid: View {
                             .font(.system(size: 10))
                             .foregroundStyle(.white)
                             .padding(5)
-                            .background(EKKOTheme.primary.opacity(0.8))
+                            .background(Color.accentColor.opacity(0.8))
                             .clipShape(Circle())
                     }
                     .padding(5)

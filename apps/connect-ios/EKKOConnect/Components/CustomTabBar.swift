@@ -53,7 +53,7 @@ struct CustomTabBar: View {
             GeometryReader { geo in
                 let slotWidth = (geo.size.width - 12) / CGFloat(tabs.count) // - horizontal padding
                 Capsule(style: .continuous)
-                    .fill(EKKOTheme.primary.opacity(0.15))
+                    .fill(Color.accentColor.opacity(0.15))
                     .frame(width: slotWidth, height: rowHeight)
                     .offset(x: 6 + CGFloat(selection) * slotWidth, y: 6)
                     .animation(.spring(response: 0.32, dampingFraction: 0.78), value: selection)
@@ -82,7 +82,7 @@ struct CustomTabBar: View {
                 Text(tab.english)
                     .font(.system(size: 11, weight: isActive ? .semibold : .medium))
             }
-            .foregroundStyle(isActive ? EKKOTheme.primary : Color.secondary)
+            .foregroundStyle(isActive ? Color.accentColor : Color.secondary)
             .animation(.easeInOut(duration: 0.2), value: isActive)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .contentShape(Rectangle())

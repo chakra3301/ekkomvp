@@ -164,6 +164,6 @@ struct JapaneseSubLabelsToggle: View {
                     .font(.subheadline)
             }
         }
-        .tint(EKKOTheme.primary)
+        .tint(Color.accentColor)
     }
 }

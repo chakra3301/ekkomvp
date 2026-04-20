@@ -162,7 +162,7 @@ struct DiscoverView: View {
                         .frame(width: 36, height: 32)
                         .background(
                             viewModel.viewMode == mode
-                            ? EKKOTheme.primary
+                            ? Color.accentColor
                             : Color.clear
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -455,7 +455,7 @@ struct DiscoverView: View {
                 .font(.caption.bold())
                 .foregroundStyle(.white)
                 .frame(width: 28, height: 28)
-                .background(wasLike ? EKKOTheme.primary : EKKOTheme.destructive)
+                .background(wasLike ? Color.accentColor : EKKOTheme.destructive)
                 .clipShape(Circle())
                 .padding(8)
         }
@@ -468,7 +468,7 @@ struct DiscoverView: View {
             Spacer()
             Image(systemName: "location.circle.fill")
                 .font(.system(size: 48))
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
 
             Text("Turn On Location")
                 .font(.headline)
@@ -487,7 +487,7 @@ struct DiscoverView: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 12)
-                    .background(EKKOTheme.primary)
+                    .background(Color.accentColor)
                     .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
             }
             .disabled(locating)
@@ -539,9 +539,9 @@ struct DiscoverView: View {
             Spacer()
             Image(systemName: "safari")
                 .font(.system(size: 40))
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
                 .padding()
-                .background(EKKOTheme.primary.opacity(0.1))
+                .background(Color.accentColor.opacity(0.1))
                 .clipShape(Circle())
 
             Text("You've seen everyone")
@@ -561,7 +561,7 @@ struct DiscoverView: View {
                     .foregroundStyle(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
-                    .background(EKKOTheme.primary)
+                    .background(Color.accentColor)
                     .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
             }
             .padding(.top, 4)

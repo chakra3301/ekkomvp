@@ -201,7 +201,7 @@ struct ChatView: View {
                         .padding(.vertical, 10)
                         .background(
                             isMine
-                            ? AnyShapeStyle(EKKOTheme.primary)
+                            ? AnyShapeStyle(Color.accentColor)
                             : AnyShapeStyle(.ultraThinMaterial)
                         )
                         .clipShape(
@@ -314,7 +314,7 @@ struct ChatView: View {
                                 .font(.system(size: 14, weight: .bold))
                                 .foregroundStyle(.white)
                                 .frame(width: 26, height: 26)
-                                .background(EKKOTheme.primary)
+                                .background(Color.accentColor)
                                 .clipShape(Circle())
                         }
                         .accessibilityLabel("Send message")
@@ -586,9 +586,9 @@ struct AudioMessageBubble: View {
             } label: {
                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                     .font(.system(size: 14))
-                    .foregroundStyle(isMine ? .white : EKKOTheme.primary)
+                    .foregroundStyle(isMine ? .white : Color.accentColor)
                     .frame(width: 32, height: 32)
-                    .background(isMine ? Color.white.opacity(0.2) : EKKOTheme.primary.opacity(0.15))
+                    .background(isMine ? Color.white.opacity(0.2) : Color.accentColor.opacity(0.15))
                     .clipShape(Circle())
             }
 
@@ -598,7 +598,7 @@ struct AudioMessageBubble: View {
                     Capsule()
                         .fill(
                             barProgress <= progress
-                            ? (isMine ? Color.white : EKKOTheme.primary)
+                            ? (isMine ? Color.white : Color.accentColor)
                             : (isMine ? Color.white.opacity(0.35) : Color.gray.opacity(0.3))
                         )
                         .frame(width: 2.5, height: waveHeight(i))
@@ -608,7 +608,7 @@ struct AudioMessageBubble: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(isMine ? EKKOTheme.primary : Color.gray.opacity(0.15))
+        .background(isMine ? Color.accentColor : Color.gray.opacity(0.15))
         .clipShape(Capsule())
         .onDisappear {
             player?.pause()

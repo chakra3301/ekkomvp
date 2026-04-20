@@ -303,6 +303,48 @@ struct ProfileView: View {
                 editActions: editActions
             )
 
+        case .hire:
+            ConnectProfileHireView(
+                displayName: displayName,
+                avatarUrl: avatarUrl,
+                headline: headline,
+                location: location,
+                lookingFor: lookingFor,
+                bio: bio,
+                mediaSlots: mediaSlots,
+                prompts: prompts,
+                instagramHandle: instagram,
+                twitterHandle: twitter,
+                websiteUrl: website,
+                connectTier: profile.connectTier,
+                likesReceivedCount: profile.likesReceivedCount,
+                matchesCount: profile.matchesCount,
+                isAdmin: appState.isAdmin,
+                hireData: isEditMode ? draft.hireData : profile.hireData,
+                editActions: editActions
+            )
+
+        case .threeD:
+            ConnectProfileThreeDView(
+                displayName: displayName,
+                avatarUrl: avatarUrl,
+                username: appState.currentProfile?.username,
+                headline: headline,
+                location: location,
+                lookingFor: lookingFor,
+                bio: bio,
+                mediaSlots: mediaSlots,
+                prompts: prompts,
+                instagramHandle: instagram,
+                twitterHandle: twitter,
+                websiteUrl: website,
+                connectTier: profile.connectTier,
+                likesReceivedCount: profile.likesReceivedCount,
+                matchesCount: profile.matchesCount,
+                isAdmin: appState.isAdmin,
+                editActions: editActions
+            )
+
         case .default:
             ConnectProfileCard(
                 displayName: displayName,
@@ -383,7 +425,7 @@ struct ProfileView: View {
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(EKKOTheme.primary)
+                    .background(Color.accentColor)
                     .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
                     .shadow(color: .black.opacity(0.2), radius: 6, y: 2)
@@ -420,7 +462,7 @@ struct ProfileView: View {
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(EKKOTheme.primary)
+                    .background(Color.accentColor)
                     .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
                     .opacity(isSaving ? 0.7 : 1.0)
@@ -432,7 +474,7 @@ struct ProfileView: View {
             // Subtle "Editing" banner so it's obvious the page is in edit mode.
             HStack(spacing: 6) {
                 Image(systemName: "pencil.circle.fill")
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
                 Text("Editing — tap any section to change it")
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
@@ -488,7 +530,7 @@ struct ProfileView: View {
             Spacer()
             Image(systemName: "person.crop.circle")
                 .font(.system(size: 48))
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
 
             Text("No Connect Profile Yet")
                 .font(.title3.bold())
@@ -602,6 +644,9 @@ struct ProfileView: View {
                 set: { setAudioKey(index: index, $0) }
             )
             ProfileAudioMetaSheet(bpm: bpmBinding, key: keyBinding)
+
+        case .hireData:
+            ProfileHireSheet(hireData: $draft.hireData)
         }
     }
 
@@ -659,7 +704,8 @@ struct ProfileView: View {
             onTapPrompts:          { activeEditor = .prompts },
             onTapSocials:          { activeEditor = .socials },
             onEditMediaTitle:      { idx in activeEditor = .mediaTitle(idx) },
-            onEditAudioMeta:       { idx in activeEditor = .audioMeta(idx) }
+            onEditAudioMeta:       { idx in activeEditor = .audioMeta(idx) },
+            onTapHireData:         { activeEditor = .hireData }
         )
     }
 
@@ -703,7 +749,8 @@ struct ProfileView: View {
                 twitterHandle:   draft.twitterHandle.isEmpty ? nil : draft.twitterHandle,
                 websiteUrl:      draft.websiteUrl.isEmpty ? nil : draft.websiteUrl,
                 location:        draft.location.isEmpty ? nil : draft.location,
-                profileTemplate: draft.profileTemplate
+                profileTemplate: draft.profileTemplate,
+                hireData:        draft.hireData
             )
             struct GenericResponse: Codable { let id: String }
             let _: GenericResponse = try await appState.trpc.mutate(
@@ -755,6 +802,8 @@ struct ProfileDraft: Equatable {
     var websiteUrl: String = ""
     var mediaSlots: [MediaSlot] = []
     var prompts: [PromptEntry] = []
+    /// Hire-template payload. nil when not yet configured.
+    var hireData: HireData? = nil
 
     static func from(_ profile: ConnectProfile) -> ProfileDraft {
         ProfileDraft(
@@ -767,7 +816,8 @@ struct ProfileDraft: Equatable {
             twitterHandle:   profile.twitterHandle ?? "",
             websiteUrl:      profile.websiteUrl ?? "",
             mediaSlots:      profile.mediaSlots,
-            prompts:         profile.prompts
+            prompts:         profile.prompts,
+            hireData:        profile.hireData
         )
     }
 }

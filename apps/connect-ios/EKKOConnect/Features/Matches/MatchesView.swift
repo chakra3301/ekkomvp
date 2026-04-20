@@ -70,7 +70,7 @@ struct MatchesView: View {
                                             )
                                             .overlay(
                                                 Circle()
-                                                    .stroke(EKKOTheme.primary.opacity(0.3), lineWidth: 2)
+                                                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 2)
                                             )
 
                                             Text(firstName(match.otherUser.profile?.displayName ?? "User"))
@@ -130,7 +130,7 @@ struct MatchesView: View {
                         .foregroundStyle(.white)
                         .padding(.horizontal, 6)
                         .frame(minWidth: 20, minHeight: 20)
-                        .background(EKKOTheme.primary)
+                        .background(Color.accentColor)
                         .clipShape(Capsule())
                         .overlay(Capsule().stroke(Color(.systemBackground), lineWidth: 2))
                         .offset(x: 4, y: -4)
@@ -146,7 +146,7 @@ struct MatchesView: View {
                     if let lastMsg = match.lastMessage {
                         Text(lastMsg.createdAt.relativeShort)
                             .font(.caption)
-                            .foregroundStyle(unread > 0 ? EKKOTheme.primary : .secondary)
+                            .foregroundStyle(unread > 0 ? Color.accentColor : .secondary)
                             .fontWeight(unread > 0 ? .semibold : .regular)
                     }
                 }
@@ -173,9 +173,9 @@ struct MatchesView: View {
             Spacer()
             Image(systemName: "message")
                 .font(.system(size: 40))
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
                 .padding()
-                .background(EKKOTheme.primary.opacity(0.1))
+                .background(Color.accentColor.opacity(0.1))
                 .clipShape(Circle())
 
             Text("No matches yet")

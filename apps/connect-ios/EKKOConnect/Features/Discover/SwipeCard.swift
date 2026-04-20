@@ -106,13 +106,13 @@ struct SwipeCard: View {
         } else {
             ZStack {
                 LinearGradient(
-                    colors: [EKKOTheme.primary.opacity(0.3), EKKOTheme.primary.opacity(0.1), Color(.systemBackground)],
+                    colors: [Color.accentColor.opacity(0.3), Color.accentColor.opacity(0.1), Color(.systemBackground)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
                 Text(String(displayName.prefix(1)))
                     .font(.system(size: 72, weight: .bold))
-                    .foregroundStyle(EKKOTheme.primary.opacity(0.2))
+                    .foregroundStyle(Color.accentColor.opacity(0.2))
             }
         }
     }
@@ -122,12 +122,12 @@ struct SwipeCard: View {
             // LIKE indicator (top right)
             Text("LIKE")
                 .font(.title.bold())
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(EKKOTheme.primary.opacity(0.5), lineWidth: 2)
+                        .stroke(Color.accentColor.opacity(0.5), lineWidth: 2)
                 )
                 .rotationEffect(.degrees(-20))
                 .opacity(likeOpacity)
@@ -194,7 +194,7 @@ struct SwipeCard: View {
                         .padding(.vertical, 3)
                         .background(
                             LinearGradient(
-                                colors: [EKKOTheme.primary, Color.purple],
+                                colors: [Color.accentColor, Color.purple],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -203,10 +203,10 @@ struct SwipeCard: View {
                 } else if profile.connectTier == .INFINITE {
                     Image(systemName: "infinity")
                         .font(.caption2.bold())
-                        .foregroundStyle(EKKOTheme.primary)
+                        .foregroundStyle(Color.accentColor)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
-                        .background(EKKOTheme.primary.opacity(0.2))
+                        .background(Color.accentColor.opacity(0.2))
                         .clipShape(Capsule())
                 }
             }
@@ -291,7 +291,7 @@ struct SwipeCard: View {
                                 .font(.title)
                                 .foregroundStyle(.white)
                                 .frame(width: 64, height: 64)
-                                .background(EKKOTheme.primary)
+                                .background(Color.accentColor)
                                 .clipShape(Circle())
                                 .shadow(radius: 8)
                         }

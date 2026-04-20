@@ -91,7 +91,7 @@ struct ConnectProfileEditorialView: View {
                 Text("FEATURE / PROFILE №\(featureNumber)")
                     .font(.custom(mono, size: 10))
                     .tracking(1.8)
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
                     .padding(.bottom, 10)
 
                 // Massive display name.
@@ -106,7 +106,7 @@ struct ConnectProfileEditorialView: View {
                     } else if connectTier == .INFINITE {
                         Image(systemName: "infinity")
                             .font(.callout.weight(.semibold))
-                            .foregroundStyle(EKKOTheme.primary)
+                            .foregroundStyle(Color.accentColor)
                     }
                 }
 
@@ -147,7 +147,7 @@ struct ConnectProfileEditorialView: View {
             .padding(.vertical, 3)
             .background(
                 LinearGradient(
-                    colors: [EKKOTheme.primary, .purple],
+                    colors: [Color.accentColor, .purple],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
@@ -163,7 +163,7 @@ struct ConnectProfileEditorialView: View {
                 if let bio, !bio.isEmpty {
                     Text(bio)
                         .font(.body)
-                        .foregroundStyle(EKKOTheme.primary)
+                        .foregroundStyle(Color.accentColor)
                         .lineSpacing(2)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -219,7 +219,7 @@ struct ConnectProfileEditorialView: View {
             Text(String(format: "%02d", index + 1))
                 .font(.custom(mono, size: 11))
                 .tracking(1.2)
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
                 .frame(width: 22, alignment: .leading)
                 .padding(.top, 2)
 
@@ -321,7 +321,7 @@ struct ConnectProfileEditorialView: View {
                     Spacer(minLength: 0)
                     Image(systemName: "pencil")
                         .font(.caption2.weight(.semibold))
-                        .foregroundStyle(EKKOTheme.primary)
+                        .foregroundStyle(Color.accentColor)
                 }
                 .contentShape(Rectangle())
             }
@@ -388,7 +388,7 @@ struct ConnectProfileEditorialView: View {
             Text(text)
                 .font(.custom(mono, size: 10))
                 .tracking(2.4)
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
                 .textCase(.uppercase)
             Rectangle()
                 .fill(Color.secondary.opacity(0.25))
@@ -409,7 +409,7 @@ struct ConnectProfileEditorialView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
         }
     }
 

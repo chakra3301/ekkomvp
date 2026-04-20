@@ -119,7 +119,7 @@ struct SettingsView: View {
                             Task { await saveDisplayName() }
                         }
                         .font(.subheadline.weight(.medium))
-                        .foregroundStyle(EKKOTheme.primary)
+                        .foregroundStyle(Color.accentColor)
                         .disabled(isSavingName)
                         Button("Cancel") {
                             editingDisplayName = false
@@ -142,7 +142,7 @@ struct SettingsView: View {
                             editingDisplayName = true
                         }
                         .font(.caption)
-                        .foregroundStyle(EKKOTheme.primary)
+                        .foregroundStyle(Color.accentColor)
                     }
                 }
             } header: {
@@ -170,14 +170,14 @@ struct SettingsView: View {
                             .padding(.vertical, 12)
                             .background(
                                 appState.themePreference == value
-                                ? EKKOTheme.primary.opacity(0.1)
+                                ? Color.accentColor.opacity(0.1)
                                 : Color.clear
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 12)
                                     .stroke(
                                         appState.themePreference == value
-                                        ? EKKOTheme.primary.opacity(0.3)
+                                        ? Color.accentColor.opacity(0.3)
                                         : Color.clear,
                                         lineWidth: 1
                                     )
@@ -186,13 +186,16 @@ struct SettingsView: View {
                         }
                         .buttonStyle(.plain)
                         .foregroundStyle(
-                            appState.themePreference == value ? EKKOTheme.primary : .secondary
+                            appState.themePreference == value ? Color.accentColor : .secondary
                         )
                     }
                 }
 
                 // Japanese sub-labels — purely aesthetic, default on.
                 JapaneseSubLabelsToggle()
+
+                // Accent color — palette swatches, applied app-wide.
+                AccentColorPicker()
             } header: {
                 Text("Appearance")
             }
@@ -218,7 +221,7 @@ struct SettingsView: View {
                         Spacer()
                         Image(systemName: locating ? "arrow.circlepath" : "location.fill")
                             .font(.caption)
-                            .foregroundStyle(EKKOTheme.primary)
+                            .foregroundStyle(Color.accentColor)
                     }
                 }
                 .buttonStyle(.plain)
@@ -257,7 +260,7 @@ struct SettingsView: View {
                     }
                     Slider(value: filterDistance, in: 10...200, step: 10)
                         .disabled(filterGlobalSearch.wrappedValue)
-                        .tint(EKKOTheme.primary)
+                        .tint(Color.accentColor)
                 }
 
                 if appState.hasInfiniteAccess {
@@ -270,7 +273,7 @@ struct SettingsView: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    .tint(EKKOTheme.primary)
+                    .tint(Color.accentColor)
                 } else {
                     Button {
                         showUpgradeSheet = true
@@ -287,7 +290,7 @@ struct SettingsView: View {
                             Spacer()
                             Image(systemName: "lock.fill")
                                 .font(.caption)
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                         }
                     }
                     .buttonStyle(.plain)
@@ -307,7 +310,7 @@ struct SettingsView: View {
                                     .padding(.vertical, 8)
                                     .background(
                                         filterRole.wrappedValue == role
-                                        ? EKKOTheme.primary
+                                        ? Color.accentColor
                                         : Color.gray.opacity(0.1)
                                     )
                                     .foregroundStyle(filterRole.wrappedValue == role ? .white : .primary)
@@ -454,7 +457,7 @@ struct SettingsView: View {
                     .frame(width: 36, height: 36)
                     .background(
                         LinearGradient(
-                            colors: [EKKOTheme.primary, Color.purple],
+                            colors: [Color.accentColor, Color.purple],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -478,7 +481,7 @@ struct SettingsView: View {
                     .frame(width: 36, height: 36)
                     .background(
                         LinearGradient(
-                            colors: [EKKOTheme.primary, Color.purple],
+                            colors: [Color.accentColor, Color.purple],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
@@ -505,7 +508,7 @@ struct SettingsView: View {
                         .frame(width: 36, height: 36)
                         .background(
                             LinearGradient(
-                                colors: [EKKOTheme.primary, Color.purple],
+                                colors: [Color.accentColor, Color.purple],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )

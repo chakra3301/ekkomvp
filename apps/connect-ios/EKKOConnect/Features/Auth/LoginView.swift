@@ -94,7 +94,7 @@ struct LoginView: View {
                 VStack(spacing: 12) {
                     TextField("", text: $email, prompt: Text("you@example.com").foregroundColor(.black.opacity(0.45)))
                         .foregroundStyle(.black)
-                        .tint(EKKOTheme.primary)
+                        .tint(Color.accentColor)
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
@@ -104,7 +104,7 @@ struct LoginView: View {
 
                     SecureField("", text: $password, prompt: Text("Password").foregroundColor(.black.opacity(0.45)))
                         .foregroundStyle(.black)
-                        .tint(EKKOTheme.primary)
+                        .tint(Color.accentColor)
                         .textContentType(.password)
                         .padding(.horizontal, 16)
                         .frame(height: 48)

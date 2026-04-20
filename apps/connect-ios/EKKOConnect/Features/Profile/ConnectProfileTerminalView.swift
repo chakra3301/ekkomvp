@@ -59,12 +59,12 @@ struct ConnectProfileTerminalView: View {
         let session = String(format: "%03d", (mediaSlots.count + prompts.count) * 7 + 11)
         let handle = (username?.uppercased() ?? "GUEST")
         return HStack(spacing: 6) {
-            Circle().fill(EKKOTheme.primary).frame(width: 6, height: 6)
+            Circle().fill(Color.accentColor).frame(width: 6, height: 6)
             HStack(spacing: 0) {
                 Text("SESSION/\(session)  ·  MOUNT OK  ·  ")
                     .foregroundStyle(Color.secondary)
                 Text("\(handle)@EKKO")
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
             }
         }
         .font(.custom(mono, size: 10))
@@ -101,14 +101,14 @@ struct ConnectProfileTerminalView: View {
                     } else if connectTier == .INFINITE {
                         Image(systemName: "infinity")
                             .font(.callout.weight(.semibold))
-                            .foregroundStyle(EKKOTheme.primary)
+                            .foregroundStyle(Color.accentColor)
                     }
                 }
 
                 EditableSection(action: editActions?.onTapBio) {
                     HStack(alignment: .top, spacing: 6) {
                         Text(">")
-                            .foregroundStyle(EKKOTheme.primary)
+                            .foregroundStyle(Color.accentColor)
                         Text(bio?.isEmpty == false ? bio! : (editActions != nil ? "Add a short bio" : ""))
                             .foregroundStyle(bio?.isEmpty == false ? Color.primary : Color.secondary.opacity(0.7))
                     }
@@ -143,7 +143,7 @@ struct ConnectProfileTerminalView: View {
             .padding(.vertical, 3)
             .background(
                 LinearGradient(
-                    colors: [EKKOTheme.primary, .purple],
+                    colors: [Color.accentColor, .purple],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
@@ -276,7 +276,7 @@ struct ConnectProfileTerminalView: View {
         HStack(alignment: .center, spacing: 8) {
             Text(num)
                 .frame(width: 26, alignment: .leading)
-                .foregroundStyle(isHeader ? .secondary : EKKOTheme.primary)
+                .foregroundStyle(isHeader ? .secondary : Color.accentColor)
             Text(name)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .foregroundStyle(isHeader ? .secondary : .primary)
@@ -353,7 +353,7 @@ struct ConnectProfileTerminalView: View {
                     commandLabel("$ grep -i \"looking.for\"")
                     HStack(alignment: .top, spacing: 6) {
                         Text(">")
-                            .foregroundStyle(EKKOTheme.primary)
+                            .foregroundStyle(Color.accentColor)
                         Text(lookingFor)
                             .foregroundStyle(.primary)
                     }
@@ -440,7 +440,7 @@ struct ConnectProfileTerminalView: View {
         Text(text)
             .font(.custom(mono, size: 9))
             .tracking(2.0)
-            .foregroundStyle(EKKOTheme.primary)
+            .foregroundStyle(Color.accentColor)
     }
 
     private func placeholderRow(label: String, hint: String) -> some View {
@@ -455,7 +455,7 @@ struct ConnectProfileTerminalView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
         }
     }
 

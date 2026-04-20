@@ -18,7 +18,7 @@ struct WelcomeSheet: View {
                     .foregroundStyle(.secondary)
                 HStack(spacing: 6) {
                     Text("EKKO")
-                        .foregroundStyle(EKKOTheme.primary)
+                        .foregroundStyle(Color.accentColor)
                     + Text(" Connect")
                         .foregroundStyle(.primary)
                 }
@@ -31,7 +31,7 @@ struct WelcomeSheet: View {
                 .foregroundStyle(.secondary)
 
             VStack(spacing: 16) {
-                tip(icon: "safari", color: EKKOTheme.primary,
+                tip(icon: "safari", color: Color.accentColor,
                     title: "Discover",
                     body: "Swipe right on creatives you want to connect with. Left to pass.")
                 tip(icon: "heart.fill", color: .pink,
@@ -57,7 +57,7 @@ struct WelcomeSheet: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
-                    .background(EKKOTheme.primary)
+                    .background(Color.accentColor)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
             }
             .buttonStyle(.plain)

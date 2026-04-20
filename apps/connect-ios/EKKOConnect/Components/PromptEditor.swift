@@ -81,7 +81,7 @@ struct PromptEditor: View {
                                 confirmCustomQuestion(at: index)
                             }
                             .font(.caption.weight(.medium))
-                            .foregroundStyle(EKKOTheme.primary)
+                            .foregroundStyle(Color.accentColor)
                         }
                     }
                 } else {
@@ -94,19 +94,19 @@ struct PromptEditor: View {
                         HStack(spacing: 4) {
                             Text(prompts[index].question.isEmpty ? "Select a prompt..." : prompts[index].question)
                                 .font(.subheadline.weight(.medium))
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                                 .lineLimit(2)
                                 .multilineTextAlignment(.leading)
 
                             if isCustomQuestion(prompts[index].question) {
                                 Image(systemName: "pencil")
                                     .font(.caption2)
-                                    .foregroundStyle(EKKOTheme.primary)
+                                    .foregroundStyle(Color.accentColor)
                             }
 
                             Image(systemName: "chevron.down")
                                 .font(.caption2)
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                         }
                     }
                 }
@@ -187,7 +187,7 @@ struct PromptEditor: View {
                         Text("Write your own...")
                             .font(.subheadline.weight(.medium))
                     }
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 10)

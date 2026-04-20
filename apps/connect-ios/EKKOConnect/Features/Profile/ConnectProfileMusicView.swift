@@ -93,7 +93,7 @@ struct ConnectProfileMusicView: View {
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
                                 .font(.callout.weight(.semibold))
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                         }
                     }
 
@@ -128,7 +128,7 @@ struct ConnectProfileMusicView: View {
             .padding(.vertical, 3)
             .background(
                 LinearGradient(
-                    colors: [EKKOTheme.primary, .purple],
+                    colors: [Color.accentColor, .purple],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
@@ -155,7 +155,7 @@ struct ConnectProfileMusicView: View {
                         Text("♫ NOW PLAYING")
                             .font(.custom(mono, size: 9))
                             .tracking(2.0)
-                            .foregroundStyle(EKKOTheme.primary)
+                            .foregroundStyle(Color.accentColor)
 
                         // Editable title — tap-to-edit pencil affordance in
                         // edit mode, plain text in display.
@@ -166,7 +166,7 @@ struct ConnectProfileMusicView: View {
                     Spacer(minLength: 0)
                 }
 
-                AudioVisualizerBars(isPlaying: isPlaying, accent: EKKOTheme.primary)
+                AudioVisualizerBars(isPlaying: isPlaying, accent: Color.accentColor)
                     .frame(height: 44)
 
                 HStack {
@@ -183,7 +183,7 @@ struct ConnectProfileMusicView: View {
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(EKKOTheme.primary.opacity(0.08))
+                    .fill(Color.accentColor.opacity(0.08))
                     .overlay(
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
                             .stroke(Color.secondary.opacity(0.2), lineWidth: 0.5)
@@ -264,7 +264,7 @@ struct ConnectProfileMusicView: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(.white)
                         .padding(4)
-                        .background(Circle().fill(EKKOTheme.primary))
+                        .background(Circle().fill(Color.accentColor))
                 }
                 .contentShape(Rectangle())
             }
@@ -297,7 +297,7 @@ struct ConnectProfileMusicView: View {
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(.black)
                     .frame(width: 52, height: 52)
-                    .background(EKKOTheme.primary, in: Circle())
+                    .background(Color.accentColor, in: Circle())
             }
             .buttonStyle(.plain)
 
@@ -319,7 +319,7 @@ struct ConnectProfileMusicView: View {
         VStack(spacing: 12) {
             Image(systemName: "music.note.list")
                 .font(.system(size: 36))
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
             Text("Add audio to start your release feed")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -366,7 +366,7 @@ struct ConnectProfileMusicView: View {
             HStack(alignment: .center, spacing: 10) {
                 Text(isCurrent && isPlaying ? "▶" : String(format: "%02d", index + 1))
                     .font(.custom(mono, size: 11))
-                    .foregroundStyle(isCurrent ? EKKOTheme.primary : .secondary)
+                    .foregroundStyle(isCurrent ? Color.accentColor : .secondary)
                     .frame(width: 22, alignment: .leading)
 
                 rowThumb(slot: slot)
@@ -384,7 +384,7 @@ struct ConnectProfileMusicView: View {
 
                 Spacer(minLength: 8)
 
-                MiniWaveform(seed: slot.sortOrder, accent: isCurrent ? EKKOTheme.primary : .secondary.opacity(0.45))
+                MiniWaveform(seed: slot.sortOrder, accent: isCurrent ? Color.accentColor : .secondary.opacity(0.45))
                     .frame(width: 56, height: 18)
 
                 Text(syntheticLength(for: slot))
@@ -396,10 +396,10 @@ struct ConnectProfileMusicView: View {
             .padding(.vertical, 10)
             .background(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(isCurrent ? EKKOTheme.primary.opacity(0.08) : Color.clear)
+                    .fill(isCurrent ? Color.accentColor.opacity(0.08) : Color.clear)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(isCurrent ? EKKOTheme.primary.opacity(0.25) : Color.clear, lineWidth: 0.5)
+                            .stroke(isCurrent ? Color.accentColor.opacity(0.25) : Color.clear, lineWidth: 0.5)
                     )
             )
             .contentShape(Rectangle())
@@ -628,7 +628,7 @@ struct ConnectProfileMusicView: View {
                         .font(.system(size: 8, weight: .semibold))
                         .foregroundStyle(.white)
                         .padding(3)
-                        .background(Circle().fill(EKKOTheme.primary))
+                        .background(Circle().fill(Color.accentColor))
                 }
                 .contentShape(Rectangle())
             }
@@ -664,7 +664,7 @@ struct ConnectProfileMusicView: View {
             Text(text)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -683,7 +683,7 @@ struct ConnectProfileMusicView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
         }
     }
 

@@ -44,7 +44,7 @@ struct RegisterView: View {
                     HStack(alignment: .top, spacing: 12) {
                         Toggle("", isOn: $agreedToTerms)
                             .toggleStyle(.switch)
-                            .tint(EKKOTheme.primary)
+                            .tint(Color.accentColor)
                             .labelsHidden()
 
                         VStack(alignment: .leading, spacing: 4) {
@@ -56,13 +56,13 @@ struct RegisterView: View {
                                     if let url = LegalURLs.terms { UIApplication.shared.open(url) }
                                 }
                                 .font(.caption.weight(.medium))
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
 
                                 Button("Privacy Policy") {
                                     if let url = LegalURLs.privacy { UIApplication.shared.open(url) }
                                 }
                                 .font(.caption.weight(.medium))
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                             }
                         }
                         Spacer()

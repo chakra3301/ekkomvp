@@ -15,7 +15,7 @@ struct AvatarView: View {
                 .clipShape(Circle())
         } else {
             Circle()
-                .fill(EKKOTheme.primary)
+                .fill(Color.accentColor)
                 .frame(width: size, height: size)
                 .overlay {
                     Text(initials)

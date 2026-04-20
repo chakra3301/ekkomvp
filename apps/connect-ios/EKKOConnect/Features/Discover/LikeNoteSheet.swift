@@ -13,7 +13,7 @@ struct LikeNoteSheet: View {
             // Header
             HStack {
                 Image(systemName: "heart.fill")
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
                     .font(.subheadline)
                 Text("Add a note?")
                     .font(.subheadline.weight(.semibold))
@@ -40,7 +40,7 @@ struct LikeNoteSheet: View {
                     Image(systemName: "paperplane.fill")
                         .foregroundStyle(.white)
                         .padding(10)
-                        .background(EKKOTheme.primary)
+                        .background(Color.accentColor)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
             }

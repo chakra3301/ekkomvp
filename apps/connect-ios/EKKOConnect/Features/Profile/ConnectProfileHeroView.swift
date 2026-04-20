@@ -139,7 +139,7 @@ struct ConnectProfileHeroView: View {
     private func heroEditPill(icon: String, label: String) -> some View {
         HStack {
             Image(systemName: icon)
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
             Text(label)
                 .font(.subheadline.weight(.medium))
             Spacer()
@@ -147,13 +147,13 @@ struct ConnectProfileHeroView: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.white)
                 .padding(6)
-                .background(Circle().fill(EKKOTheme.primary))
+                .background(Circle().fill(Color.accentColor))
         }
         .padding(12)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .strokeBorder(EKKOTheme.primary.opacity(0.45), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                .strokeBorder(Color.accentColor.opacity(0.45), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
         )
     }
 
@@ -164,7 +164,7 @@ struct ConnectProfileHeroView: View {
                 .foregroundStyle(.secondary)
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -200,8 +200,8 @@ struct ConnectProfileHeroView: View {
                         coverContent(for: slot)
                     } else {
                         LinearGradient(
-                            colors: [EKKOTheme.primary.opacity(0.6),
-                                     EKKOTheme.primary.opacity(0.15),
+                            colors: [Color.accentColor.opacity(0.6),
+                                     Color.accentColor.opacity(0.15),
                                      .black.opacity(0.85)],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -230,7 +230,7 @@ struct ConnectProfileHeroView: View {
                         Text(location.uppercased())
                             .font(.custom(EKKOFont.regular, size: 11))
                             .tracking(2)
-                            .foregroundStyle(EKKOTheme.primary)
+                            .foregroundStyle(Color.accentColor)
                             .shadow(color: .black.opacity(0.5), radius: 4)
                     }
                 }
@@ -289,10 +289,10 @@ struct ConnectProfileHeroView: View {
                 } else if connectTier == .INFINITE {
                     Image(systemName: "infinity")
                         .font(.callout.weight(.semibold))
-                        .foregroundStyle(EKKOTheme.primary)
+                        .foregroundStyle(Color.accentColor)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(EKKOTheme.primary.opacity(0.12))
+                        .background(Color.accentColor.opacity(0.12))
                         .clipShape(Capsule())
                 }
             }
@@ -321,7 +321,7 @@ struct ConnectProfileHeroView: View {
             .padding(.vertical, 3)
             .background(
                 LinearGradient(
-                    colors: [EKKOTheme.primary, .purple],
+                    colors: [Color.accentColor, .purple],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
@@ -529,7 +529,7 @@ struct ConnectProfileHeroView: View {
             Text(label)
                 .font(.custom(EKKOFont.regular, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)

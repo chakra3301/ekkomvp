@@ -190,7 +190,7 @@ struct LikesView: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 8)
-                        .background(EKKOTheme.primary)
+                        .background(Color.accentColor)
                         .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
                 }
                 .disabled(isSwiping)
@@ -208,7 +208,7 @@ struct LikesView: View {
             VStack(spacing: 14) {
                 Image(systemName: "lock.fill")
                     .font(.system(size: 36))
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
 
                 Text("See who likes you")
                     .font(.title3.bold())
@@ -227,7 +227,7 @@ struct LikesView: View {
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(EKKOTheme.primary)
+                        .background(Color.accentColor)
                         .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
                 }
                 .padding(.horizontal, 24)
@@ -254,9 +254,9 @@ struct LikesView: View {
             Spacer()
             Image(systemName: "heart")
                 .font(.system(size: 40))
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
                 .padding()
-                .background(EKKOTheme.primary.opacity(0.1))
+                .background(Color.accentColor.opacity(0.1))
                 .clipShape(Circle())
 
             Text("No likes yet")
@@ -399,7 +399,7 @@ struct LikesView: View {
                                 .font(.title)
                                 .foregroundStyle(.white)
                                 .frame(width: 64, height: 64)
-                                .background(EKKOTheme.primary)
+                                .background(Color.accentColor)
                                 .clipShape(Circle())
                                 .shadow(radius: 8)
                         }

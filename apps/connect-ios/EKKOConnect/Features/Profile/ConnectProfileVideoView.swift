@@ -81,7 +81,7 @@ struct ConnectProfileVideoView: View {
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
                                 .font(.callout.weight(.semibold))
-                                .foregroundStyle(EKKOTheme.primary)
+                                .foregroundStyle(Color.accentColor)
                         }
                     }
 
@@ -116,7 +116,7 @@ struct ConnectProfileVideoView: View {
             .padding(.vertical, 3)
             .background(
                 LinearGradient(
-                    colors: [EKKOTheme.primary, .purple],
+                    colors: [Color.accentColor, .purple],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
@@ -259,7 +259,7 @@ struct ConnectProfileVideoView: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(.white)
                         .padding(5)
-                        .background(Circle().fill(EKKOTheme.primary))
+                        .background(Circle().fill(Color.accentColor))
                 }
                 .contentShape(Rectangle())
             }
@@ -277,7 +277,7 @@ struct ConnectProfileVideoView: View {
         VStack(spacing: 10) {
             Image(systemName: "play.rectangle")
                 .font(.system(size: 36))
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
             Text("Add videos to fill the reel")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -307,10 +307,10 @@ struct ConnectProfileVideoView: View {
                                 .fill(Color.secondary.opacity(0.18))
                                 .frame(height: 2)
                             Capsule()
-                                .fill(EKKOTheme.primary)
+                                .fill(Color.accentColor)
                                 .frame(width: max(2, geo.size.width * progress), height: 2)
                             Circle()
-                                .fill(EKKOTheme.primary)
+                                .fill(Color.accentColor)
                                 .frame(width: 8, height: 8)
                                 .offset(x: max(0, geo.size.width * progress - 4))
                                 .animation(.spring(response: 0.3, dampingFraction: 0.85), value: selectedIndex)
@@ -371,7 +371,7 @@ struct ConnectProfileVideoView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 4, style: .continuous)
-                            .stroke(isSelected ? EKKOTheme.primary : Color.white.opacity(0.1), lineWidth: isSelected ? 2 : 0.5)
+                            .stroke(isSelected ? Color.accentColor : Color.white.opacity(0.1), lineWidth: isSelected ? 2 : 0.5)
                     )
                     .overlay(alignment: .topLeading) {
                         Text(String(format: "%02d", index + 1))
@@ -573,7 +573,7 @@ struct ConnectProfileVideoView: View {
             Text(text)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -592,7 +592,7 @@ struct ConnectProfileVideoView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
         }
     }
 

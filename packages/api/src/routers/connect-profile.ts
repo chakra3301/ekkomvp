@@ -25,7 +25,56 @@ const promptSchema = z.object({
   answer: z.string().min(1).max(CONNECT_LIMITS.PROMPT_ANSWER_MAX),
 });
 
-const profileTemplateSchema = z.enum(["DEFAULT", "HERO", "EDITORIAL", "STACK", "SPLIT", "TERMINAL", "PHOTO", "VIDEO", "MUSIC"]);
+const profileTemplateSchema = z.enum(["DEFAULT", "HERO", "EDITORIAL", "STACK", "SPLIT", "TERMINAL", "PHOTO", "VIDEO", "MUSIC", "THREED", "HIRE"]);
+
+// Hire-template payload. All fields optional so partial edits round-trip
+// cleanly and older clients can write any subset.
+const hireDataSchema = z.object({
+  availability: z
+    .object({
+      status: z.enum(["BOOKING", "LIMITED", "CLOSED"]).optional(),
+      next: z.string().max(40).optional(),
+      capacity: z.string().max(40).optional(),
+      timezone: z.string().max(40).optional(),
+      replyTime: z.string().max(40).optional(),
+      contactEmail: z.string().max(120).optional(),
+    })
+    .optional(),
+  services: z
+    .array(
+      z.object({
+        name: z.string().min(1).max(80),
+        from: z.string().max(40).optional(),
+        unit: z.string().max(40).optional(),
+        tag: z.string().max(20).optional(),
+        lead: z.string().max(40).optional(),
+      }),
+    )
+    .max(12)
+    .optional(),
+  clients: z.array(z.string().min(1).max(60)).max(20).optional(),
+  testimonials: z
+    .array(
+      z.object({
+        by: z.string().min(1).max(80),
+        role: z.string().max(120).optional(),
+        quote: z.string().min(1).max(400),
+      }),
+    )
+    .max(10)
+    .optional(),
+  process: z
+    .array(
+      z.object({
+        title: z.string().min(1).max(40),
+        detail: z.string().max(160).optional(),
+        length: z.string().max(40).optional(),
+      }),
+    )
+    .max(8)
+    .optional(),
+  ctaTagline: z.string().max(120).optional(),
+});
 
 export const connectProfileRouter = router({
   getCurrent: protectedProcedure.query(async ({ ctx }) => {
@@ -116,6 +165,8 @@ export const connectProfileRouter = router({
         latitude: z.number().min(-90).max(90).optional(),
         longitude: z.number().min(-180).max(180).optional(),
         profileTemplate: profileTemplateSchema.optional(),
+        accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+        hireData: hireDataSchema.optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -160,6 +211,8 @@ export const connectProfileRouter = router({
           latitude: input.latitude,
           longitude: input.longitude,
           profileTemplate: input.profileTemplate,
+          accentColor: input.accentColor,
+          hireData: input.hireData,
         },
       });
 
@@ -190,6 +243,8 @@ export const connectProfileRouter = router({
         latitude: z.number().min(-90).max(90).nullable().optional(),
         longitude: z.number().min(-180).max(180).nullable().optional(),
         profileTemplate: profileTemplateSchema.nullable().optional(),
+        accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).nullable().optional(),
+        hireData: hireDataSchema.nullable().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -237,6 +292,8 @@ export const connectProfileRouter = router({
         if (input.latitude !== undefined) updateData.latitude = input.latitude;
         if (input.longitude !== undefined) updateData.longitude = input.longitude;
         if (input.profileTemplate !== undefined) updateData.profileTemplate = input.profileTemplate;
+        if (input.accentColor !== undefined) updateData.accentColor = input.accentColor;
+        if (input.hireData !== undefined) updateData.hireData = input.hireData;
 
         return tx.connectProfile.update({
           where: { userId: ctx.user.id },

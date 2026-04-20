@@ -203,7 +203,7 @@ struct UpgradeModal: View {
                     size: max(w, h) * 0.8
                 )
                 blob(
-                    color: EKKOTheme.primary,
+                    color: Color.accentColor,
                     x: animatePhase < 0.5 ? 0.15 : 0.85,
                     y: 0.8,
                     size: max(w, h) * 0.85
@@ -247,7 +247,7 @@ struct UpgradeModal: View {
             stops: [
                 .init(color: Color(red: 0.50, green: 0.18, blue: 0.80), location: 0.0 + offset * 0.0),
                 .init(color: Color(red: 0.96, green: 0.30, blue: 0.55), location: 0.33),
-                .init(color: EKKOTheme.primary, location: 0.66),
+                .init(color: Color.accentColor, location: 0.66),
                 .init(color: Color.cyan, location: 1.0),
             ],
             startPoint: UnitPoint(x: -1 + offset * 2, y: 0.5),

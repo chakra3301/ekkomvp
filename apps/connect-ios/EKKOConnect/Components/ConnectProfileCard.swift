@@ -176,7 +176,7 @@ struct ConnectProfileCard: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(EKKOTheme.primary)
+                .foregroundStyle(Color.accentColor)
         }
     }
 
@@ -305,7 +305,7 @@ struct ConnectProfileCard: View {
                         .padding(.vertical, 3)
                         .background(
                             LinearGradient(
-                                colors: [EKKOTheme.primary, Color.purple],
+                                colors: [Color.accentColor, Color.purple],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
@@ -314,10 +314,10 @@ struct ConnectProfileCard: View {
                 } else if connectTier == .INFINITE {
                     Image(systemName: "infinity")
                         .font(.caption)
-                        .foregroundStyle(EKKOTheme.primary)
+                        .foregroundStyle(Color.accentColor)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(EKKOTheme.primary.opacity(0.1))
+                        .background(Color.accentColor.opacity(0.1))
                         .clipShape(Capsule())
                 }
             }
@@ -477,9 +477,9 @@ struct AudioPlayerView: View {
             } label: {
                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                     .font(.title2)
-                    .foregroundStyle(EKKOTheme.primary)
+                    .foregroundStyle(Color.accentColor)
                     .frame(width: 48, height: 48)
-                    .background(EKKOTheme.primary.opacity(0.1))
+                    .background(Color.accentColor.opacity(0.1))
                     .clipShape(Circle())
             }
 
@@ -490,7 +490,7 @@ struct AudioPlayerView: View {
                     ForEach(0..<30, id: \.self) { i in
                         let barProgress = Double(i) / 30.0
                         RoundedRectangle(cornerRadius: 1)
-                            .fill(barProgress <= progress ? EKKOTheme.primary : Color.gray.opacity(0.2))
+                            .fill(barProgress <= progress ? Color.accentColor : Color.gray.opacity(0.2))
                             .frame(width: 3, height: waveformHeight(index: i))
                     }
                 }

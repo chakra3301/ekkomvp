@@ -71,7 +71,7 @@ struct ToastHost: View {
 
     private func color(for kind: AppState.Toast.Kind) -> Color {
         switch kind {
-        case .info: return EKKOTheme.primary
+        case .info: return Color.accentColor
         case .success: return .green
         case .error: return EKKOTheme.destructive
         }
