@@ -421,6 +421,72 @@ struct TemplatePreviewCard: View {
         case .music:     musicPreview
         case .threeD:    threeDPreview
         case .hire:      hirePreview
+        case .client:    clientPreview
+        }
+    }
+
+    /// Schematic of ConnectProfileClientView: brand hero card with a
+    /// HIRING pill, then a brief row and a small past-hires strip.
+    private var clientPreview: some View {
+        ZStack {
+            Color(.systemBackground)
+            VStack(spacing: 4) {
+                // Brand hero card
+                ZStack(alignment: .bottomLeading) {
+                    LinearGradient(
+                        colors: [Color.accentColor.opacity(0.6), Color.accentColor.opacity(0.15), .black.opacity(0.6)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .aspectRatio(16.0/10.0, contentMode: .fit)
+
+                    HStack {
+                        HStack(spacing: 2) {
+                            Circle().fill(Color.accentColor).frame(width: 3, height: 3)
+                            RoundedRectangle(cornerRadius: 0.5).fill(Color.accentColor).frame(width: 22, height: 2)
+                        }
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 1.5)
+                        .background(Capsule().stroke(Color.accentColor.opacity(0.7), lineWidth: 0.4))
+                        Spacer()
+                    }
+                    .padding(4)
+                    .frame(maxHeight: .infinity, alignment: .top)
+
+                    VStack(alignment: .leading, spacing: 1) {
+                        RoundedRectangle(cornerRadius: 1).fill(.white).frame(width: 60, height: 6)
+                        RoundedRectangle(cornerRadius: 1).fill(.white.opacity(0.7)).frame(width: 70, height: 2)
+                    }
+                    .padding(6)
+                }
+
+                // Brief row (urgent)
+                HStack(spacing: 4) {
+                    RoundedRectangle(cornerRadius: 1).fill(Color.accentColor).frame(width: 18, height: 2)
+                    RoundedRectangle(cornerRadius: 1).fill(.primary).frame(maxWidth: .infinity, maxHeight: 3)
+                    RoundedRectangle(cornerRadius: 1).fill(Color.accentColor.opacity(0.7)).frame(width: 14, height: 3)
+                }
+                .padding(4)
+                .background(
+                    RoundedRectangle(cornerRadius: 3)
+                        .stroke(Color.accentColor, lineWidth: 0.4)
+                )
+
+                // Past hires strip — circles
+                HStack(spacing: 4) {
+                    ForEach(0..<5, id: \.self) { i in
+                        Circle()
+                            .fill(Color.accentColor.opacity(Double(0.3 + Double(i) * 0.1)))
+                            .frame(width: 12, height: 12)
+                    }
+                    Spacer()
+                }
+                .padding(.top, 2)
+
+                Spacer()
+            }
+            .padding(8)
         }
     }
 

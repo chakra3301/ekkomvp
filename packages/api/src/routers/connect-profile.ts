@@ -25,7 +25,7 @@ const promptSchema = z.object({
   answer: z.string().min(1).max(CONNECT_LIMITS.PROMPT_ANSWER_MAX),
 });
 
-const profileTemplateSchema = z.enum(["DEFAULT", "HERO", "EDITORIAL", "STACK", "SPLIT", "TERMINAL", "PHOTO", "VIDEO", "MUSIC", "THREED", "HIRE"]);
+const profileTemplateSchema = z.enum(["DEFAULT", "HERO", "EDITORIAL", "STACK", "SPLIT", "TERMINAL", "PHOTO", "VIDEO", "MUSIC", "THREED", "HIRE", "CLIENT"]);
 
 // Hire-template payload. All fields optional so partial edits round-trip
 // cleanly and older clients can write any subset.
@@ -74,6 +74,55 @@ const hireDataSchema = z.object({
     .max(8)
     .optional(),
   ctaTagline: z.string().max(120).optional(),
+});
+
+// Client-template payload. Brand/company profile from the client side.
+// All fields optional so partial edits round-trip and older clients can
+// write any subset.
+const clientDataSchema = z.object({
+  company: z.string().max(80).optional(),
+  jpName: z.string().max(60).optional(),
+  tagline: z.string().max(200).optional(),
+  size: z.string().max(40).optional(),
+  founded: z.string().max(20).optional(),
+  website: z.string().max(200).optional(),
+  verified: z.boolean().optional(),
+  briefs: z
+    .array(
+      z.object({
+        title: z.string().min(1).max(120),
+        type: z.string().max(40).optional(),
+        budget: z.string().max(60).optional(),
+        timeline: z.string().max(40).optional(),
+        starts: z.string().max(40).optional(),
+        tags: z.array(z.string().max(40)).max(8).optional(),
+        priority: z.enum(["normal", "urgent"]).optional(),
+        applicants: z.number().int().min(0).max(99999).optional(),
+      }),
+    )
+    .max(20)
+    .optional(),
+  pastHires: z
+    .array(
+      z.object({
+        name: z.string().min(1).max(60),
+        role: z.string().max(40).optional(),
+        color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+      }),
+    )
+    .max(30)
+    .optional(),
+  lookingFor: z.array(z.string().min(1).max(200)).max(10).optional(),
+  stats: z
+    .object({
+      hires: z.number().int().min(0).max(99999).optional(),
+      avgDays: z.string().max(20).optional(),
+      response: z.string().max(20).optional(),
+      repeat: z.string().max(20).optional(),
+    })
+    .optional(),
+  culture: z.array(z.string().min(1).max(40)).max(20).optional(),
+  ctaTagline: z.string().max(160).optional(),
 });
 
 export const connectProfileRouter = router({
@@ -167,6 +216,7 @@ export const connectProfileRouter = router({
         profileTemplate: profileTemplateSchema.optional(),
         accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
         hireData: hireDataSchema.optional(),
+        clientData: clientDataSchema.optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -213,6 +263,7 @@ export const connectProfileRouter = router({
           profileTemplate: input.profileTemplate,
           accentColor: input.accentColor,
           hireData: input.hireData,
+          clientData: input.clientData,
         },
       });
 
@@ -245,6 +296,7 @@ export const connectProfileRouter = router({
         profileTemplate: profileTemplateSchema.nullable().optional(),
         accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).nullable().optional(),
         hireData: hireDataSchema.nullable().optional(),
+        clientData: clientDataSchema.nullable().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -294,6 +346,7 @@ export const connectProfileRouter = router({
         if (input.profileTemplate !== undefined) updateData.profileTemplate = input.profileTemplate;
         if (input.accentColor !== undefined) updateData.accentColor = input.accentColor;
         if (input.hireData !== undefined) updateData.hireData = input.hireData;
+        if (input.clientData !== undefined) updateData.clientData = input.clientData;
 
         return tx.connectProfile.update({
           where: { userId: ctx.user.id },

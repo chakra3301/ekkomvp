@@ -16,6 +16,7 @@ enum ProfileEditSection: Identifiable {
     case mediaTitle(Int) // edit one MediaSlot's caption
     case audioMeta(Int)  // edit one audio MediaSlot's BPM + KEY
     case hireData        // edit the Hire-template payload
+    case clientData      // edit the Client-template payload
 
     var id: String {
         switch self {
@@ -28,6 +29,7 @@ enum ProfileEditSection: Identifiable {
         case .mediaTitle(let i): return "mediaTitle-\(i)"
         case .audioMeta(let i): return "audioMeta-\(i)"
         case .hireData: return "hireData"
+        case .clientData: return "clientData"
         }
     }
 
@@ -42,6 +44,7 @@ enum ProfileEditSection: Identifiable {
         case .mediaTitle: return "Caption"
         case .audioMeta: return "Track Info"
         case .hireData: return "Hire Setup"
+        case .clientData: return "Hiring Setup"
         }
     }
 }
@@ -65,6 +68,10 @@ struct ProfileEditActions {
     /// Edit the Hire-template payload (availability, services, clients,
     /// testimonials, process). Optional — only the Hire template uses it.
     var onTapHireData: (() -> Void)? = nil
+    /// Edit the Client-template payload (company info, briefs, hires,
+    /// criteria, stats, culture). Optional — only the Client template
+    /// uses it.
+    var onTapClientData: (() -> Void)? = nil
 }
 
 // MARK: - Editable section wrapper
@@ -887,6 +894,478 @@ struct ProfileHireSheet: View {
         // Wholly empty payload — return nil so the JSON column can clear.
         if out.availability == nil, out.services == nil, out.clients == nil,
            out.testimonials == nil, out.process == nil, out.ctaTagline == nil {
+            return nil
+        }
+        return out
+    }
+}
+
+// MARK: - Client data sheet
+//
+// Single sheet that edits the entire ClientData payload (company info,
+// briefs, past hires, hiring criteria, stats, culture, tagline). Same
+// shape as ProfileHireSheet so the two stay easy to compare.
+
+struct ProfileClientSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Binding var clientData: ClientData?
+
+    @State private var draft: ClientData = ClientData()
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                companySection
+                briefsSection
+                lookingForSection
+                pastHiresSection
+                statsSection
+                cultureSection
+                taglineSection
+            }
+            .navigationTitle("Hiring Setup")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        clientData = sanitized(draft)
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear { draft = clientData ?? ClientData() }
+        }
+    }
+
+    // MARK: - Company
+
+    private var companySection: some View {
+        Section {
+            TextField("Company name",
+                      text: stringBinding({ draft.company ?? "" }, { draft.company = $0.isEmpty ? nil : $0 }))
+            TextField("日本語 name (optional)",
+                      text: stringBinding({ draft.jpName ?? "" }, { draft.jpName = $0.isEmpty ? nil : $0 }))
+            TextField("Tagline",
+                      text: stringBinding({ draft.tagline ?? "" }, { draft.tagline = $0.isEmpty ? nil : $0 }),
+                      axis: .vertical)
+                .lineLimit(1...3)
+            TextField("Size (e.g. 14 ppl)",
+                      text: stringBinding({ draft.size ?? "" }, { draft.size = $0.isEmpty ? nil : $0 }))
+            TextField("Founded (e.g. 2021)",
+                      text: stringBinding({ draft.founded ?? "" }, { draft.founded = $0.isEmpty ? nil : $0 }))
+                .keyboardType(.numbersAndPunctuation)
+            TextField("Website",
+                      text: stringBinding({ draft.website ?? "" }, { draft.website = $0.isEmpty ? nil : $0 }))
+                .keyboardType(.URL)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+            Toggle("Verified client", isOn: Binding(
+                get: { draft.verified ?? false },
+                set: { draft.verified = $0 ? true : nil }
+            ))
+        } header: {
+            Text("Company")
+        } footer: {
+            Text("Shown in the brand hero card. Verified is decorative — actual verification flows live elsewhere.")
+                .font(.caption)
+        }
+    }
+
+    // MARK: - Briefs
+
+    private var briefsSection: some View {
+        Section {
+            ForEach(Array((draft.briefs ?? []).enumerated()), id: \.offset) { idx, _ in
+                briefEditor(at: idx)
+            }
+            .onDelete { indexSet in
+                var arr = draft.briefs ?? []
+                arr.remove(atOffsets: indexSet)
+                draft.briefs = arr
+            }
+            .onMove { from, to in
+                var arr = draft.briefs ?? []
+                arr.move(fromOffsets: from, toOffset: to)
+                draft.briefs = arr
+            }
+
+            Button {
+                var arr = draft.briefs ?? []
+                arr.append(ClientBrief(title: "New Brief"))
+                draft.briefs = arr
+            } label: {
+                Label("Add brief", systemImage: "plus.circle")
+            }
+        } header: {
+            HStack {
+                Text("Open briefs")
+                Spacer()
+                if !(draft.briefs ?? []).isEmpty {
+                    EditButton().font(.caption)
+                }
+            }
+        } footer: {
+            Text("Up to 20 briefs. Mark one as urgent to highlight it.")
+                .font(.caption)
+        }
+    }
+
+    private func briefEditor(at idx: Int) -> some View {
+        let titleBinding    = briefBinding(idx, get: { $0.title },          set: { v, b in b.title = v })
+        let typeBinding     = briefBinding(idx, get: { $0.type ?? "" },     set: { v, b in b.type = v.isEmpty ? nil : v })
+        let budgetBinding   = briefBinding(idx, get: { $0.budget ?? "" },   set: { v, b in b.budget = v.isEmpty ? nil : v })
+        let timelineBinding = briefBinding(idx, get: { $0.timeline ?? "" }, set: { v, b in b.timeline = v.isEmpty ? nil : v })
+        let startsBinding   = briefBinding(idx, get: { $0.starts ?? "" },   set: { v, b in b.starts = v.isEmpty ? nil : v })
+        let tagsBinding     = briefBinding(idx, get: { ($0.tags ?? []).joined(separator: ", ") },
+                                                set: { v, b in
+                                                    let parts = v.split(separator: ",")
+                                                        .map { $0.trimmingCharacters(in: .whitespaces) }
+                                                        .filter { !$0.isEmpty }
+                                                    b.tags = parts.isEmpty ? nil : parts
+                                                })
+        let urgentBinding   = Binding<Bool>(
+            get: {
+                let arr = draft.briefs ?? []
+                guard arr.indices.contains(idx) else { return false }
+                return arr[idx].priority?.lowercased() == "urgent"
+            },
+            set: { v in
+                var arr = draft.briefs ?? []
+                guard arr.indices.contains(idx) else { return }
+                arr[idx].priority = v ? "urgent" : nil
+                draft.briefs = arr
+            }
+        )
+        let applicantsBinding = Binding<String>(
+            get: {
+                let arr = draft.briefs ?? []
+                guard arr.indices.contains(idx) else { return "" }
+                return arr[idx].applicants.map { String($0) } ?? ""
+            },
+            set: { v in
+                var arr = draft.briefs ?? []
+                guard arr.indices.contains(idx) else { return }
+                arr[idx].applicants = Int(v.trimmingCharacters(in: .whitespaces))
+                draft.briefs = arr
+            }
+        )
+
+        return DisclosureGroup {
+            TextField("Title", text: titleBinding)
+            TextField("Type (e.g. contract / project)", text: typeBinding)
+            TextField("Budget (e.g. $14k—$22k)", text: budgetBinding)
+            TextField("Timeline (e.g. 6 weeks)", text: timelineBinding)
+            TextField("Starts (e.g. MAY 05 / ROLLING)", text: startsBinding)
+            TextField("Tags (comma-separated)", text: tagsBinding)
+                .textInputAutocapitalization(.never)
+            Toggle("Urgent", isOn: urgentBinding)
+            TextField("Applicants count (optional)", text: applicantsBinding)
+                .keyboardType(.numberPad)
+        } label: {
+            HStack {
+                Text(titleBinding.wrappedValue.isEmpty ? "New Brief" : titleBinding.wrappedValue)
+                    .foregroundStyle(.primary)
+                Spacer()
+                if urgentBinding.wrappedValue {
+                    Text("URGENT")
+                        .font(.caption2.bold())
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 3))
+                }
+            }
+        }
+    }
+
+    private func briefBinding(_ idx: Int,
+                              get: @escaping (ClientBrief) -> String,
+                              set: @escaping (String, inout ClientBrief) -> Void) -> Binding<String> {
+        Binding<String>(
+            get: {
+                let arr = draft.briefs ?? []
+                return arr.indices.contains(idx) ? get(arr[idx]) : ""
+            },
+            set: { v in
+                var arr = draft.briefs ?? []
+                guard arr.indices.contains(idx) else { return }
+                set(v, &arr[idx])
+                draft.briefs = arr
+            }
+        )
+    }
+
+    // MARK: - Looking for
+
+    private var lookingForSection: some View {
+        Section {
+            ForEach(Array((draft.lookingFor ?? []).enumerated()), id: \.offset) { idx, _ in
+                let binding = Binding<String>(
+                    get: {
+                        let arr = draft.lookingFor ?? []
+                        return arr.indices.contains(idx) ? arr[idx] : ""
+                    },
+                    set: { v in
+                        var arr = draft.lookingFor ?? []
+                        guard arr.indices.contains(idx) else { return }
+                        arr[idx] = v
+                        draft.lookingFor = arr
+                    }
+                )
+                TextField("Criterion", text: binding, axis: .vertical)
+                    .lineLimit(1...3)
+            }
+            .onDelete { indexSet in
+                var arr = draft.lookingFor ?? []
+                arr.remove(atOffsets: indexSet)
+                draft.lookingFor = arr
+            }
+
+            Button {
+                var arr = draft.lookingFor ?? []
+                arr.append("")
+                draft.lookingFor = arr
+            } label: {
+                Label("Add criterion", systemImage: "plus.circle")
+            }
+        } header: {
+            Text("What we look for")
+        } footer: {
+            Text("Up to 10 lines. One short statement per row.")
+                .font(.caption)
+        }
+    }
+
+    // MARK: - Past hires
+
+    private var pastHiresSection: some View {
+        Section {
+            ForEach(Array((draft.pastHires ?? []).enumerated()), id: \.offset) { idx, _ in
+                pastHireEditor(at: idx)
+            }
+            .onDelete { indexSet in
+                var arr = draft.pastHires ?? []
+                arr.remove(atOffsets: indexSet)
+                draft.pastHires = arr
+            }
+
+            Button {
+                var arr = draft.pastHires ?? []
+                arr.append(ClientPastHire(name: "", role: nil, color: nil))
+                draft.pastHires = arr
+            } label: {
+                Label("Add past hire", systemImage: "plus.circle")
+            }
+        } header: {
+            Text("We've hired")
+        }
+    }
+
+    private func pastHireEditor(at idx: Int) -> some View {
+        let nameBinding = pastHireBinding(idx, get: { $0.name },          set: { v, h in h.name = v })
+        let roleBinding = pastHireBinding(idx, get: { $0.role ?? "" },    set: { v, h in h.role = v.isEmpty ? nil : v })
+        let colorBinding = pastHireBinding(idx, get: { $0.color ?? "" },  set: { v, h in h.color = v.isEmpty ? nil : v })
+
+        return DisclosureGroup {
+            TextField("Name (e.g. mona.jpg)", text: nameBinding)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+            TextField("Role (e.g. AD / Motion)", text: roleBinding)
+            TextField("Accent (hex, e.g. #FF3D9A)", text: colorBinding)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+        } label: {
+            HStack {
+                Text(nameBinding.wrappedValue.isEmpty ? "New hire" : nameBinding.wrappedValue)
+                    .foregroundStyle(.primary)
+                Spacer()
+                if !roleBinding.wrappedValue.isEmpty {
+                    Text(roleBinding.wrappedValue.uppercased())
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private func pastHireBinding(_ idx: Int,
+                                 get: @escaping (ClientPastHire) -> String,
+                                 set: @escaping (String, inout ClientPastHire) -> Void) -> Binding<String> {
+        Binding<String>(
+            get: {
+                let arr = draft.pastHires ?? []
+                return arr.indices.contains(idx) ? get(arr[idx]) : ""
+            },
+            set: { v in
+                var arr = draft.pastHires ?? []
+                guard arr.indices.contains(idx) else { return }
+                set(v, &arr[idx])
+                draft.pastHires = arr
+            }
+        )
+    }
+
+    // MARK: - Stats
+
+    private var statsSection: some View {
+        Section {
+            statField("Total hires", placeholder: "e.g. 34", keyboard: .numberPad,
+                      get: { draft.stats?.hires.map { String($0) } ?? "" },
+                      set: { v in mutateStats { $0.hires = Int(v.trimmingCharacters(in: .whitespaces)) } })
+            statField("Avg time to reply", placeholder: "e.g. 9d",
+                      get: { draft.stats?.avgDays ?? "" },
+                      set: { v in mutateStats { $0.avgDays = v.isEmpty ? nil : v } })
+            statField("Reply rate", placeholder: "e.g. 100%",
+                      get: { draft.stats?.response ?? "" },
+                      set: { v in mutateStats { $0.response = v.isEmpty ? nil : v } })
+            statField("Repeat hires", placeholder: "e.g. 68%",
+                      get: { draft.stats?.repeatRate ?? "" },
+                      set: { v in mutateStats { $0.repeatRate = v.isEmpty ? nil : v } })
+        } header: {
+            Text("Track record")
+        }
+    }
+
+    private func statField(_ label: String,
+                           placeholder: String,
+                           keyboard: UIKeyboardType = .default,
+                           get: @escaping () -> String,
+                           set: @escaping (String) -> Void) -> some View {
+        HStack {
+            Text(label).foregroundStyle(.secondary)
+            Spacer()
+            TextField(placeholder, text: Binding(get: get, set: set))
+                .keyboardType(keyboard)
+                .multilineTextAlignment(.trailing)
+                .frame(maxWidth: 180)
+        }
+    }
+
+    private func mutateStats(_ apply: (inout ClientStats) -> Void) {
+        var s = draft.stats ?? ClientStats()
+        apply(&s)
+        draft.stats = s
+    }
+
+    // MARK: - Culture
+
+    private var cultureSection: some View {
+        Section {
+            ForEach(Array((draft.culture ?? []).enumerated()), id: \.offset) { idx, _ in
+                let binding = Binding<String>(
+                    get: {
+                        let arr = draft.culture ?? []
+                        return arr.indices.contains(idx) ? arr[idx] : ""
+                    },
+                    set: { v in
+                        var arr = draft.culture ?? []
+                        guard arr.indices.contains(idx) else { return }
+                        arr[idx] = v
+                        draft.culture = arr
+                    }
+                )
+                TextField("e.g. Async-first", text: binding)
+            }
+            .onDelete { indexSet in
+                var arr = draft.culture ?? []
+                arr.remove(atOffsets: indexSet)
+                draft.culture = arr
+            }
+
+            Button {
+                var arr = draft.culture ?? []
+                arr.append("")
+                draft.culture = arr
+            } label: {
+                Label("Add chip", systemImage: "plus.circle")
+            }
+        } header: {
+            Text("Culture")
+        } footer: {
+            Text("Short single-word or two-word chips. Up to 20.")
+                .font(.caption)
+        }
+    }
+
+    // MARK: - Tagline
+
+    private var taglineSection: some View {
+        Section {
+            TextField("Think you'd fit? Send us one piece.",
+                      text: stringBinding({ draft.ctaTagline ?? "" }, { draft.ctaTagline = $0.isEmpty ? nil : $0 }),
+                      axis: .vertical)
+                .lineLimit(1...3)
+        } header: {
+            Text("Closing pitch")
+        } footer: {
+            Text("Shown in the final “Apply now” card. Optional.")
+                .font(.caption)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func stringBinding(_ get: @escaping () -> String,
+                               _ set: @escaping (String) -> Void) -> Binding<String> {
+        Binding(get: get, set: set)
+    }
+
+    /// Drop empty rows / unset stats so the saved payload doesn't carry
+    /// junk. Returns nil for a wholly empty payload so the column clears.
+    private func sanitized(_ d: ClientData) -> ClientData? {
+        var out = d
+
+        if let arr = out.lookingFor {
+            let cleaned = arr
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .filter { !$0.isEmpty }
+            out.lookingFor = cleaned.isEmpty ? nil : cleaned
+        }
+
+        if let arr = out.culture {
+            let cleaned = arr
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .filter { !$0.isEmpty }
+            out.culture = cleaned.isEmpty ? nil : cleaned
+        }
+
+        if let arr = out.briefs {
+            let cleaned = arr.filter {
+                !$0.title.trimmingCharacters(in: .whitespaces).isEmpty
+            }
+            out.briefs = cleaned.isEmpty ? nil : cleaned
+        }
+
+        if let arr = out.pastHires {
+            let cleaned = arr.filter {
+                !$0.name.trimmingCharacters(in: .whitespaces).isEmpty
+            }
+            out.pastHires = cleaned.isEmpty ? nil : cleaned
+        }
+
+        if let s = out.stats,
+           s.hires == nil, (s.avgDays?.isEmpty ?? true),
+           (s.response?.isEmpty ?? true), (s.repeatRate?.isEmpty ?? true) {
+            out.stats = nil
+        }
+
+        if let tag = out.ctaTagline?.trimmingCharacters(in: .whitespaces), tag.isEmpty {
+            out.ctaTagline = nil
+        }
+
+        if let comp = out.company?.trimmingCharacters(in: .whitespaces), comp.isEmpty {
+            out.company = nil
+        }
+
+        // Wholly empty? clear the column.
+        if out.company == nil, out.jpName == nil, out.tagline == nil,
+           out.size == nil, out.founded == nil, out.website == nil,
+           out.verified == nil, out.briefs == nil, out.pastHires == nil,
+           out.lookingFor == nil, out.stats == nil, out.culture == nil,
+           out.ctaTagline == nil {
             return nil
         }
         return out

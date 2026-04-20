@@ -303,6 +303,27 @@ struct ProfileView: View {
                 editActions: editActions
             )
 
+        case .client:
+            ConnectProfileClientView(
+                displayName: displayName,
+                avatarUrl: avatarUrl,
+                headline: headline,
+                location: location,
+                lookingFor: lookingFor,
+                bio: bio,
+                mediaSlots: mediaSlots,
+                prompts: prompts,
+                instagramHandle: instagram,
+                twitterHandle: twitter,
+                websiteUrl: website,
+                connectTier: profile.connectTier,
+                likesReceivedCount: profile.likesReceivedCount,
+                matchesCount: profile.matchesCount,
+                isAdmin: appState.isAdmin,
+                clientData: isEditMode ? draft.clientData : profile.clientData,
+                editActions: editActions
+            )
+
         case .hire:
             ConnectProfileHireView(
                 displayName: displayName,
@@ -647,6 +668,9 @@ struct ProfileView: View {
 
         case .hireData:
             ProfileHireSheet(hireData: $draft.hireData)
+
+        case .clientData:
+            ProfileClientSheet(clientData: $draft.clientData)
         }
     }
 
@@ -705,7 +729,8 @@ struct ProfileView: View {
             onTapSocials:          { activeEditor = .socials },
             onEditMediaTitle:      { idx in activeEditor = .mediaTitle(idx) },
             onEditAudioMeta:       { idx in activeEditor = .audioMeta(idx) },
-            onTapHireData:         { activeEditor = .hireData }
+            onTapHireData:         { activeEditor = .hireData },
+            onTapClientData:       { activeEditor = .clientData }
         )
     }
 
@@ -750,7 +775,8 @@ struct ProfileView: View {
                 websiteUrl:      draft.websiteUrl.isEmpty ? nil : draft.websiteUrl,
                 location:        draft.location.isEmpty ? nil : draft.location,
                 profileTemplate: draft.profileTemplate,
-                hireData:        draft.hireData
+                hireData:        draft.hireData,
+                clientData:      draft.clientData
             )
             struct GenericResponse: Codable { let id: String }
             let _: GenericResponse = try await appState.trpc.mutate(
@@ -804,6 +830,8 @@ struct ProfileDraft: Equatable {
     var prompts: [PromptEntry] = []
     /// Hire-template payload. nil when not yet configured.
     var hireData: HireData? = nil
+    /// Client-template payload. nil when not yet configured.
+    var clientData: ClientData? = nil
 
     static func from(_ profile: ConnectProfile) -> ProfileDraft {
         ProfileDraft(
@@ -817,7 +845,8 @@ struct ProfileDraft: Equatable {
             websiteUrl:      profile.websiteUrl ?? "",
             mediaSlots:      profile.mediaSlots,
             prompts:         profile.prompts,
-            hireData:        profile.hireData
+            hireData:        profile.hireData,
+            clientData:      profile.clientData
         )
     }
 }

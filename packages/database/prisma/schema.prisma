@@ -1015,6 +1015,11 @@ model ConnectProfile {
   // shape without a migration per change.
   hireData    Json?   @map("hire_data")
 
+  // Client-template payload. Brand/company profile shown to creatives:
+  // company info, open briefs, past hires, hiring criteria, track-record
+  // stats, culture. Same JSON-column rationale as hireData.
+  clientData  Json?   @map("client_data")
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

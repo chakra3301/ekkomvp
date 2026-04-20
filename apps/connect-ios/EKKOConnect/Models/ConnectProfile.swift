@@ -34,6 +34,10 @@ struct ConnectProfile: Codable, Identifiable {
     /// clients, testimonials, process. Lives in a single JSON column
     /// server-side so this struct can grow without a migration.
     var hireData: HireData?
+    /// Optional payload for the Client template — brand info, open
+    /// briefs, past hires, hiring criteria, track-record stats, culture.
+    /// Same JSON-column rationale as hireData.
+    var clientData: ClientData?
     let createdAt: Date?
     let updatedAt: Date?
 
@@ -70,6 +74,7 @@ struct ConnectProfile: Codable, Identifiable {
         profileTemplate = try container.decodeIfPresent(String.self, forKey: .profileTemplate)
         accentColor = try container.decodeIfPresent(String.self, forKey: .accentColor)
         hireData = try? container.decodeIfPresent(HireData.self, forKey: .hireData)
+        clientData = try? container.decodeIfPresent(ClientData.self, forKey: .clientData)
         createdAt = try? container.decodeIfPresent(Date.self, forKey: .createdAt)
         updatedAt = try? container.decodeIfPresent(Date.self, forKey: .updatedAt)
         user = try container.decodeIfPresent(UserWithProfile.self, forKey: .user)
@@ -83,7 +88,7 @@ struct ConnectProfile: Codable, Identifiable {
         case disciplineIds, location, latitude, longitude
         case likesReceivedCount, matchesCount, isActive, connectTier
         case profileTemplate, accentColor
-        case hireData
+        case hireData, clientData
         case createdAt, updatedAt, user
     }
 }
@@ -100,6 +105,7 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
     case music     = "MUSIC"
     case threeD    = "THREED"
     case hire      = "HIRE"
+    case client    = "CLIENT"
 
     var id: String { rawValue }
 
@@ -116,6 +122,7 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
         case .music:     return "Music"
         case .threeD:    return "3D"
         case .hire:      return "Hire Me"
+        case .client:    return "Hiring"
         }
     }
 
@@ -143,6 +150,8 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
             return "Live wireframe viewport with FPS / coord HUD and an asset library of your model files. Best for 3D artists and technical creatives."
         case .hire:
             return "Client-facing rate card — availability, services, past clients, testimonials, and process. Best when you're open for work."
+        case .client:
+            return "Hiring-side profile — brand hero, open briefs, past hires, criteria, track record, and culture. Best for studios and brands recruiting creatives."
         }
     }
 
@@ -256,6 +265,7 @@ struct ProfilePayload: Codable {
     var profileTemplate: String?
     var accentColor: String?
     var hireData: HireData?
+    var clientData: ClientData?
 }
 
 // MARK: - Hire template payload
@@ -311,4 +321,62 @@ struct HireProcessStep: Codable, Equatable, Identifiable {
     var length: String?      // "3 days"
 
     var id: String { title }
+}
+
+// MARK: - Client template payload
+//
+// Brand/company-side profile. Same JSON-column model as HireData — every
+// field is optional so partial saves round-trip cleanly and the view can
+// show a placeholder where data is missing.
+
+struct ClientData: Codable, Equatable {
+    var company: String?
+    var jpName: String?
+    var tagline: String?
+    var size: String?       // "14 ppl"
+    var founded: String?    // "2021"
+    var website: String?
+    var verified: Bool?
+    var briefs: [ClientBrief]?
+    var pastHires: [ClientPastHire]?
+    var lookingFor: [String]?
+    var stats: ClientStats?
+    var culture: [String]?
+    /// Optional one-liner under the closing pitch. Falls back to a
+    /// default when empty.
+    var ctaTagline: String?
+}
+
+struct ClientBrief: Codable, Equatable {
+    var title: String
+    var type: String?       // "contract" / "project" / "per-deliverable"
+    var budget: String?
+    var timeline: String?
+    var starts: String?     // "MAY 05" / "ROLLING"
+    var tags: [String]?
+    var priority: String?   // "normal" | "urgent"
+    var applicants: Int?
+}
+
+struct ClientPastHire: Codable, Equatable {
+    var name: String
+    var role: String?
+    /// Optional accent for the avatar conic-gradient ring. Defaults to
+    /// the user's accent color when nil.
+    var color: String?
+}
+
+struct ClientStats: Codable, Equatable {
+    var hires: Int?
+    var avgDays: String?    // "9d"
+    var response: String?   // "100%"
+    /// Repeat-hire rate. Stored under JSON key "repeat" but renamed in
+    /// Swift since `repeat` is a reserved keyword that can't be used as
+    /// an identifier even with backtick escaping in property positions.
+    var repeatRate: String? // "68%"
+
+    enum CodingKeys: String, CodingKey {
+        case hires, avgDays, response
+        case repeatRate = "repeat"
+    }
 }
