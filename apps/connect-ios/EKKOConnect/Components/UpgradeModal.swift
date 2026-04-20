@@ -5,6 +5,7 @@ struct UpgradeModal: View {
     @Binding var isPresented: Bool
     @Environment(PurchaseManager.self) private var purchaseManager
     @State private var animatePhase: CGFloat = 0
+    @State private var showSuccess = false
 
     var body: some View {
         ZStack {
@@ -73,7 +74,7 @@ struct UpgradeModal: View {
                     Button {
                         Task {
                             let success = await purchaseManager.purchaseInfinite()
-                            if success { isPresented = false }
+                            if success { triggerSuccessBeat() }
                         }
                     } label: {
                         Group {
@@ -122,6 +123,15 @@ struct UpgradeModal: View {
                 }
                 .padding(.bottom, 36)
             }
+
+            // Celebration overlay — lives on top of the modal body, only
+            // visible after a successful purchase. Auto-dismisses the whole
+            // modal so the user lands back in the app with a win, not a
+            // silently-closed sheet.
+            if showSuccess {
+                successOverlay
+                    .transition(.opacity)
+            }
         }
         .onAppear {
             // Kick off the gradient animation
@@ -129,6 +139,88 @@ struct UpgradeModal: View {
                 animatePhase = 1
             }
         }
+    }
+
+    // MARK: - Success Celebration
+
+    private func triggerSuccessBeat() {
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        withAnimation(.spring(response: 0.55, dampingFraction: 0.6)) {
+            showSuccess = true
+        }
+        // Second haptic when the stars finish flying — adds a "landed" feel.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.4) {
+            isPresented = false
+        }
+    }
+
+    private var successOverlay: some View {
+        ZStack {
+            // Deep-magenta veil so the celebration reads as its own moment
+            // rather than "modal on top of modal."
+            Color.black.opacity(0.55).ignoresSafeArea()
+
+            RadialGradient(
+                colors: [
+                    Color(red: 0.85, green: 0.0, blue: 1.0).opacity(0.55),
+                    Color.clear,
+                ],
+                center: .center,
+                startRadius: 20,
+                endRadius: 320
+            )
+            .ignoresSafeArea()
+
+            // 12 star sprites flying outward on a circle. Each one fades and
+            // scales up slightly as it travels — reads as a burst.
+            ForEach(0..<12, id: \.self) { i in
+                let angle = Double(i) / 12.0 * 2 * .pi
+                Image(uiImage: EKKOStarSprite.image(size: 96, variant: .detailed))
+                    .resizable()
+                    .frame(width: 72, height: 72)
+                    .foregroundStyle(.white)
+                    .offset(
+                        x: showSuccess ? cos(angle) * 220 : 0,
+                        y: showSuccess ? sin(angle) * 220 : 0
+                    )
+                    .scaleEffect(showSuccess ? 1.1 : 0.3)
+                    .opacity(showSuccess ? 0.0 : 1.0)
+                    .rotationEffect(.degrees(Double(i) * 27))
+                    .animation(
+                        .easeOut(duration: 1.2).delay(Double(i) * 0.02),
+                        value: showSuccess
+                    )
+            }
+
+            VStack(spacing: 14) {
+                Image(systemName: "infinity")
+                    .font(.system(size: 96, weight: .bold))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.white, Color(red: 1.0, green: 0.75, blue: 1.0)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .shadow(color: Color(red: 1.0, green: 0.3, blue: 1.0).opacity(0.8), radius: 24)
+                    .scaleEffect(showSuccess ? 1.0 : 0.3)
+
+                Text("Infinite unlocked")
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.4), radius: 8)
+
+                Text("Welcome to the full Connect ✦")
+                    .font(.subheadline)
+                    .foregroundStyle(.white.opacity(0.85))
+            }
+            .opacity(showSuccess ? 1 : 0)
+            .animation(.easeOut(duration: 0.6).delay(0.1), value: showSuccess)
+        }
+        .allowsHitTesting(false)
     }
 
     // MARK: - Price + Legal Disclosure

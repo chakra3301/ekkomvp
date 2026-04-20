@@ -49,24 +49,78 @@ struct SwipeCard: View {
     }
 
     var body: some View {
-        cardContent
-            .offset(x: offset.width)
-            .rotationEffect(.degrees(rotation))
-            .gesture(
-                isTop && !isExpanded
-                ? DragGesture()
-                    .onChanged { value in
-                        offset = value.translation
-                    }
-                    .onEnded { value in
-                        handleDragEnd(value)
-                    }
-                : nil
-            )
-            .animation(.spring(response: 0.4, dampingFraction: 0.7), value: offset)
-            .fullScreenCover(isPresented: $isExpanded) {
-                expandedProfile
+        ZStack {
+            // Neon trail — sits at the card's resting frame so as the card
+            // flies off it leaves a glow streak in the direction of motion.
+            // Green trail for LIKE, hot pink for PASS — mirrors the globe
+            // pin palette so the whole app speaks the same neon vocabulary.
+            swipeTrail
+
+            cardContent
+                .offset(x: offset.width)
+                .rotationEffect(.degrees(rotation))
+        }
+        .gesture(
+            isTop && !isExpanded
+            ? DragGesture()
+                .onChanged { value in
+                    offset = value.translation
+                }
+                .onEnded { value in
+                    handleDragEnd(value)
+                }
+            : nil
+        )
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: offset)
+        .fullScreenCover(isPresented: $isExpanded) {
+            expandedProfile
+        }
+    }
+
+    /// Swipe trail: two edge-anchored neon gradient streaks (green right,
+    /// pink left) that fade in with drag intensity and offset slightly
+    /// *toward* the drag direction to read as motion blur rather than a
+    /// static glow. Only renders on the top card.
+    @ViewBuilder
+    private var swipeTrail: some View {
+        if isTop {
+            ZStack {
+                streakLayer(
+                    color: Color(red: 0.0, green: 1.0, blue: 0.32),   // matrix green
+                    anchor: .trailing,
+                    intensity: likeOpacity
+                )
+                streakLayer(
+                    color: Color(red: 1.0, green: 0.08, blue: 0.56),  // neon hot pink
+                    anchor: .leading,
+                    intensity: passOpacity
+                )
             }
+            .allowsHitTesting(false)
+            // Parallax with the card at half speed — classic motion-blur trick.
+            .offset(x: offset.width * 0.5)
+            .rotationEffect(.degrees(rotation * 0.5))
+        }
+    }
+
+    private func streakLayer(color: Color, anchor: HorizontalAlignment, intensity: Double) -> some View {
+        let toTrailing = anchor == .trailing
+        return RoundedRectangle(cornerRadius: 20, style: .continuous)
+            .fill(
+                LinearGradient(
+                    stops: [
+                        .init(color: .clear,                   location: 0.0),
+                        .init(color: color.opacity(0.0),       location: 0.35),
+                        .init(color: color.opacity(0.55),      location: 0.85),
+                        .init(color: color.opacity(0.9),       location: 1.0),
+                    ],
+                    startPoint: toTrailing ? .leading : .trailing,
+                    endPoint:   toTrailing ? .trailing : .leading
+                )
+            )
+            .blur(radius: 28)
+            .opacity(intensity)
+            .padding(-24)  // let the blur bleed past the card frame for a true glow
     }
 
     // MARK: - Card Content (Collapsed)

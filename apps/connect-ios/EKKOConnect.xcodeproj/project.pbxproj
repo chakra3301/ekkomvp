@@ -110,11 +110,11 @@
 		1898A246D2F31E797DEED158 /* ConnectProfileClientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileClientView.swift; sourceTree = "<group>"; };
 		1B5099770EB5143E66F61661 /* EKKOFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOFont.swift; sourceTree = "<group>"; };
 		228D601B5509AA4D2A790714 /* JapaneseLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JapaneseLabel.swift; sourceTree = "<group>"; };
-		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		25464A7A6B8484A571408E6D /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
 		27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchCelebrationOverlay.swift; sourceTree = "<group>"; };
 		2954B95D97E4A99FE6ADD395 /* ConnectProfileMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileMusicView.swift; sourceTree = "<group>"; };
-		2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */ = {isa = PBXFileReference; path = coastlines.geojson; sourceTree = "<group>"; };
+		2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = coastlines.geojson; sourceTree = "<group>"; };
 		37599C761D0200DAE7F3FD8C /* CompleteProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteProfileView.swift; sourceTree = "<group>"; };
 		377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileEditorialView.swift; sourceTree = "<group>"; };
 		3C2A698D4ADD418F1A28B37E /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -134,7 +134,7 @@
 		7D5729266ADD7D748C1D8DC0 /* ConnectProfileTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileTerminalView.swift; sourceTree = "<group>"; };
 		7F196972C0FE82EA4A7B9468 /* EKKOConnect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EKKOConnect.entitlements; sourceTree = "<group>"; };
 		7FA796FEFEEF21ACBD9272F1 /* ConnectSwipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSwipe.swift; sourceTree = "<group>"; };
-		811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		85FE6C07E51E526F3BC4299A /* ConnectProfileCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileCard.swift; sourceTree = "<group>"; };
 		871BC70E098C57BEE2436D76 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
 		8785EFD367E67672B664E3B3 /* TwitterPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPreview.swift; sourceTree = "<group>"; };
@@ -169,7 +169,7 @@
 		CD2EA2BD53985DE45F5B5447 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		CE5E3FA89419F1E6D935732C /* LegalLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalLinks.swift; sourceTree = "<group>"; };
 		CE6293A856B21826507BDAAD /* MediaSlotGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSlotGrid.swift; sourceTree = "<group>"; };
-		D08B3118FD262A697877D048 /* Products.storekit */ = {isa = PBXFileReference; path = Products.storekit; sourceTree = "<group>"; };
+		D08B3118FD262A697877D048 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		D0D70B1A8956D3C537DF6621 /* ConnectProfileVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileVideoView.swift; sourceTree = "<group>"; };
 		D2B61B9994A7B2E2DFB0D5A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D7556E0055DF8FFC25312217 /* ArchesRegularItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ArchesRegularItalic.ttf; sourceTree = "<group>"; };
@@ -559,11 +559,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-					FD8336ECB0B238202B2AD9B0 = {
-						DevelopmentTeam = "";
-					};
-				};
 			};
 			buildConfigurationList = 5EE46B4119D061763E04ED6B /* Build configuration list for PBXProject "EKKOConnect" */;
 			developmentRegion = en;
@@ -705,7 +700,7 @@
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 14;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -848,7 +843,7 @@
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 14;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

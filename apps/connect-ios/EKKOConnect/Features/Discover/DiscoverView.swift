@@ -102,11 +102,9 @@ struct DiscoverView: View {
             await viewModel.loadQueue()
         }
         .onChange(of: appState.discoveryFilters) { _, _ in
-            // If the user disables global search (or loses Infinite access)
-            // while on globe mode, drop back to the stack so they don't end
-            // up stranded on a feature they can't access.
-            let globeEligible = appState.hasInfiniteAccess && appState.discoveryFilters.globalSearch
-            if viewModel.viewMode == .globe && !globeEligible {
+            // If the user loses Infinite access while on globe mode, drop back
+            // to the stack so they don't get stranded on a paid-only feature.
+            if viewModel.viewMode == .globe && !appState.hasInfiniteAccess {
                 viewModel.viewMode = .stack
             }
             Task { await viewModel.loadQueue() }
@@ -138,11 +136,11 @@ struct DiscoverView: View {
 
     // MARK: - View Mode Toggle
 
-    /// Globe mode is an Infinite-tier perk that only makes sense when the
-    /// user has opted into global search. Hide it otherwise so the toggle
-    /// doesn't advertise a button that will fall back to an empty view.
+    /// Globe mode is an Infinite-tier perk. It fetches its own pins independent
+    /// of the stack's filters, so it stays available even after a pin tap
+    /// scopes the stack to a city (which flips globalSearch off).
     private var availableModes: [DiscoverViewModel.ViewMode] {
-        let globeEligible = appState.hasInfiniteAccess && appState.discoveryFilters.globalSearch
+        let globeEligible = appState.hasInfiniteAccess
         return DiscoverViewModel.ViewMode.allCases.filter { mode in
             mode != .globe || globeEligible
         }
@@ -535,41 +533,145 @@ struct DiscoverView: View {
     }
 
     private var emptyState: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 20) {
             Spacer()
-            Image(systemName: "safari")
-                .font(.system(size: 40))
+
+            Image(systemName: "sparkles")
+                .font(.system(size: 36))
                 .foregroundStyle(Color.accentColor)
-                .padding()
-                .background(Color.accentColor.opacity(0.1))
+                .padding(18)
+                .background(Color.accentColor.opacity(0.12))
                 .clipShape(Circle())
 
-            Text("You've seen everyone")
-                .font(.headline)
+            VStack(spacing: 6) {
+                Text("You've seen everyone nearby")
+                    .font(.headline)
+                Text("Here's where to go next.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
-            Text("No new creatives right now. Try expanding your filters in Settings or check back soon.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+            VStack(spacing: 10) {
+                // Door 1 — Globe (paid, or prompt to upgrade)
+                emptyStateDoor(
+                    icon: "globe",
+                    title: "Explore the globe",
+                    subtitle: appState.hasInfiniteAccess
+                        ? "See creatives worldwide"
+                        : "Unlock with Infinite",
+                    accent: Color(red: 0.85, green: 0.0, blue: 1.0)
+                ) {
+                    if appState.hasInfiniteAccess {
+                        withAnimation(.spring(response: 0.35)) {
+                            viewModel.viewMode = .globe
+                        }
+                    } else {
+                        showUpgradeSheet = true
+                    }
+                }
+
+                // Door 2 — Widen radius (+50mi, capped at 500)
+                emptyStateDoor(
+                    icon: "dot.radiowaves.left.and.right",
+                    title: "Widen the radius",
+                    subtitle: "Currently \(appState.discoveryFilters.maxDistanceMiles) mi → \(min(appState.discoveryFilters.maxDistanceMiles + 50, 500)) mi",
+                    accent: Color(red: 0.0, green: 1.0, blue: 0.32)
+                ) {
+                    let current = appState.discoveryFilters.maxDistanceMiles
+                    guard current < 500 else {
+                        appState.showToast("Already at the max radius (500 mi).")
+                        return
+                    }
+                    var filters = appState.discoveryFilters
+                    filters.maxDistanceMiles = min(current + 50, 500)
+                    appState.discoveryFilters = filters
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                }
+
+                // Door 3 — Invite a friend (share sheet)
+                ShareLink(
+                    item: URL(string: "https://ekkoconnect.app")!,
+                    subject: Text("EKKO Connect"),
+                    message: Text("Join me on EKKO — the network for creatives.")
+                ) {
+                    emptyStateDoorLabel(
+                        icon: "person.2.badge.plus",
+                        title: "Invite a creative",
+                        subtitle: "More people, better matches",
+                        accent: Color(red: 1.0, green: 0.08, blue: 0.56)
+                    )
+                }
+                .buttonStyle(.plain)
+            }
 
             Button {
                 Task { await viewModel.loadQueue() }
             } label: {
-                Label("Refresh", systemImage: "arrow.clockwise")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .background(Color.accentColor)
-                    .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
+                Label("Check again", systemImage: "arrow.clockwise")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
             }
             .padding(.top, 4)
+
             Spacer()
         }
-        .padding()
+        .padding(24)
         .glassCard()
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 20)
+    }
+
+    private func emptyStateDoor(
+        icon: String,
+        title: String,
+        subtitle: String,
+        accent: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            emptyStateDoorLabel(icon: icon, title: title, subtitle: subtitle, accent: accent)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func emptyStateDoorLabel(
+        icon: String,
+        title: String,
+        subtitle: String,
+        accent: Color
+    ) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(accent)
+                .frame(width: 40, height: 40)
+                .background(accent.opacity(0.15))
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 0)
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.tertiary)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(accent.opacity(0.25), lineWidth: 1)
+                )
+        )
     }
 }
 

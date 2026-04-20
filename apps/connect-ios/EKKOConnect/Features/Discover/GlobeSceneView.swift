@@ -43,8 +43,8 @@ struct GlobeSceneView: UIViewRepresentable {
             grid: UIColor(white: 1.0, alpha: 0.28),
             innerGlow: UIColor(white: 0.04, alpha: 1),
             starfieldAlpha: 1.0,
-            bloomIntensity: 1.1,
-            bloomThreshold: 0.35
+            bloomIntensity: 1.6,
+            bloomThreshold: 0.25
         )
 
         /// Light mode is the dark-mode palette inverted: black wireframe on
@@ -70,7 +70,8 @@ struct GlobeSceneView: UIViewRepresentable {
 
     /// Globe radius in scene units. All distances are derived from this.
     static let globeRadius: CGFloat = 2.0
-    static let pinRadius: CGFloat = 0.028
+    static let pinRadius: CGFloat = 0.012
+    static let starSize: CGFloat = 0.11   // billboard sprite edge in scene units
     static let dotCount: Int = 3200
     static let cameraMinZ: Float = 3.2  // closest (most zoomed in)
     static let cameraMaxZ: Float = 11.0 // farthest (most zoomed out)
@@ -658,64 +659,79 @@ struct GlobeSceneView: UIViewRepresentable {
             wrapper.name = "pin:\(pin.userId)"
             wrapper.position = SCNVector3(x, y, z)
 
+            // Tokyo / matrix neon palette — super-saturated so bloom produces
+            // that diffraction-spike star look rather than a pastel blob.
             let color: UIColor
             switch pin.tint {
-            case .creative: color = UIColor(red: 0.20, green: 1.0, blue: 0.55, alpha: 1)    // neon green
-            case .client:   color = UIColor(red: 1.0,  green: 0.25, blue: 0.35, alpha: 1)   // neon red
-            case .infinite: color = UIColor(red: 0.73, green: 0.38, blue: 1.0,  alpha: 1)   // neon purple
+            case .creative: color = UIColor(red: 0.0,  green: 1.0, blue: 0.32, alpha: 1)   // matrix green (#00FF52)
+            case .client:   color = UIColor(red: 1.0,  green: 0.08, blue: 0.56, alpha: 1)  // neon hot pink (#FF148F)
+            case .infinite: color = UIColor(red: 0.85, green: 0.0,  blue: 1.0,  alpha: 1)  // electric magenta (#D900FF)
             }
 
-            // Core dot
+            // Tiny solid core — just a bright pinprick so the star sprite has a
+            // hot center to anchor the glow.
             let core = SCNSphere(radius: pinRadius)
-            core.segmentCount = 14
-            let mat = SCNMaterial()
-            mat.diffuse.contents = color
-            mat.emission.contents = color
-            mat.lightingModel = .constant
-            core.materials = [mat]
+            core.segmentCount = 10
+            let coreMat = SCNMaterial()
+            coreMat.diffuse.contents = UIColor.white
+            coreMat.emission.contents = UIColor.white
+            coreMat.lightingModel = .constant
+            coreMat.writesToDepthBuffer = false
+            core.materials = [coreMat]
             let coreNode = SCNNode(geometry: core)
             wrapper.addChildNode(coreNode)
 
-            // Halo — larger translucent sphere that pulses
-            let halo = SCNSphere(radius: pinRadius * 2.2)
-            halo.segmentCount = 14
-            let haloMat = SCNMaterial()
-            haloMat.diffuse.contents = color.withAlphaComponent(0.0)
-            haloMat.emission.contents = color.withAlphaComponent(0.55)
-            haloMat.lightingModel = .constant
-            haloMat.writesToDepthBuffer = false
-            haloMat.blendMode = .add
-            halo.materials = [haloMat]
-            let haloNode = SCNNode(geometry: halo)
-            haloNode.opacity = 0.5
-            wrapper.addChildNode(haloNode)
+            // Billboard star sprite — 4-point diffraction-spike plane that
+            // always faces the camera. Tinted by the pin color via diffuse/
+            // emission; the texture is white so the material tint is true.
+            let plane = SCNPlane(width: starSize, height: starSize)
+            let starMat = SCNMaterial()
+            starMat.diffuse.contents = starSprite
+            starMat.emission.contents = starSprite
+            starMat.diffuse.intensity = 1.0
+            starMat.multiply.contents = color
+            starMat.lightingModel = .constant
+            starMat.writesToDepthBuffer = false
+            starMat.blendMode = .add
+            starMat.isDoubleSided = true
+            plane.materials = [starMat]
+            let starNode = SCNNode(geometry: plane)
+            let billboard = SCNBillboardConstraint()
+            billboard.freeAxes = .all
+            starNode.constraints = [billboard]
+            wrapper.addChildNode(starNode)
 
-            // Pulse: stagger start per-pin via userId hash so they don't all blink in sync
+            // Twinkle: stagger start per-pin via userId hash so they don't all
+            // blink in sync. Scale + opacity together for a breathing star.
             let phase = Double(abs(pin.userId.hashValue % 1000)) / 1000.0
-            let pulseOut = SCNAction.group([
-                SCNAction.scale(to: 1.8, duration: 1.2),
-                SCNAction.fadeOpacity(to: 0.0, duration: 1.2),
-            ])
-            pulseOut.timingMode = .easeOut
-            let reset = SCNAction.group([
-                SCNAction.scale(to: 1.0, duration: 0.0),
-                SCNAction.fadeOpacity(to: 0.55, duration: 0.0),
-            ])
-            let sequence = SCNAction.sequence([
+            let twinkle = SCNAction.repeatForever(SCNAction.sequence([
+                SCNAction.group([
+                    SCNAction.scale(to: 1.35, duration: 1.1),
+                    SCNAction.fadeOpacity(to: 1.0, duration: 1.1),
+                ]),
+                SCNAction.group([
+                    SCNAction.scale(to: 0.85, duration: 1.1),
+                    SCNAction.fadeOpacity(to: 0.55, duration: 1.1),
+                ]),
+            ]))
+            starNode.runAction(SCNAction.sequence([
                 SCNAction.wait(duration: phase * 1.5),
-                SCNAction.repeatForever(SCNAction.sequence([pulseOut, reset, SCNAction.wait(duration: 0.3)])),
-            ])
-            haloNode.runAction(sequence)
+                twinkle,
+            ]))
 
-            // Core breathing pulse (subtler)
+            // Core breathes too, but more subtly — just intensity, no scale.
             let breathe = SCNAction.repeatForever(SCNAction.sequence([
-                SCNAction.scale(to: 1.25, duration: 0.9),
-                SCNAction.scale(to: 1.0,  duration: 0.9),
+                SCNAction.fadeOpacity(to: 1.0, duration: 0.9),
+                SCNAction.fadeOpacity(to: 0.7, duration: 0.9),
             ]))
             coreNode.runAction(breathe)
 
             return wrapper
         }
+
+        /// Reuses the shared star sprite so globe pins and the purchase
+        /// celebration speak the same visual vocabulary.
+        static let starSprite: UIImage = EKKOStarSprite.image(size: 128, variant: .detailed)
     }
 }
 

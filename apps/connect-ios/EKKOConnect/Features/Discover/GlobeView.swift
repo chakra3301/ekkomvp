@@ -124,7 +124,7 @@ struct GlobeView: View {
                         if pin.isInfinite {
                             Text("∞")
                                 .font(.system(size: 14, weight: .bold))
-                                .foregroundStyle(Color(red: 0.73, green: 0.38, blue: 1.0))
+                                .foregroundStyle(Color(red: 0.85, green: 0.0, blue: 1.0))
                         }
                     }
                     Text(pin.city ?? "Somewhere on Earth")
@@ -158,9 +158,9 @@ struct GlobeView: View {
 
     private func accentColor(for pin: GlobePin) -> Color {
         switch pin.tint {
-        case .creative: return Color(red: 0.20, green: 1.0, blue: 0.55)
-        case .client:   return Color(red: 1.0, green: 0.25, blue: 0.35)
-        case .infinite: return Color(red: 0.73, green: 0.38, blue: 1.0)
+        case .creative: return Color(red: 0.0,  green: 1.0,  blue: 0.32)  // matrix green
+        case .client:   return Color(red: 1.0,  green: 0.08, blue: 0.56)  // neon hot pink
+        case .infinite: return Color(red: 0.85, green: 0.0,  blue: 1.0)   // electric magenta
         }
     }
 
@@ -171,9 +171,80 @@ struct GlobeView: View {
         defer { isLoading = false }
         do {
             let result: GlobePinsResponse = try await appState.trpc.query("connectDiscover.getGlobalPins")
-            pins = result.pins
+            #if DEBUG
+            print("[Globe] server returned \(result.pins.count) pins")
+            #endif
+            if result.pins.isEmpty {
+                // Dev fallback: an empty DB shouldn't mean an empty globe — seed
+                // demo pins so the rendering path is verifiable without seeding
+                // real ConnectProfiles with lat/lon. Stripped from release builds.
+                #if DEBUG
+                pins = Self.demoPins
+                print("[Globe] using \(pins.count) demo pins (DEBUG fallback)")
+                #else
+                pins = []
+                #endif
+            } else {
+                pins = result.pins
+            }
         } catch {
             appState.showError("Couldn't load the globe — \(error.localizedDescription)")
         }
     }
+
+    #if DEBUG
+    /// Spread across major creative hubs — enough to validate the render path
+    /// (tint variety, overlapping pulses, tap → preview card) without needing
+    /// real data in the DB.
+    private static let demoPins: [GlobePin] = [
+        .demo("nyc",       40.7128,  -74.0060, "New York",      .CREATIVE, infinite: true),
+        .demo("la",        34.0522, -118.2437, "Los Angeles",   .CREATIVE, infinite: false),
+        .demo("london",    51.5074,   -0.1278, "London",        .CREATIVE, infinite: false),
+        .demo("paris",     48.8566,    2.3522, "Paris",         .CLIENT,   infinite: false),
+        .demo("berlin",    52.5200,   13.4050, "Berlin",        .CREATIVE, infinite: false),
+        .demo("tokyo",     35.6762,  139.6503, "Tokyo",         .CREATIVE, infinite: true),
+        .demo("seoul",     37.5665,  126.9780, "Seoul",         .CREATIVE, infinite: false),
+        .demo("shanghai",  31.2304,  121.4737, "Shanghai",      .CLIENT,   infinite: false),
+        .demo("mumbai",    19.0760,   72.8777, "Mumbai",        .CREATIVE, infinite: false),
+        .demo("dubai",     25.2048,   55.2708, "Dubai",         .CLIENT,   infinite: true),
+        .demo("sf",        37.7749, -122.4194, "San Francisco", .CLIENT,   infinite: false),
+        .demo("chicago",   41.8781,  -87.6298, "Chicago",       .CREATIVE, infinite: false),
+        .demo("toronto",   43.6532,  -79.3832, "Toronto",       .CREATIVE, infinite: false),
+        .demo("mexico",    19.4326,  -99.1332, "Mexico City",   .CREATIVE, infinite: false),
+        .demo("sao",      -23.5505,  -46.6333, "São Paulo",     .CREATIVE, infinite: true),
+        .demo("ba",       -34.6037,  -58.3816, "Buenos Aires",  .CREATIVE, infinite: false),
+        .demo("lagos",      6.5244,    3.3792, "Lagos",         .CREATIVE, infinite: false),
+        .demo("cairo",     30.0444,   31.2357, "Cairo",         .CREATIVE, infinite: false),
+        .demo("nairobi",   -1.2921,   36.8219, "Nairobi",       .CREATIVE, infinite: false),
+        .demo("joburg",   -26.2041,   28.0473, "Johannesburg",  .CLIENT,   infinite: false),
+        .demo("sydney",   -33.8688,  151.2093, "Sydney",        .CREATIVE, infinite: true),
+        .demo("melbourne",-37.8136,  144.9631, "Melbourne",     .CREATIVE, infinite: false),
+        .demo("singapore",  1.3521,  103.8198, "Singapore",     .CLIENT,   infinite: false),
+        .demo("bangkok",   13.7563,  100.5018, "Bangkok",       .CREATIVE, infinite: false),
+        .demo("istanbul",  41.0082,   28.9784, "Istanbul",      .CREATIVE, infinite: false),
+        .demo("madrid",    40.4168,   -3.7038, "Madrid",        .CREATIVE, infinite: false),
+        .demo("amsterdam", 52.3676,    4.9041, "Amsterdam",     .CREATIVE, infinite: true),
+        .demo("stockholm", 59.3293,   18.0686, "Stockholm",     .CREATIVE, infinite: false),
+        .demo("moscow",    55.7558,   37.6173, "Moscow",        .CLIENT,   infinite: false),
+        .demo("hk",        22.3193,  114.1694, "Hong Kong",     .CLIENT,   infinite: true),
+    ]
+    #endif
 }
+
+#if DEBUG
+private extension GlobePin {
+    static func demo(_ id: String, _ lat: Double, _ lon: Double, _ city: String, _ role: UserRole, infinite: Bool) -> GlobePin {
+        GlobePin(
+            userId: "demo-\(id)",
+            lat: lat,
+            lon: lon,
+            city: city,
+            role: role,
+            isInfinite: infinite,
+            displayName: city,
+            avatarUrl: nil,
+            username: id
+        )
+    }
+}
+#endif
