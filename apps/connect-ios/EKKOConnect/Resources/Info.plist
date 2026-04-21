@@ -77,5 +77,7 @@
 	<string>EKKO Connect needs microphone access to record voice messages</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>EKKO Connect uses your location to discover nearby creatives</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 </dict>
 </plist>

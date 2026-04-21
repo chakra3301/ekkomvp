@@ -50,6 +50,20 @@ struct EKKOConnectApp: App {
                             route: info.route,
                             initials: initials
                         ))
+                        // If this push is for a match thread, push the latest
+                        // preview into the lock-screen Live Activity so the
+                        // pill updates alongside the in-app banner.
+                        if let route = info.route,
+                           route.hasPrefix("/matches/") {
+                            let matchId = String(route.dropFirst("/matches/".count))
+                            if !matchId.isEmpty {
+                                MatchLiveActivityManager.pushMessage(
+                                    matchId: matchId,
+                                    preview: info.body,
+                                    unread: 1
+                                )
+                            }
+                        }
                         return true
                     }
 

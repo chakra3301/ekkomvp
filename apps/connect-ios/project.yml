@@ -43,3 +43,27 @@ targets:
       - package: Kingfisher
       - package: RevenueCat
         product: RevenueCat
+      - target: EKKOConnectWidgets
+        embed: true
+        codeSign: true
+
+  # WidgetKit extension that owns the "New match" Live Activity. Shares
+  # MatchActivityAttributes with the app target via an explicit source entry
+  # so both processes decode the same schema.
+  EKKOConnectWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: EKKOConnectWidgets
+      - path: EKKOConnect/Core/LiveActivity/MatchActivityAttributes.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.ekkoconnect.connect.widgets
+        MARKETING_VERSION: "2.0.0"
+        CURRENT_PROJECT_VERSION: "14"
+        INFOPLIST_FILE: EKKOConnectWidgets/Info.plist
+        SWIFT_VERSION: "5.9"
+        TARGETED_DEVICE_FAMILY: "1"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        SKIP_INSTALL: YES
+        GENERATE_INFOPLIST_FILE: false

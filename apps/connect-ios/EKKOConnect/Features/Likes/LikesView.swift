@@ -395,6 +395,11 @@ struct LikesView: View {
                     avatarUrl: avatar,
                     featuredImage: avatar
                 )
+                MatchLiveActivityManager.startOrUpdate(
+                    matchId: matchId,
+                    otherDisplayName: name,
+                    otherAvatarUrl: avatar
+                )
             }
         } catch {
             // Surface the real error so we can tell a daily-limit cap apart

@@ -207,12 +207,21 @@ final class DiscoverViewModel {
             // Check for match
             if result.matched, let matchId = result.matchId {
                 let firstPhoto = profile.mediaSlots.first { $0.mediaType == "PHOTO" }
+                let name = profile.user?.profile?.displayName ?? "Your Match"
+                let avatar = profile.user?.profile?.avatarUrl
                 matchData = MatchData(
                     id: matchId,
-                    displayName: profile.user?.profile?.displayName ?? "Your Match",
-                    avatarUrl: profile.user?.profile?.avatarUrl,
+                    displayName: name,
+                    avatarUrl: avatar,
                     featuredImage: firstPhoto?.url
                 )
+                await MainActor.run {
+                    MatchLiveActivityManager.startOrUpdate(
+                        matchId: matchId,
+                        otherDisplayName: name,
+                        otherAvatarUrl: avatar
+                    )
+                }
             }
         } catch {
             let msg = error.localizedDescription.lowercased()

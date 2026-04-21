@@ -220,6 +220,7 @@ final class AppState {
         currentUser = nil
         currentProfile = nil
         trpc.setAccessToken(nil)
+        await MainActor.run { MatchLiveActivityManager.endAll() }
     }
 
     func fetchCurrentUser() async {

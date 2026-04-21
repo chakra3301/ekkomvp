@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		01D7EE7762A72ADB273C3B93 /* ConnectProfileStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76548A4B2DC105D6ABA1639 /* ConnectProfileStackView.swift */; };
 		042C8F5257012667CCA0605E /* Date+Relative.swift in Sources */ = {isa = PBXBuildFile; fileRef = C308161AFFEF25202B6ECF1F /* Date+Relative.swift */; };
+		058A20F1E669117B3AB702E0 /* ShareCard_Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B34DA2F72B900D97B54A0F4 /* ShareCard_Signal.swift */; };
 		059B52868D1C468D5B2DC47E /* SwipeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */; };
 		0BC9FED059C44D8E0F03BCED /* ArchesRegularItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7556E0055DF8FFC25312217 /* ArchesRegularItalic.ttf */; };
 		10669041C45250A6A607B0CA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A698D4ADD418F1A28B37E /* LoginView.swift */; };
@@ -16,10 +17,12 @@
 		182D176CDAFE74938414D202 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE831145F32102D043E1C487 /* Enums.swift */; };
 		1A6B2D464148B12F7EAD77DA /* ConnectInquiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91312ED78CC0C3EE9D4FF445 /* ConnectInquiry.swift */; };
 		1A8EF3890E4F06100109896F /* ReportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95847590D257E624076B08A2 /* ReportSheet.swift */; };
+		1B8A3BFC86D29D9332E9A849 /* ProfileShareCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1484B6D762AD28C0CEC41F10 /* ProfileShareCard.swift */; };
 		1B95F39D1C91D3BE049ED190 /* GlobeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E9E97572DF4DE816EE020F /* GlobeView.swift */; };
 		1C1620057F65E56C56B1332E /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E8DACECBC06504D944E9928 /* Profile.swift */; };
 		1E321C35DAED39CAEF425D81 /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = D08B3118FD262A697877D048 /* Products.storekit */; };
 		1E75599884921A90DCF588E0 /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CA70C2381F53D3DEEA3BE99 /* DiscoverView.swift */; };
+		1F7BC4BB81ABE50F2E5B2D53 /* ShareCard_Receipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = C733FE1EBD6CB9146F61E10C /* ShareCard_Receipt.swift */; };
 		203E2A600502DA6B8CB73B4D /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB9478C8C0DE104FC8483C57 /* ToastView.swift */; };
 		207CB98D4A3CFD1058F23976 /* TwitterPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8785EFD367E67672B664E3B3 /* TwitterPreview.swift */; };
 		243A65A41A8F2792DEE02E61 /* ConnectProfileClientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898A246D2F31E797DEED158 /* ConnectProfileClientView.swift */; };
@@ -27,9 +30,11 @@
 		2CC5783C311CC1E98831B183 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5878DD8F54AB84ECFA38FE67 /* PurchaseManager.swift */; };
 		3110F7976710874B222F2D1C /* RealtimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A1EB3F55C190724AF3370B /* RealtimeService.swift */; };
 		34B0FD178FAED2EB05CB4FBE /* GlobeSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA357290B949894640624B9 /* GlobeSceneView.swift */; };
+		34BB851FC7CCAEB08DFEFD31 /* EKKOConnectWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C67C7C1606AEFC752EA3E0 /* EKKOConnectWidgets.swift */; };
 		42F7C87B23E2204320184E8A /* coastlines.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */; };
 		46670C24E1C16DB9AA265E6A /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF82251403BC9D6473DE86 /* RegisterView.swift */; };
 		484DEB42319F17DC8DA7A8E0 /* EKKOTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E35A587910461E3D00A183 /* EKKOTheme.swift */; };
+		4A16417D3CD1A2E2FB2F2F60 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98EC1B128A5D776A19153B24 /* MatchLiveActivity.swift */; };
 		4BCC6930BB82281351B4B312 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2F19CF4CF4990526EF8D8357 /* Kingfisher */; };
 		4D4E8AB5F3404AF8016DB657 /* WelcomeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE72F841BC20E473494CA695 /* WelcomeSheet.swift */; };
 		4EB2BB63162F364769BC7150 /* RequestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB8721ED6014A56558D82AD /* RequestsView.swift */; };
@@ -38,6 +43,7 @@
 		578A9AD7845C249D6C59D746 /* ConnectProfileTerminalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D5729266ADD7D748C1D8DC0 /* ConnectProfileTerminalView.swift */; };
 		587A36F34BB9F6D10F7F8C46 /* SkeletonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D2D8890B2231560DA21604 /* SkeletonView.swift */; };
 		59B4404A9D99ECE7E4C31F1B /* InstagramPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94763DBB8AE7EE82754BBDB6 /* InstagramPreview.swift */; };
+		5A695D2174D5074A577A41AE /* ShareCard_TradingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 624FE9BD88FC17FA530D71EE /* ShareCard_TradingCard.swift */; };
 		5E53B57FFEEEC253793D4653 /* EKKOFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B5099770EB5143E66F61661 /* EKKOFont.swift */; };
 		605F4ECB06AD20EA925DB57D /* JapaneseLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228D601B5509AA4D2A790714 /* JapaneseLabel.swift */; };
 		623C6D7EE80E2767294520C6 /* MediaSlotGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6293A856B21826507BDAAD /* MediaSlotGrid.swift */; };
@@ -47,6 +53,7 @@
 		65D17522620447E44AC5C650 /* DiscoverViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AD79D17365D6EF42685880E /* DiscoverViewModel.swift */; };
 		6A30492134840F22DBE715CC /* UpgradeModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45AFA2F36F18688B5B69096 /* UpgradeModal.swift */; };
 		6B081664C65AAABF8A41DFDC /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9B2983FEC60425BB2002CBB /* AudioRecorder.swift */; };
+		6BFE4FF527904DD76BD69C33 /* ShareCardShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C524F663CEC490424290CCB /* ShareCardShared.swift */; };
 		6CDDEB78D7EA9919D6BD7DAA /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C54C28665D5A22F8D330557C /* AppRouter.swift */; };
 		6E90CDDD7C12D88CE6C5FDCD /* ConnectSwipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FA796FEFEEF21ACBD9272F1 /* ConnectSwipe.swift */; };
 		70D94246EAC5419EBE6803C4 /* ConnectProfileThreeDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE378B9F79F7C8EE4D3CC0E8 /* ConnectProfileThreeDView.swift */; };
@@ -60,6 +67,7 @@
 		88B70FED49166AF787F7C30A /* ConnectProfileCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FE6C07E51E526F3BC4299A /* ConnectProfileCard.swift */; };
 		8D25123188F47A760ADBBDCD /* View+Glass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D4E206CAAC1783C689691E /* View+Glass.swift */; };
 		919981201C4334EC74C4DF19 /* AccentPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C1B4D550D46924A5208AAE /* AccentPalette.swift */; };
+		97776725B1F40DD729575127 /* ShareCard_Manga.swift in Sources */ = {isa = PBXBuildFile; fileRef = 978F789379297ABB9B2CE5A4 /* ShareCard_Manga.swift */; };
 		98998BBAD67DDF7881C4D8C0 /* ConnectProfileMusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2954B95D97E4A99FE6ADD395 /* ConnectProfileMusicView.swift */; };
 		99F0D9CB3DF848E1E918D2C4 /* ConnectProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A8D108E3C1483EEB5F3C7D /* ConnectProfile.swift */; };
 		9F1625EB8D4E717444764FA1 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2EA2BD53985DE45F5B5447 /* User.swift */; };
@@ -67,42 +75,40 @@
 		9FCE93AEAE76CDE0FFE69487 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = E811961274D9DDBD658D7458 /* RevenueCat */; };
 		A2588AD1E12B317E65FA3535 /* MeshBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBF50F556894B6B7A2200E4 /* MeshBackground.swift */; };
 		A38ED939CC9229398C5B4FFF /* ProfileSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111182E0860949B7CD2A97E7 /* ProfileSetupView.swift */; };
+		ABA4BC8ADA9FC8D513243026 /* ShareCard_ChromeFoil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1F4697D27F646053CFB506 /* ShareCard_ChromeFoil.swift */; };
 		AF3AFA01D642EAB8610B2760 /* PromptEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EE2C17CD4D7F311478E2D1 /* PromptEditor.swift */; };
 		B3324319A2A650E6B33BA338 /* LegalLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E3FA89419F1E6D935732C /* LegalLinks.swift */; };
 		B45A9EEDACEFD70001D310F2 /* ConnectMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4477E6AA1C95510FD0FE5B75 /* ConnectMessage.swift */; };
 		B5D6F7AEACEF329BE2579BC4 /* ConnectProfileEditorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */; };
 		B877B1FD1ED5042EA93BA030 /* LikesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D29F132143689C326F8305 /* LikesView.swift */; };
+		BAA5C73BEEA65D9A41202FF1 /* MatchActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14989D4493A6262B49063368 /* MatchActivityAttributes.swift */; };
 		BB5B1E9CBB5228CC6DF7016B /* SocialLogos.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA892215FACB6BF82AA3E680 /* SocialLogos.swift */; };
-		24EBDBFCCE7B47AC82874DCF /* StarSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F2D69533504F679E64D20B /* StarSprite.swift */; };
-		A789BF451300487A992AA33C /* ProfileShareCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D112106DD0614A2FB6484A0B /* ProfileShareCard.swift */; };
-		BB0010005CA000000000000A /* ShareCardShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000A /* ShareCardShared.swift */; };
-		BB0010005CA000000000000B /* ShareCard_ChromeFoil.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000B /* ShareCard_ChromeFoil.swift */; };
-		BB0010005CA000000000000C /* ShareCard_Receipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000C /* ShareCard_Receipt.swift */; };
-		BB0010005CA000000000000D /* ShareCard_Manga.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000D /* ShareCard_Manga.swift */; };
-		BB0010005CA000000000000E /* ShareCard_TradingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000E /* ShareCard_TradingCard.swift */; };
-		BB0010005CA000000000000F /* ShareCard_Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000F /* ShareCard_Signal.swift */; };
-		BB0010005CA0000000000010 /* ShareCard_Vhs.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA0000000000010 /* ShareCard_Vhs.swift */; };
-		BB0010005CA0000000000011 /* ShareCard_Poster.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA0000000000011 /* ShareCard_Poster.swift */; };
-		BB0010005CA0000000000012 /* ShareCard_Terminal.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA0000000000012 /* ShareCard_Terminal.swift */; };
-		BB0010005CA0000000000013 /* ShareCardRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA0000000000013 /* ShareCardRegistry.swift */; };
 		BC11AAEA41E7C375E284986E /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112188F5EBEFDFFE01282BB2 /* AppState.swift */; };
 		BC674D1C73571AEF3A8592A8 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881FD345C1D2CAF3424ED9A9 /* LocationManager.swift */; };
 		BDED37DE83D9138595F56205 /* CompleteProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37599C761D0200DAE7F3FD8C /* CompleteProfileView.swift */; };
 		C0F197E04602B03E5B2E98B9 /* PushManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9F5F79C21AB212732A7643 /* PushManager.swift */; };
 		C2398567163841428B28F77A /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 871BC70E098C57BEE2436D76 /* StorageService.swift */; };
 		C438D5D8876115BB576FF8FE /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 462F15F81C0442317081C5EB /* Constants.swift */; };
+		C539749CD6C97F4366C42BF7 /* EKKOConnectWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D28D728C2BBE0AE70774584E /* EKKOConnectWidgets.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C61666E3C2DAD3E467C97B61 /* JPLabels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 723A91A9A7864B5532F7A751 /* JPLabels.swift */; };
 		C6BCC3BAA324CDD44B9C7DBF /* ConnectProfileViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A195E3AEED24203034B6E8 /* ConnectProfileViewer.swift */; };
+		C761EDC2BBBEDDFF4CF86212 /* StarSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = A68E0B6DCF49E20F3E372327 /* StarSprite.swift */; };
+		CA7A31DD792A0EF4A07AC6F7 /* ShareCardRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0E6B911CF6EF81120FE2D8 /* ShareCardRegistry.swift */; };
 		CB435209EB40203CA7B0F8DE /* ConnectProfileVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0D70B1A8956D3C537DF6621 /* ConnectProfileVideoView.swift */; };
 		CC0E8BF108397E0D0B28FE67 /* ConnectProfileHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */; };
 		CEE35E6D319FC5335AAD0D74 /* MatchesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2976395A3932307E2D2B960 /* MatchesView.swift */; };
 		D47C740DBB3650B711C976C8 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E9279051290A85527FE8F6A /* CustomTabBar.swift */; };
 		D5F751147C89C4445EC2752A /* DeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25464A7A6B8484A571408E6D /* DeepLinkHandler.swift */; };
 		DA0A56E24129ECE272A2D5AE /* ProfileSectionEditors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 937D6CD74F7827950B16C1F7 /* ProfileSectionEditors.swift */; };
+		DA6F05207ECDDEEF461DE355 /* MatchLiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E69496886CD786FF8E6846BF /* MatchLiveActivityManager.swift */; };
 		DF6EF3259CC99F54FC6952EF /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E6159F8DBC428A2811B432 /* NetworkError.swift */; };
 		DF95D032139577F9E1616D0A /* MediaFullScreenViewer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C38CF3D54B542DE50F33D2E /* MediaFullScreenViewer.swift */; };
+		E385713D089518D261167946 /* ShareCard_Vhs.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDEDB01C2A3C4A41223F89D4 /* ShareCard_Vhs.swift */; };
 		E5F844B00857726110D04AE1 /* TRPCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB934980B1C0330A1FD48FA0 /* TRPCClient.swift */; };
 		E78566061BF105349FD37E2A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2B61B9994A7B2E2DFB0D5A3 /* Assets.xcassets */; };
+		EC9B5DEB1AE79996EB5CC07C /* MatchActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14989D4493A6262B49063368 /* MatchActivityAttributes.swift */; };
+		EF09DF6289C2DF420CDD05C8 /* ShareCard_Poster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00F6777A5E20F2C3FC18CC41 /* ShareCard_Poster.swift */; };
+		F2EC4C249DD06A05D6A9246B /* ShareCard_Terminal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB5D6B525BDAB7193BC4073 /* ShareCard_Terminal.swift */; };
 		F40646830061AA9AE034651C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7457FFE66BC891D4429F592 /* AppDelegate.swift */; };
 		F6482D50668EF6BBD5551A3B /* ConnectMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CC0A84AB371130E6BC4B3B /* ConnectMatch.swift */; };
 		F6812A414C7CAB9026E367FC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F751F506688A2D55E2B49DD6 /* SettingsView.swift */; };
@@ -111,34 +117,68 @@
 		FA79A68C6AF53C1C85AC0877 /* EmojiPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C87F8CB757DBBC151809C62 /* EmojiPickerSheet.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		D26B208D73A3892EC38C1971 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BCC2F829731E6B5D043AFC84 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4A7C1ADE1BD61FD5930C1D42;
+			remoteInfo = EKKOConnectWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2DD989D5537BEEBFA35C2D9D /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C539749CD6C97F4366C42BF7 /* EKKOConnectWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		00F6777A5E20F2C3FC18CC41 /* ShareCard_Poster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Poster.swift; sourceTree = "<group>"; };
 		015ABB13D19287E17C80378A /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		03CC0A84AB371130E6BC4B3B /* ConnectMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectMatch.swift; sourceTree = "<group>"; };
 		06E6159F8DBC428A2811B432 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		0C38CF3D54B542DE50F33D2E /* MediaFullScreenViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFullScreenViewer.swift; sourceTree = "<group>"; };
+		0C524F663CEC490424290CCB /* ShareCardShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardShared.swift; sourceTree = "<group>"; };
 		111182E0860949B7CD2A97E7 /* ProfileSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetupView.swift; sourceTree = "<group>"; };
 		112188F5EBEFDFFE01282BB2 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileHeroView.swift; sourceTree = "<group>"; };
+		1484B6D762AD28C0CEC41F10 /* ProfileShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileShareCard.swift; sourceTree = "<group>"; };
+		14989D4493A6262B49063368 /* MatchActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchActivityAttributes.swift; sourceTree = "<group>"; };
 		1898A246D2F31E797DEED158 /* ConnectProfileClientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileClientView.swift; sourceTree = "<group>"; };
 		1B5099770EB5143E66F61661 /* EKKOFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOFont.swift; sourceTree = "<group>"; };
 		228D601B5509AA4D2A790714 /* JapaneseLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JapaneseLabel.swift; sourceTree = "<group>"; };
-		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		23C67C7C1606AEFC752EA3E0 /* EKKOConnectWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOConnectWidgets.swift; sourceTree = "<group>"; };
 		25464A7A6B8484A571408E6D /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
 		27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchCelebrationOverlay.swift; sourceTree = "<group>"; };
 		2954B95D97E4A99FE6ADD395 /* ConnectProfileMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileMusicView.swift; sourceTree = "<group>"; };
-		2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = coastlines.geojson; sourceTree = "<group>"; };
+		2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */ = {isa = PBXFileReference; path = coastlines.geojson; sourceTree = "<group>"; };
 		37599C761D0200DAE7F3FD8C /* CompleteProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteProfileView.swift; sourceTree = "<group>"; };
 		377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileEditorialView.swift; sourceTree = "<group>"; };
 		3C2A698D4ADD418F1A28B37E /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		3E8DACECBC06504D944E9928 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		3FB5D6B525BDAB7193BC4073 /* ShareCard_Terminal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Terminal.swift; sourceTree = "<group>"; };
 		4477E6AA1C95510FD0FE5B75 /* ConnectMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectMessage.swift; sourceTree = "<group>"; };
 		462F15F81C0442317081C5EB /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		468EB78A56238C685062ED15 /* ConnectProfileHireView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileHireView.swift; sourceTree = "<group>"; };
 		48BD9923DAEDAA8B026A45DF /* ConnectProfileSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileSplitView.swift; sourceTree = "<group>"; };
+		4B34DA2F72B900D97B54A0F4 /* ShareCard_Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Signal.swift; sourceTree = "<group>"; };
 		51A8D108E3C1483EEB5F3C7D /* ConnectProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfile.swift; sourceTree = "<group>"; };
 		5878DD8F54AB84ECFA38FE67 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
 		61EE2C17CD4D7F311478E2D1 /* PromptEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptEditor.swift; sourceTree = "<group>"; };
+		624FE9BD88FC17FA530D71EE /* ShareCard_TradingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_TradingCard.swift; sourceTree = "<group>"; };
 		6AD79D17365D6EF42685880E /* DiscoverViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverViewModel.swift; sourceTree = "<group>"; };
+		6C1F4697D27F646053CFB506 /* ShareCard_ChromeFoil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_ChromeFoil.swift; sourceTree = "<group>"; };
+		7081EC23F989E403237DC88F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		70FF82251403BC9D6473DE86 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
 		723A91A9A7864B5532F7A751 /* JPLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPLabels.swift; sourceTree = "<group>"; };
 		7AB84A402676772345B26BDE /* EditableAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableAvatarView.swift; sourceTree = "<group>"; };
@@ -146,7 +186,7 @@
 		7D5729266ADD7D748C1D8DC0 /* ConnectProfileTerminalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileTerminalView.swift; sourceTree = "<group>"; };
 		7F196972C0FE82EA4A7B9468 /* EKKOConnect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EKKOConnect.entitlements; sourceTree = "<group>"; };
 		7FA796FEFEEF21ACBD9272F1 /* ConnectSwipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSwipe.swift; sourceTree = "<group>"; };
-		811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		85FE6C07E51E526F3BC4299A /* ConnectProfileCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileCard.swift; sourceTree = "<group>"; };
 		871BC70E098C57BEE2436D76 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
 		8785EFD367E67672B664E3B3 /* TwitterPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPreview.swift; sourceTree = "<group>"; };
@@ -160,9 +200,12 @@
 		93A1EB3F55C190724AF3370B /* RealtimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeService.swift; sourceTree = "<group>"; };
 		94763DBB8AE7EE82754BBDB6 /* InstagramPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstagramPreview.swift; sourceTree = "<group>"; };
 		95847590D257E624076B08A2 /* ReportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportSheet.swift; sourceTree = "<group>"; };
+		978F789379297ABB9B2CE5A4 /* ShareCard_Manga.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Manga.swift; sourceTree = "<group>"; };
+		98EC1B128A5D776A19153B24 /* MatchLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchLiveActivity.swift; sourceTree = "<group>"; };
 		99D29F132143689C326F8305 /* LikesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikesView.swift; sourceTree = "<group>"; };
 		9EB8721ED6014A56558D82AD /* RequestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestsView.swift; sourceTree = "<group>"; };
 		A043BF395AB7DECF8934F57D /* GlobePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobePin.swift; sourceTree = "<group>"; };
+		A68E0B6DCF49E20F3E372327 /* StarSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarSprite.swift; sourceTree = "<group>"; };
 		A6A195E3AEED24203034B6E8 /* ConnectProfileViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileViewer.swift; sourceTree = "<group>"; };
 		A8430AAE30284282903E9D26 /* ConnectProfilePhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfilePhotoView.swift; sourceTree = "<group>"; };
 		A97F39A0969A218CC4306BB7 /* InquiryForms.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InquiryForms.swift; sourceTree = "<group>"; };
@@ -174,23 +217,28 @@
 		BBBF50F556894B6B7A2200E4 /* MeshBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshBackground.swift; sourceTree = "<group>"; };
 		BDBF6E9D03EE9B1A1DE0E7B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		BE72F841BC20E473494CA695 /* WelcomeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSheet.swift; sourceTree = "<group>"; };
+		BF0E6B911CF6EF81120FE2D8 /* ShareCardRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardRegistry.swift; sourceTree = "<group>"; };
 		C308161AFFEF25202B6ECF1F /* Date+Relative.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Relative.swift"; sourceTree = "<group>"; };
 		C4C1B4D550D46924A5208AAE /* AccentPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentPalette.swift; sourceTree = "<group>"; };
 		C54C28665D5A22F8D330557C /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
+		C733FE1EBD6CB9146F61E10C /* ShareCard_Receipt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Receipt.swift; sourceTree = "<group>"; };
 		CBB35904B051E0219F70AB71 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		CD2EA2BD53985DE45F5B5447 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		CE5E3FA89419F1E6D935732C /* LegalLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalLinks.swift; sourceTree = "<group>"; };
 		CE6293A856B21826507BDAAD /* MediaSlotGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSlotGrid.swift; sourceTree = "<group>"; };
-		D08B3118FD262A697877D048 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
+		D08B3118FD262A697877D048 /* Products.storekit */ = {isa = PBXFileReference; path = Products.storekit; sourceTree = "<group>"; };
 		D0D70B1A8956D3C537DF6621 /* ConnectProfileVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileVideoView.swift; sourceTree = "<group>"; };
+		D28D728C2BBE0AE70774584E /* EKKOConnectWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = EKKOConnectWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2B61B9994A7B2E2DFB0D5A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D7556E0055DF8FFC25312217 /* ArchesRegularItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ArchesRegularItalic.ttf; sourceTree = "<group>"; };
 		DD9F5F79C21AB212732A7643 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
+		DDEDB01C2A3C4A41223F89D4 /* ShareCard_Vhs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Vhs.swift; sourceTree = "<group>"; };
 		DE378B9F79F7C8EE4D3CC0E8 /* ConnectProfileThreeDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileThreeDView.swift; sourceTree = "<group>"; };
 		DE831145F32102D043E1C487 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		E086B38FCEDB58ADC9A2C558 /* ArchesRegular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ArchesRegular.ttf; sourceTree = "<group>"; };
 		E2976395A3932307E2D2B960 /* MatchesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchesView.swift; sourceTree = "<group>"; };
 		E45AFA2F36F18688B5B69096 /* UpgradeModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpgradeModal.swift; sourceTree = "<group>"; };
+		E69496886CD786FF8E6846BF /* MatchLiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchLiveActivityManager.swift; sourceTree = "<group>"; };
 		E6C3DE4E19C55050385849AF /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		E7457FFE66BC891D4429F592 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E76548A4B2DC105D6ABA1639 /* ConnectProfileStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileStackView.swift; sourceTree = "<group>"; };
@@ -200,18 +248,6 @@
 		F5E35A587910461E3D00A183 /* EKKOTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOTheme.swift; sourceTree = "<group>"; };
 		F751F506688A2D55E2B49DD6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		FA892215FACB6BF82AA3E680 /* SocialLogos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLogos.swift; sourceTree = "<group>"; };
-		04F2D69533504F679E64D20B /* StarSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarSprite.swift; sourceTree = "<group>"; };
-		D112106DD0614A2FB6484A0B /* ProfileShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileShareCard.swift; sourceTree = "<group>"; };
-		FF0010005CA000000000000A /* ShareCardShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardShared.swift; sourceTree = "<group>"; };
-		FF0010005CA000000000000B /* ShareCard_ChromeFoil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_ChromeFoil.swift; sourceTree = "<group>"; };
-		FF0010005CA000000000000C /* ShareCard_Receipt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Receipt.swift; sourceTree = "<group>"; };
-		FF0010005CA000000000000D /* ShareCard_Manga.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Manga.swift; sourceTree = "<group>"; };
-		FF0010005CA000000000000E /* ShareCard_TradingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_TradingCard.swift; sourceTree = "<group>"; };
-		FF0010005CA000000000000F /* ShareCard_Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Signal.swift; sourceTree = "<group>"; };
-		FF0010005CA0000000000010 /* ShareCard_Vhs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Vhs.swift; sourceTree = "<group>"; };
-		FF0010005CA0000000000011 /* ShareCard_Poster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Poster.swift; sourceTree = "<group>"; };
-		FF0010005CA0000000000012 /* ShareCard_Terminal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Terminal.swift; sourceTree = "<group>"; };
-		FF0010005CA0000000000013 /* ShareCardRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardRegistry.swift; sourceTree = "<group>"; };
 		FB39030676E81329E1BC87B5 /* EKKOConnectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOConnectApp.swift; sourceTree = "<group>"; };
 		FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -344,6 +380,16 @@
 			path = Purchases;
 			sourceTree = "<group>";
 		};
+		3D32B29D3EED5D84ED62757C /* EKKOConnectWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				23C67C7C1606AEFC752EA3E0 /* EKKOConnectWidgets.swift */,
+				7081EC23F989E403237DC88F /* Info.plist */,
+				98EC1B128A5D776A19153B24 /* MatchLiveActivity.swift */,
+			);
+			path = EKKOConnectWidgets;
+			sourceTree = "<group>";
+		};
 		3D78883B8DBDD7D4685A306C /* Location */ = {
 			isa = PBXGroup;
 			children = (
@@ -365,22 +411,22 @@
 				CE5E3FA89419F1E6D935732C /* LegalLinks.swift */,
 				0C38CF3D54B542DE50F33D2E /* MediaFullScreenViewer.swift */,
 				CE6293A856B21826507BDAAD /* MediaSlotGrid.swift */,
+				1484B6D762AD28C0CEC41F10 /* ProfileShareCard.swift */,
 				61EE2C17CD4D7F311478E2D1 /* PromptEditor.swift */,
-				D112106DD0614A2FB6484A0B /* ProfileShareCard.swift */,
-				FF0010005CA000000000000A /* ShareCardShared.swift */,
-				FF0010005CA0000000000013 /* ShareCardRegistry.swift */,
-				FF0010005CA000000000000B /* ShareCard_ChromeFoil.swift */,
-				FF0010005CA000000000000C /* ShareCard_Receipt.swift */,
-				FF0010005CA000000000000D /* ShareCard_Manga.swift */,
-				FF0010005CA000000000000E /* ShareCard_TradingCard.swift */,
-				FF0010005CA000000000000F /* ShareCard_Signal.swift */,
-				FF0010005CA0000000000010 /* ShareCard_Vhs.swift */,
-				FF0010005CA0000000000011 /* ShareCard_Poster.swift */,
-				FF0010005CA0000000000012 /* ShareCard_Terminal.swift */,
 				95847590D257E624076B08A2 /* ReportSheet.swift */,
+				6C1F4697D27F646053CFB506 /* ShareCard_ChromeFoil.swift */,
+				978F789379297ABB9B2CE5A4 /* ShareCard_Manga.swift */,
+				00F6777A5E20F2C3FC18CC41 /* ShareCard_Poster.swift */,
+				C733FE1EBD6CB9146F61E10C /* ShareCard_Receipt.swift */,
+				4B34DA2F72B900D97B54A0F4 /* ShareCard_Signal.swift */,
+				3FB5D6B525BDAB7193BC4073 /* ShareCard_Terminal.swift */,
+				624FE9BD88FC17FA530D71EE /* ShareCard_TradingCard.swift */,
+				DDEDB01C2A3C4A41223F89D4 /* ShareCard_Vhs.swift */,
+				BF0E6B911CF6EF81120FE2D8 /* ShareCardRegistry.swift */,
+				0C524F663CEC490424290CCB /* ShareCardShared.swift */,
 				B0D2D8890B2231560DA21604 /* SkeletonView.swift */,
 				FA892215FACB6BF82AA3E680 /* SocialLogos.swift */,
-				04F2D69533504F679E64D20B /* StarSprite.swift */,
+				A68E0B6DCF49E20F3E372327 /* StarSprite.swift */,
 				EB9478C8C0DE104FC8483C57 /* ToastView.swift */,
 				8785EFD367E67672B664E3B3 /* TwitterPreview.swift */,
 				E45AFA2F36F18688B5B69096 /* UpgradeModal.swift */,
@@ -406,6 +452,7 @@
 			isa = PBXGroup;
 			children = (
 				57D1187DC98859C93E84B92B /* EKKOConnect */,
+				3D32B29D3EED5D84ED62757C /* EKKOConnectWidgets */,
 				BA4DC6DA936ED0FACB4A48E1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -432,6 +479,7 @@
 			children = (
 				336E06A7FB6EDD433567DB4A /* Audio */,
 				AC74C143733678EB29D334C4 /* i18n */,
+				D3D344AE96B5DC87740C03AB /* LiveActivity */,
 				3D78883B8DBDD7D4685A306C /* Location */,
 				A1188C60CDC3224231E2AD4B /* Networking */,
 				379DBE4CDC8FD276B1209874 /* Purchases */,
@@ -509,6 +557,7 @@
 			isa = PBXGroup;
 			children = (
 				23523C059159557C91BE6D1B /* EKKOConnect.app */,
+				D28D728C2BBE0AE70774584E /* EKKOConnectWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -522,6 +571,15 @@
 				BBBF50F556894B6B7A2200E4 /* MeshBackground.swift */,
 			);
 			path = Theme;
+			sourceTree = "<group>";
+		};
+		D3D344AE96B5DC87740C03AB /* LiveActivity */ = {
+			isa = PBXGroup;
+			children = (
+				14989D4493A6262B49063368 /* MatchActivityAttributes.swift */,
+				E69496886CD786FF8E6846BF /* MatchLiveActivityManager.swift */,
+			);
+			path = LiveActivity;
 			sourceTree = "<group>";
 		};
 		DAEAF280A38DB3A5006B22C2 /* ProfileSetup */ = {
@@ -565,6 +623,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		4A7C1ADE1BD61FD5930C1D42 /* EKKOConnectWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9E415011AF5B26F20ED73478 /* Build configuration list for PBXNativeTarget "EKKOConnectWidgets" */;
+			buildPhases = (
+				886045D5BAC4FA3829354E7C /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EKKOConnectWidgets;
+			packageProductDependencies = (
+			);
+			productName = EKKOConnectWidgets;
+			productReference = D28D728C2BBE0AE70774584E /* EKKOConnectWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		FD8336ECB0B238202B2AD9B0 /* EKKOConnect */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D6B04A64AE4E6C5224DCC5BA /* Build configuration list for PBXNativeTarget "EKKOConnect" */;
@@ -572,10 +647,12 @@
 				59EB82756AF8A0B385358FD9 /* Sources */,
 				BEB61412C0D868592AE63938 /* Resources */,
 				FDBC664C4BFFD5B1EAB26AA4 /* Frameworks */,
+				2DD989D5537BEEBFA35C2D9D /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				E8CD0A6729E0107BA8078AD8 /* PBXTargetDependency */,
 			);
 			name = EKKOConnect;
 			packageProductDependencies = (
@@ -595,6 +672,11 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					FD8336ECB0B238202B2AD9B0 = {
+						DevelopmentTeam = "";
+					};
+				};
 			};
 			buildConfigurationList = 5EE46B4119D061763E04ED6B /* Build configuration list for PBXProject "EKKOConnect" */;
 			developmentRegion = en;
@@ -616,6 +698,7 @@
 			projectRoot = "";
 			targets = (
 				FD8336ECB0B238202B2AD9B0 /* EKKOConnect */,
+				4A7C1ADE1BD61FD5930C1D42 /* EKKOConnectWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -693,7 +776,9 @@
 				B877B1FD1ED5042EA93BA030 /* LikesView.swift in Sources */,
 				BC674D1C73571AEF3A8592A8 /* LocationManager.swift in Sources */,
 				10669041C45250A6A607B0CA /* LoginView.swift in Sources */,
+				EC9B5DEB1AE79996EB5CC07C /* MatchActivityAttributes.swift in Sources */,
 				8728D8D6C2547F839203D335 /* MatchCelebrationOverlay.swift in Sources */,
+				DA6F05207ECDDEEF461DE355 /* MatchLiveActivityManager.swift in Sources */,
 				CEE35E6D319FC5335AAD0D74 /* MatchesView.swift in Sources */,
 				DF95D032139577F9E1616D0A /* MediaFullScreenViewer.swift in Sources */,
 				623C6D7EE80E2767294520C6 /* MediaSlotGrid.swift in Sources */,
@@ -702,19 +787,9 @@
 				1C1620057F65E56C56B1332E /* Profile.swift in Sources */,
 				DA0A56E24129ECE272A2D5AE /* ProfileSectionEditors.swift in Sources */,
 				A38ED939CC9229398C5B4FFF /* ProfileSetupView.swift in Sources */,
+				1B8A3BFC86D29D9332E9A849 /* ProfileShareCard.swift in Sources */,
 				563DB68F4C430E57C0DF582D /* ProfileView.swift in Sources */,
 				AF3AFA01D642EAB8610B2760 /* PromptEditor.swift in Sources */,
-				A789BF451300487A992AA33C /* ProfileShareCard.swift in Sources */,
-				BB0010005CA000000000000A /* ShareCardShared.swift in Sources */,
-				BB0010005CA0000000000013 /* ShareCardRegistry.swift in Sources */,
-				BB0010005CA000000000000B /* ShareCard_ChromeFoil.swift in Sources */,
-				BB0010005CA000000000000C /* ShareCard_Receipt.swift in Sources */,
-				BB0010005CA000000000000D /* ShareCard_Manga.swift in Sources */,
-				BB0010005CA000000000000E /* ShareCard_TradingCard.swift in Sources */,
-				BB0010005CA000000000000F /* ShareCard_Signal.swift in Sources */,
-				BB0010005CA0000000000010 /* ShareCard_Vhs.swift in Sources */,
-				BB0010005CA0000000000011 /* ShareCard_Poster.swift in Sources */,
-				BB0010005CA0000000000012 /* ShareCard_Terminal.swift in Sources */,
 				2CC5783C311CC1E98831B183 /* PurchaseManager.swift in Sources */,
 				C0F197E04602B03E5B2E98B9 /* PushManager.swift in Sources */,
 				3110F7976710874B222F2D1C /* RealtimeService.swift in Sources */,
@@ -722,9 +797,19 @@
 				1A8EF3890E4F06100109896F /* ReportSheet.swift in Sources */,
 				4EB2BB63162F364769BC7150 /* RequestsView.swift in Sources */,
 				F6812A414C7CAB9026E367FC /* SettingsView.swift in Sources */,
+				CA7A31DD792A0EF4A07AC6F7 /* ShareCardRegistry.swift in Sources */,
+				6BFE4FF527904DD76BD69C33 /* ShareCardShared.swift in Sources */,
+				ABA4BC8ADA9FC8D513243026 /* ShareCard_ChromeFoil.swift in Sources */,
+				97776725B1F40DD729575127 /* ShareCard_Manga.swift in Sources */,
+				EF09DF6289C2DF420CDD05C8 /* ShareCard_Poster.swift in Sources */,
+				1F7BC4BB81ABE50F2E5B2D53 /* ShareCard_Receipt.swift in Sources */,
+				058A20F1E669117B3AB702E0 /* ShareCard_Signal.swift in Sources */,
+				F2EC4C249DD06A05D6A9246B /* ShareCard_Terminal.swift in Sources */,
+				5A695D2174D5074A577A41AE /* ShareCard_TradingCard.swift in Sources */,
+				E385713D089518D261167946 /* ShareCard_Vhs.swift in Sources */,
 				587A36F34BB9F6D10F7F8C46 /* SkeletonView.swift in Sources */,
 				BB5B1E9CBB5228CC6DF7016B /* SocialLogos.swift in Sources */,
-				24EBDBFCCE7B47AC82874DCF /* StarSprite.swift in Sources */,
+				C761EDC2BBBEDDFF4CF86212 /* StarSprite.swift in Sources */,
 				C2398567163841428B28F77A /* StorageService.swift in Sources */,
 				059B52868D1C468D5B2DC47E /* SwipeCard.swift in Sources */,
 				E5F844B00857726110D04AE1 /* TRPCClient.swift in Sources */,
@@ -737,7 +822,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		886045D5BAC4FA3829354E7C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34BB851FC7CCAEB08DFEFD31 /* EKKOConnectWidgets.swift in Sources */,
+				BAA5C73BEEA65D9A41202FF1 /* MatchActivityAttributes.swift in Sources */,
+				4A16417D3CD1A2E2FB2F2F60 /* MatchLiveActivity.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E8CD0A6729E0107BA8078AD8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4A7C1ADE1BD61FD5930C1D42 /* EKKOConnectWidgets */;
+			targetProxy = D26B208D73A3892EC38C1971 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1C040C9C1D6F93830C41F3F1 /* Debug */ = {
@@ -748,7 +851,7 @@
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 14;
-				DEVELOPMENT_TEAM = X429L5AGXB;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -883,6 +986,27 @@
 			};
 			name = Debug;
 		};
+		5012590BD2CFDD15FE325047 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CURRENT_PROJECT_VERSION = 14;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EKKOConnectWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 2.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.ekkoconnect.connect.widgets;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
 		6D55E74176E219AED11E7D8E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -891,7 +1015,7 @@
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 14;
-				DEVELOPMENT_TEAM = X429L5AGXB;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -907,6 +1031,27 @@
 			};
 			name = Release;
 		};
+		A79E4B18543A220536C4EB90 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CURRENT_PROJECT_VERSION = 14;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = EKKOConnectWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 2.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.ekkoconnect.connect.widgets;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -915,6 +1060,15 @@
 			buildConfigurations = (
 				320C5E889926ADBAC88FEB05 /* Debug */,
 				2D5932ED7B7CE98033381E9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9E415011AF5B26F20ED73478 /* Build configuration list for PBXNativeTarget "EKKOConnectWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5012590BD2CFDD15FE325047 /* Debug */,
+				A79E4B18543A220536C4EB90 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

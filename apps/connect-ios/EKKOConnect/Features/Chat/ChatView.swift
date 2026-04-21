@@ -127,6 +127,9 @@ struct ChatView: View {
             // user is actively reading it. EKKOConnectApp bridges push →
             // banner via AppState and skips when this matches the push route.
             appState.activeChatMatchId = matchId
+            // Opening the chat = the match has been acknowledged, so dismiss
+            // any lock-screen Live Activity still pinned for it.
+            MatchLiveActivityManager.end(matchId: matchId)
         }
         .onDisappear {
             if appState.activeChatMatchId == matchId {
