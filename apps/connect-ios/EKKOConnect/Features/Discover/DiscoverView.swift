@@ -77,11 +77,25 @@ struct DiscoverView: View {
 
             // Match celebration overlay
             if let match = viewModel.matchData {
+                // Total likers minus the one we just matched with — the upsell
+                // copy reads "N others already liked you" so we subtract 1 to
+                // keep the number honest.
+                let otherLikes = max(0, (appState.currentConnectProfile?.likesReceivedCount ?? 0) - 1)
+                // Only offer the upsell to users who actually can upgrade. Infinite
+                // viewers already see all likers on the Likes tab — nothing to sell.
+                let seeLikesHandler: (() -> Void)? = appState.hasInfiniteAccess
+                    ? nil
+                    : {
+                        viewModel.matchData = nil
+                        viewModel.shouldShowUpgradePrompt = true
+                    }
+
                 MatchCelebrationOverlay(
                     matchId: match.id,
                     displayName: match.displayName,
                     avatarUrl: match.avatarUrl,
                     featuredImage: match.featuredImage,
+                    otherLikesCount: otherLikes,
                     onSendMessage: {
                         let matchId = match.id
                         viewModel.matchData = nil
@@ -90,7 +104,8 @@ struct DiscoverView: View {
                     },
                     onKeepSwiping: {
                         viewModel.matchData = nil
-                    }
+                    },
+                    onSeeLikes: seeLikesHandler
                 )
                 .transition(.opacity)
             }
@@ -588,11 +603,14 @@ struct DiscoverView: View {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 }
 
-                // Door 3 — Invite a friend (share sheet)
+                // Door 3 — Invite a friend (share sheet, shows the EKKO mark
+                // in the preview instead of falling back to the URL's favicon)
                 ShareLink(
                     item: URL(string: "https://ekkoconnect.app")!,
-                    subject: Text("EKKO Connect"),
-                    message: Text("Join me on EKKO — the network for creatives.")
+                    preview: SharePreview(
+                        "Find Your Creative Match on EKKO",
+                        image: Image("EkkoMark")
+                    )
                 ) {
                     emptyStateDoorLabel(
                         icon: "person.2.badge.plus",

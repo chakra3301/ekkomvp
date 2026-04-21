@@ -14,6 +14,7 @@ struct SwipeCard: View {
     @State private var isExpanded = false
     @State private var showMenu = false
     @State private var pendingInquiry: PendingSwipeInquiry?
+    @State private var activePulse = false
 
     @Environment(AppState.self) private var appState
 
@@ -250,6 +251,25 @@ struct SwipeCard: View {
                 Text(displayName)
                     .font(.custom(EKKOFont.regular, size: 26))
                     .foregroundStyle(.white)
+
+                // Active-now sparkle — glowing matrix-green star when the
+                // other user pinged the server within the last 15 min.
+                if let lastActive = profile.user?.lastActiveAt, lastActive.isRecentlyActive {
+                    Image(uiImage: EKKOStarSprite.image(size: 32, variant: .simple))
+                        .renderingMode(.template)
+                        .resizable()
+                        .frame(width: 18, height: 18)
+                        .foregroundStyle(Color(red: 0.0, green: 1.0, blue: 0.32))
+                        .shadow(color: Color(red: 0.0, green: 1.0, blue: 0.32).opacity(0.9), radius: 6)
+                        .opacity(activePulse ? 1.0 : 0.55)
+                        .scaleEffect(activePulse ? 1.0 : 0.85)
+                        .onAppear {
+                            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                                activePulse = true
+                            }
+                        }
+                        .accessibilityLabel("Active now")
+                }
 
                 if profile.user?.role == .ADMIN {
                     Text("GM")

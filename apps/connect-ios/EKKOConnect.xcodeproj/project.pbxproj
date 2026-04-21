@@ -73,6 +73,18 @@
 		B5D6F7AEACEF329BE2579BC4 /* ConnectProfileEditorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */; };
 		B877B1FD1ED5042EA93BA030 /* LikesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D29F132143689C326F8305 /* LikesView.swift */; };
 		BB5B1E9CBB5228CC6DF7016B /* SocialLogos.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA892215FACB6BF82AA3E680 /* SocialLogos.swift */; };
+		24EBDBFCCE7B47AC82874DCF /* StarSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F2D69533504F679E64D20B /* StarSprite.swift */; };
+		A789BF451300487A992AA33C /* ProfileShareCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D112106DD0614A2FB6484A0B /* ProfileShareCard.swift */; };
+		BB0010005CA000000000000A /* ShareCardShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000A /* ShareCardShared.swift */; };
+		BB0010005CA000000000000B /* ShareCard_ChromeFoil.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000B /* ShareCard_ChromeFoil.swift */; };
+		BB0010005CA000000000000C /* ShareCard_Receipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000C /* ShareCard_Receipt.swift */; };
+		BB0010005CA000000000000D /* ShareCard_Manga.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000D /* ShareCard_Manga.swift */; };
+		BB0010005CA000000000000E /* ShareCard_TradingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000E /* ShareCard_TradingCard.swift */; };
+		BB0010005CA000000000000F /* ShareCard_Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA000000000000F /* ShareCard_Signal.swift */; };
+		BB0010005CA0000000000010 /* ShareCard_Vhs.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA0000000000010 /* ShareCard_Vhs.swift */; };
+		BB0010005CA0000000000011 /* ShareCard_Poster.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA0000000000011 /* ShareCard_Poster.swift */; };
+		BB0010005CA0000000000012 /* ShareCard_Terminal.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA0000000000012 /* ShareCard_Terminal.swift */; };
+		BB0010005CA0000000000013 /* ShareCardRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0010005CA0000000000013 /* ShareCardRegistry.swift */; };
 		BC11AAEA41E7C375E284986E /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112188F5EBEFDFFE01282BB2 /* AppState.swift */; };
 		BC674D1C73571AEF3A8592A8 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881FD345C1D2CAF3424ED9A9 /* LocationManager.swift */; };
 		BDED37DE83D9138595F56205 /* CompleteProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37599C761D0200DAE7F3FD8C /* CompleteProfileView.swift */; };
@@ -188,6 +200,18 @@
 		F5E35A587910461E3D00A183 /* EKKOTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOTheme.swift; sourceTree = "<group>"; };
 		F751F506688A2D55E2B49DD6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		FA892215FACB6BF82AA3E680 /* SocialLogos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLogos.swift; sourceTree = "<group>"; };
+		04F2D69533504F679E64D20B /* StarSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarSprite.swift; sourceTree = "<group>"; };
+		D112106DD0614A2FB6484A0B /* ProfileShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileShareCard.swift; sourceTree = "<group>"; };
+		FF0010005CA000000000000A /* ShareCardShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardShared.swift; sourceTree = "<group>"; };
+		FF0010005CA000000000000B /* ShareCard_ChromeFoil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_ChromeFoil.swift; sourceTree = "<group>"; };
+		FF0010005CA000000000000C /* ShareCard_Receipt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Receipt.swift; sourceTree = "<group>"; };
+		FF0010005CA000000000000D /* ShareCard_Manga.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Manga.swift; sourceTree = "<group>"; };
+		FF0010005CA000000000000E /* ShareCard_TradingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_TradingCard.swift; sourceTree = "<group>"; };
+		FF0010005CA000000000000F /* ShareCard_Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Signal.swift; sourceTree = "<group>"; };
+		FF0010005CA0000000000010 /* ShareCard_Vhs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Vhs.swift; sourceTree = "<group>"; };
+		FF0010005CA0000000000011 /* ShareCard_Poster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Poster.swift; sourceTree = "<group>"; };
+		FF0010005CA0000000000012 /* ShareCard_Terminal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Terminal.swift; sourceTree = "<group>"; };
+		FF0010005CA0000000000013 /* ShareCardRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardRegistry.swift; sourceTree = "<group>"; };
 		FB39030676E81329E1BC87B5 /* EKKOConnectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOConnectApp.swift; sourceTree = "<group>"; };
 		FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -342,9 +366,21 @@
 				0C38CF3D54B542DE50F33D2E /* MediaFullScreenViewer.swift */,
 				CE6293A856B21826507BDAAD /* MediaSlotGrid.swift */,
 				61EE2C17CD4D7F311478E2D1 /* PromptEditor.swift */,
+				D112106DD0614A2FB6484A0B /* ProfileShareCard.swift */,
+				FF0010005CA000000000000A /* ShareCardShared.swift */,
+				FF0010005CA0000000000013 /* ShareCardRegistry.swift */,
+				FF0010005CA000000000000B /* ShareCard_ChromeFoil.swift */,
+				FF0010005CA000000000000C /* ShareCard_Receipt.swift */,
+				FF0010005CA000000000000D /* ShareCard_Manga.swift */,
+				FF0010005CA000000000000E /* ShareCard_TradingCard.swift */,
+				FF0010005CA000000000000F /* ShareCard_Signal.swift */,
+				FF0010005CA0000000000010 /* ShareCard_Vhs.swift */,
+				FF0010005CA0000000000011 /* ShareCard_Poster.swift */,
+				FF0010005CA0000000000012 /* ShareCard_Terminal.swift */,
 				95847590D257E624076B08A2 /* ReportSheet.swift */,
 				B0D2D8890B2231560DA21604 /* SkeletonView.swift */,
 				FA892215FACB6BF82AA3E680 /* SocialLogos.swift */,
+				04F2D69533504F679E64D20B /* StarSprite.swift */,
 				EB9478C8C0DE104FC8483C57 /* ToastView.swift */,
 				8785EFD367E67672B664E3B3 /* TwitterPreview.swift */,
 				E45AFA2F36F18688B5B69096 /* UpgradeModal.swift */,
@@ -668,6 +704,17 @@
 				A38ED939CC9229398C5B4FFF /* ProfileSetupView.swift in Sources */,
 				563DB68F4C430E57C0DF582D /* ProfileView.swift in Sources */,
 				AF3AFA01D642EAB8610B2760 /* PromptEditor.swift in Sources */,
+				A789BF451300487A992AA33C /* ProfileShareCard.swift in Sources */,
+				BB0010005CA000000000000A /* ShareCardShared.swift in Sources */,
+				BB0010005CA0000000000013 /* ShareCardRegistry.swift in Sources */,
+				BB0010005CA000000000000B /* ShareCard_ChromeFoil.swift in Sources */,
+				BB0010005CA000000000000C /* ShareCard_Receipt.swift in Sources */,
+				BB0010005CA000000000000D /* ShareCard_Manga.swift in Sources */,
+				BB0010005CA000000000000E /* ShareCard_TradingCard.swift in Sources */,
+				BB0010005CA000000000000F /* ShareCard_Signal.swift in Sources */,
+				BB0010005CA0000000000010 /* ShareCard_Vhs.swift in Sources */,
+				BB0010005CA0000000000011 /* ShareCard_Poster.swift in Sources */,
+				BB0010005CA0000000000012 /* ShareCard_Terminal.swift in Sources */,
 				2CC5783C311CC1E98831B183 /* PurchaseManager.swift in Sources */,
 				C0F197E04602B03E5B2E98B9 /* PushManager.swift in Sources */,
 				3110F7976710874B222F2D1C /* RealtimeService.swift in Sources */,
@@ -677,6 +724,7 @@
 				F6812A414C7CAB9026E367FC /* SettingsView.swift in Sources */,
 				587A36F34BB9F6D10F7F8C46 /* SkeletonView.swift in Sources */,
 				BB5B1E9CBB5228CC6DF7016B /* SocialLogos.swift in Sources */,
+				24EBDBFCCE7B47AC82874DCF /* StarSprite.swift in Sources */,
 				C2398567163841428B28F77A /* StorageService.swift in Sources */,
 				059B52868D1C468D5B2DC47E /* SwipeCard.swift in Sources */,
 				E5F844B00857726110D04AE1 /* TRPCClient.swift in Sources */,

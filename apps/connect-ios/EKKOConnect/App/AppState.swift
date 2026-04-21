@@ -53,6 +53,32 @@ final class AppState {
     func showError(_ message: String) { showToast(message, kind: .error) }
     func showSuccess(_ message: String) { showToast(message, kind: .success) }
 
+    // MARK: - In-app Message Banner
+    //
+    // Shown when a push-delivered message arrives while the app is foregrounded
+    // AND the user isn't already viewing that chat. Richer than a toast: carries
+    // sender name, preview, and a tap route. Suppresses the iOS system banner
+    // so the in-app version feels native to EKKO.
+
+    struct MessageBanner: Identifiable, Equatable {
+        let id = UUID()
+        let title: String           // usually the sender's display name
+        let preview: String         // message preview text
+        let route: String?          // deep-link route to fire on tap
+        let initials: String        // fallback avatar letters when we don't have a URL
+    }
+
+    var activeMessageBanner: MessageBanner?
+
+    /// Match-id of the chat the user is currently viewing. ChatView sets this
+    /// on appear and clears on disappear. Used by the banner dispatcher to
+    /// avoid banner-spamming the user over the message they're already reading.
+    var activeChatMatchId: String?
+
+    func showMessageBanner(_ banner: MessageBanner) {
+        activeMessageBanner = banner
+    }
+
     // MARK: - Navigation (driven by deep links + push taps)
 
     /// Currently selected main tab (0=Discover, 1=Likes, 2=Matches, 3=Profile)

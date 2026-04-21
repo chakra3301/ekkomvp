@@ -33,6 +33,26 @@ struct EKKOConnectApp: App {
                     pushManager.setup(trpc: appState.trpc)
                     purchaseManager.setup(trpc: appState.trpc, appState: appState)
 
+                    // Bridge foreground pushes → in-app banner. Skip when the
+                    // user is already looking at the thread the push references
+                    // (no point banner-spamming what they're reading).
+                    pushManager.onForegroundPush = { [appState] info in
+                        if let route = info.route,
+                           route.hasPrefix("/matches/"),
+                           let active = appState.activeChatMatchId,
+                           route == "/matches/\(active)" {
+                            return false  // let it fall through to the system; it'll also get suppressed by iOS since they're in-app
+                        }
+                        let initials = Self.deriveInitials(info.title)
+                        appState.showMessageBanner(.init(
+                            title: info.title.isEmpty ? "EKKO" : info.title,
+                            preview: info.body,
+                            route: info.route,
+                            initials: initials
+                        ))
+                        return true
+                    }
+
                     // Configure RevenueCat (only if an API key is set)
                     if !Config.revenueCatAPIKey.isEmpty {
                         purchaseManager.configure(
@@ -73,6 +93,16 @@ struct EKKOConnectApp: App {
                     }
                 }
         }
+    }
+
+    /// Grab up to two initials from a name — "Mika Ito" → "MI". Falls back to
+    /// a generic glyph when the push title is something like "New message".
+    private static func deriveInitials(_ name: String) -> String {
+        let words = name
+            .split(whereSeparator: { $0.isWhitespace || $0.isPunctuation })
+            .prefix(2)
+        let letters = words.compactMap { $0.first.map(String.init) }.joined()
+        return letters.isEmpty ? "✦" : letters.uppercased()
     }
 
     private func handleDeepLink(_ route: String) {

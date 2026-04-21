@@ -10,6 +10,18 @@ final class PushManager: NSObject {
 
     private var trpc: TRPCClient?
 
+    /// Fired from `willPresent` when a push arrives while the app is in the
+    /// foreground. Consumer (EKKOConnectApp) bridges this to an in-app banner
+    /// via AppState. When set, the iOS system banner is suppressed so the
+    /// in-app banner doesn't double up on what the user sees.
+    var onForegroundPush: ((ForegroundPushInfo) -> Bool)?
+
+    struct ForegroundPushInfo {
+        let title: String           // sender name / event title from the alert
+        let body: String            // message preview
+        let route: String?          // "/matches/{id}", "/likes", etc.
+    }
+
     func setup(trpc: TRPCClient) {
         self.trpc = trpc
     }
@@ -89,10 +101,23 @@ final class PushManager: NSObject {
 
 extension PushManager: UNUserNotificationCenterDelegate {
     /// Called when a notification is received while the app is in the foreground.
+    /// If the consumer handles it in-app (returns true), we suppress the system
+    /// banner so users don't see two notifications for one event.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification
     ) async -> UNNotificationPresentationOptions {
+        let content = notification.request.content
+        let info = ForegroundPushInfo(
+            title: content.title,
+            body: content.body,
+            route: routeFromNotification(content.userInfo)
+        )
+        let handled = await MainActor.run { onForegroundPush?(info) ?? false }
+        if handled {
+            // In-app banner took over — play the sound but skip the system banner.
+            return [.sound]
+        }
         return [.banner, .sound, .badge]
     }
 

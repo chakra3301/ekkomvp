@@ -16,6 +16,7 @@ struct ProfileView: View {
     /// Compared to `originalSnapshot` for the unsaved-changes guard.
     @State private var draft: ProfileDraft = .init()
     @State private var originalSnapshot: ProfileDraft = .init()
+    @State private var showShareSheet = false
 
     /// Read through to AppState so tier changes from a purchase propagate
     /// automatically — no local copy to go stale.
@@ -42,12 +43,45 @@ struct ProfileView: View {
             // Hide the gear in edit mode so users can't navigate away accidentally.
             if !isEditMode {
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink(destination: SettingsView()) {
-                        Image(systemName: "gearshape")
-                            .foregroundStyle(.secondary)
+                    HStack(spacing: 16) {
+                        Button {
+                            showShareSheet = true
+                        } label: {
+                            Image(systemName: "square.and.arrow.up")
+                                .foregroundStyle(.secondary)
+                        }
+                        .accessibilityLabel("Share profile")
+
+                        NavigationLink(destination: SettingsView()) {
+                            Image(systemName: "gearshape")
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
             }
+        }
+        .sheet(isPresented: $showShareSheet) {
+            // Hero = first media slot (matches how SwipeCard picks its hero).
+            let heroUrl = connectProfile?.mediaSlots
+                .min(by: { $0.sortOrder < $1.sortOrder })?.url
+
+            ProfileShareSheet(
+                displayName: appState.currentProfile?.displayName ?? "Creative",
+                username: appState.currentProfile?.username,
+                headline: connectProfile?.headline,
+                location: connectProfile?.location,
+                isInfinite: connectProfile?.connectTier == .INFINITE,
+                heroUrl: heroUrl,
+                avatarUrl: appState.currentProfile?.avatarUrl,
+                bio: connectProfile?.bio,
+                lookingFor: connectProfile?.lookingFor,
+                likes: connectProfile?.likesReceivedCount ?? 0,
+                matches: connectProfile?.matchesCount ?? 0,
+                projects: connectProfile?.mediaSlots.count ?? 0,
+                accentHex: connectProfile?.accentColor
+            )
+            .presentationDetents([.large])
+            .presentationDragIndicator(.hidden)
         }
         .task { await loadProfile() }
         .confirmationDialog(

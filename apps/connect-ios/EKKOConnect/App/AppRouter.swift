@@ -41,6 +41,9 @@ struct AppRouter: View {
         .overlay(alignment: .top) {
             ToastHost()
         }
+        .overlay(alignment: .top) {
+            MessageBannerHost()
+        }
     }
 }
 

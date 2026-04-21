@@ -122,7 +122,16 @@ struct ChatView: View {
             await loadChat()
             await setupRealtime()
         }
+        .onAppear {
+            // Suppresses the in-app message banner for this thread while the
+            // user is actively reading it. EKKOConnectApp bridges push →
+            // banner via AppState and skips when this matches the push route.
+            appState.activeChatMatchId = matchId
+        }
         .onDisappear {
+            if appState.activeChatMatchId == matchId {
+                appState.activeChatMatchId = nil
+            }
             Task { await realtimeService?.unsubscribe() }
         }
         .onChange(of: realtimeService?.newMessageSignal) { _, _ in
@@ -375,16 +384,29 @@ struct ChatView: View {
                 .opacity(audioRecorder.isRecording ? 1 : 0.3)
                 .animation(.easeInOut(duration: 0.7).repeatForever(), value: audioRecorder.isRecording)
 
-            Text("Recording")
-                .font(.subheadline.weight(.medium))
+            // Live amplitude waveform — newest sample on the right. Bars
+            // fallback to a minimum height so silent moments aren't invisible.
+            HStack(alignment: .center, spacing: 2) {
+                ForEach(Array(audioRecorder.levels.enumerated()), id: \.offset) { _, level in
+                    Capsule()
+                        .fill(Color.red.opacity(0.85))
+                        .frame(width: 2.5, height: max(4, CGFloat(level) * 22))
+                }
+            }
+            .frame(height: 24)
+            .animation(.linear(duration: 0.08), value: audioRecorder.levels)
 
+            Spacer(minLength: 4)
+
+            // Elapsed / cap — tints amber as we approach the ceiling so the
+            // user isn't surprised by the auto-stop.
+            let remaining = AudioRecorder.maxDuration - audioRecorder.elapsed
             Text(formatTime(audioRecorder.elapsed))
                 .font(.subheadline.monospacedDigit())
-                .foregroundStyle(.secondary)
-
-            Spacer()
+                .foregroundStyle(remaining < 10 ? Color.orange : .secondary)
 
             Button {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 audioRecorder.cancelRecording()
             } label: {
                 Text("Cancel")
@@ -407,16 +429,26 @@ struct ChatView: View {
     private func toggleRecording() async {
         if audioRecorder.isRecording {
             // Stop and send
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             guard let url = audioRecorder.stopRecording() else { return }
             await sendVoiceMessage(fileURL: url)
         } else {
-            // Request permission + start
             let granted = await audioRecorder.requestPermission()
-            guard granted else { return }
+            guard granted else {
+                appState.showError("EKKO can't record without microphone access. Enable it in Settings.")
+                return
+            }
             do {
                 try audioRecorder.startRecording()
+                UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                // Auto-send when the cap is hit so the user doesn't have to
+                // race the countdown.
+                audioRecorder.onMaxDurationReached = {
+                    UINotificationFeedbackGenerator().notificationOccurred(.warning)
+                    Task { await toggleRecording() }
+                }
             } catch {
-                print("[Recording] Failed: \(error)")
+                appState.showError("Couldn't start recording — \(error.localizedDescription)")
             }
         }
     }
@@ -654,6 +686,8 @@ struct AudioMessageBubble: View {
     @State private var isPlaying = false
     @State private var progress: Double = 0
     @State private var timer: Timer?
+    @State private var duration: Double = 0
+    @State private var currentTime: Double = 0
 
     var body: some View {
         HStack(spacing: 10) {
@@ -681,15 +715,34 @@ struct AudioMessageBubble: View {
                 }
             }
             .frame(height: 24)
+
+            // Duration label — total while idle, current while playing.
+            Text(formatTime(isPlaying ? currentTime : duration))
+                .font(.system(size: 11, weight: .medium).monospacedDigit())
+                .foregroundStyle(isMine ? .white.opacity(0.85) : .secondary)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(isMine ? Color.accentColor : Color.gray.opacity(0.15))
         .clipShape(Capsule())
+        .task(id: url) {
+            // Preload duration so the bubble shows "0:14" before first play.
+            guard let u = URL(string: url) else { return }
+            let asset = AVURLAsset(url: u)
+            if let d = try? await asset.load(.duration), d.isValid {
+                let seconds = d.seconds
+                if seconds.isFinite { duration = seconds }
+            }
+        }
         .onDisappear {
             player?.pause()
             timer?.invalidate()
         }
+    }
+
+    private func formatTime(_ seconds: Double) -> String {
+        let total = Int(seconds.rounded())
+        return String(format: "%d:%02d", total / 60, total % 60)
     }
 
     private func waveHeight(_ i: Int) -> CGFloat {
@@ -712,8 +765,10 @@ struct AudioMessageBubble: View {
                 let c = player.currentTime().seconds
                 if d.isFinite && d > 0 {
                     progress = c / d
+                    currentTime = c
                     if progress >= 1.0 {
                         progress = 0
+                        currentTime = 0
                         isPlaying = false
                         player.seek(to: .zero)
                         timer?.invalidate()

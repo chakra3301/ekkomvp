@@ -70,6 +70,7 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>instagram</string>
+		<string>instagram-stories</string>
 		<string>twitter</string>
 	</array>
 	<key>NSMicrophoneUsageDescription</key>
