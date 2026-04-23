@@ -71,7 +71,7 @@ struct ConnectProfileStackView: View {
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
                                 .font(.callout.weight(.semibold))
-                                .foregroundStyle(Color.accentColor)
+                                .foregroundStyle(.tint)
                         }
                     }
 
@@ -146,7 +146,7 @@ struct ConnectProfileStackView: View {
                 Text(progressLabel)
                     .font(.custom(mono, size: 10))
                     .tracking(2.0)
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
                 Spacer()
                 dotIndicator
             }
@@ -270,7 +270,7 @@ struct ConnectProfileStackView: View {
                         Text(metaLine(for: slot))
                             .font(.custom(mono, size: 10))
                             .tracking(1.5)
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(.tint)
                             .textCase(.uppercase)
 
                         Text(captionText)
@@ -295,7 +295,7 @@ struct ConnectProfileStackView: View {
                 Text(metaLine(for: slot))
                     .font(.custom(mono, size: 10))
                     .tracking(1.5)
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
                     .textCase(.uppercase)
 
                 Text(captionText)
@@ -330,7 +330,7 @@ struct ConnectProfileStackView: View {
             VStack(spacing: 12) {
                 Image(systemName: "rectangle.stack.badge.plus")
                     .font(.system(size: 36))
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
                 Text("Add media to build your deck")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -608,7 +608,7 @@ struct ConnectProfileStackView: View {
             Text(label)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -627,7 +627,7 @@ struct ConnectProfileStackView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
         }
     }
 }

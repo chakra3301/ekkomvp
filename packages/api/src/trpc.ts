@@ -46,18 +46,26 @@ const ACTIVITY_THROTTLE_MS = 60_000;
 const lastActivityWrite = new Map<string, number>();
 
 const trackActivity = middleware(async ({ ctx, next }) => {
-  if (ctx.user) {
-    const userId = ctx.user.id;
-    const now = Date.now();
-    const last = lastActivityWrite.get(userId) ?? 0;
-    if (now - last > ACTIVITY_THROTTLE_MS) {
-      lastActivityWrite.set(userId, now);
-      prisma.user
-        .update({ where: { id: userId }, data: { lastActiveAt: new Date() } })
-        .catch(() => {
-          // best-effort — don't crash a request over a presence write
-        });
+  // Defensive try/catch in addition to the .catch — on serverless the
+  // dangling promise from prisma.user.update can turn into a 500 when the
+  // column is missing or the DB is otherwise unhappy. Presence is
+  // strictly best-effort; never let it crash a real request.
+  try {
+    if (ctx.user) {
+      const userId = ctx.user.id;
+      const now = Date.now();
+      const last = lastActivityWrite.get(userId) ?? 0;
+      if (now - last > ACTIVITY_THROTTLE_MS) {
+        lastActivityWrite.set(userId, now);
+        void prisma.user
+          .update({ where: { id: userId }, data: { lastActiveAt: new Date() } })
+          .catch(() => {
+            // best-effort — don't crash a request over a presence write
+          });
+      }
     }
+  } catch {
+    // swallow
   }
   return next();
 });

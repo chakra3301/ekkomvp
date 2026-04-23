@@ -64,7 +64,7 @@ struct ConnectProfileTerminalView: View {
                 Text("SESSION/\(session)  ·  MOUNT OK  ·  ")
                     .foregroundStyle(Color.secondary)
                 Text("\(handle)@EKKO")
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
             }
         }
         .font(.custom(mono, size: 10))
@@ -101,14 +101,14 @@ struct ConnectProfileTerminalView: View {
                     } else if connectTier == .INFINITE {
                         Image(systemName: "infinity")
                             .font(.callout.weight(.semibold))
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(.tint)
                     }
                 }
 
                 EditableSection(action: editActions?.onTapBio) {
                     HStack(alignment: .top, spacing: 6) {
                         Text(">")
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(.tint)
                         Text(bio?.isEmpty == false ? bio! : (editActions != nil ? "Add a short bio" : ""))
                             .foregroundStyle(bio?.isEmpty == false ? Color.primary : Color.secondary.opacity(0.7))
                     }
@@ -353,7 +353,7 @@ struct ConnectProfileTerminalView: View {
                     commandLabel("$ grep -i \"looking.for\"")
                     HStack(alignment: .top, spacing: 6) {
                         Text(">")
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(.tint)
                         Text(lookingFor)
                             .foregroundStyle(.primary)
                     }
@@ -440,7 +440,7 @@ struct ConnectProfileTerminalView: View {
         Text(text)
             .font(.custom(mono, size: 9))
             .tracking(2.0)
-            .foregroundStyle(Color.accentColor)
+            .foregroundStyle(.tint)
     }
 
     private func placeholderRow(label: String, hint: String) -> some View {
@@ -455,7 +455,7 @@ struct ConnectProfileTerminalView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
         }
     }
 

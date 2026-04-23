@@ -465,7 +465,7 @@ struct ConnectProfileHireView: View {
         HStack(alignment: .top, spacing: 12) {
             Text(String(format: "%02d", number))
                 .font(.custom(EKKOFont.regular, size: 28))
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
                 .frame(width: 44, alignment: .leading)
             VStack(alignment: .leading, spacing: 4) {
                 Text(step.title.uppercased())
@@ -680,7 +680,7 @@ struct ConnectProfileHireView: View {
             Text(text)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -699,7 +699,7 @@ struct ConnectProfileHireView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
         }
     }
 

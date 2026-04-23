@@ -14,7 +14,6 @@ enum ShareCardSlug: String, CaseIterable, Identifiable {
     case receipt     = "receipt"
     case manga       = "manga"
     case tradingCard = "trading-card"
-    case signal      = "signal"
     case vhs         = "vhs"
     case poster      = "poster"
     case terminal    = "terminal"
@@ -28,7 +27,6 @@ enum ShareCardSlug: String, CaseIterable, Identifiable {
         case .receipt:     return "Receipt"
         case .manga:       return "Manga"
         case .tradingCard: return "Trading Card"
-        case .signal:      return "Signal"
         case .vhs:         return "VHS"
         case .poster:      return "Poster"
         case .terminal:    return "Terminal"
@@ -84,7 +82,6 @@ struct ShareCardView: View {
         case .receipt:     ReceiptShareCard(profile: profile, accent: resolvedAccent)
         case .manga:       MangaShareCard(profile: profile, accent: resolvedAccent)
         case .tradingCard: TradingShareCard(profile: profile, accent: resolvedAccent)
-        case .signal:      SignalShareCard(profile: profile, accent: resolvedAccent)
         case .vhs:         VhsShareCard(profile: profile, accent: resolvedAccent)
         case .poster:      PosterShareCard(profile: profile, accent: resolvedAccent)
         case .terminal:    TerminalShareCard(profile: profile, accent: resolvedAccent)

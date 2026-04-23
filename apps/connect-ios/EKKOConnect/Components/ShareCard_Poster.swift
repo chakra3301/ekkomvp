@@ -12,7 +12,7 @@ struct PosterShareCard: View {
     private let ink = Color(red: 0.039, green: 0.039, blue: 0.055)
 
     private var nameSlice: String {
-        String(profile.name.lowercased().prefix(8))
+        String(profile.name.uppercased().prefix(8))
     }
 
     var body: some View {

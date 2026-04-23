@@ -139,7 +139,7 @@ struct ConnectProfileHeroView: View {
     private func heroEditPill(icon: String, label: String) -> some View {
         HStack {
             Image(systemName: icon)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Text(label)
                 .font(.subheadline.weight(.medium))
             Spacer()
@@ -164,7 +164,7 @@ struct ConnectProfileHeroView: View {
                 .foregroundStyle(.secondary)
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -230,7 +230,7 @@ struct ConnectProfileHeroView: View {
                         Text(location.uppercased())
                             .font(.custom(EKKOFont.regular, size: 11))
                             .tracking(2)
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(.tint)
                             .shadow(color: .black.opacity(0.5), radius: 4)
                     }
                 }
@@ -289,7 +289,7 @@ struct ConnectProfileHeroView: View {
                 } else if connectTier == .INFINITE {
                     Image(systemName: "infinity")
                         .font(.callout.weight(.semibold))
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(.tint)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(Color.accentColor.opacity(0.12))
@@ -529,7 +529,7 @@ struct ConnectProfileHeroView: View {
             Text(label)
                 .font(.custom(EKKOFont.regular, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)

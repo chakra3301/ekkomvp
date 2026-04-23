@@ -80,7 +80,7 @@ struct ConnectProfileThreeDView: View {
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
                                 .font(.callout.weight(.semibold))
-                                .foregroundStyle(Color.accentColor)
+                                .foregroundStyle(.tint)
                         }
                     }
 
@@ -141,7 +141,7 @@ struct ConnectProfileThreeDView: View {
                 Text("● VIEWPORT · PERSP · 60mm")
                     .font(.custom(mono, size: 9))
                     .tracking(1.4)
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
                     .padding(.horizontal, 10)
                     .padding(.top, 10)
                     .allowsHitTesting(false)
@@ -341,7 +341,7 @@ struct ConnectProfileThreeDView: View {
                 Spacer()
 
                 Text("↓")
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
             }
             .padding(12)
             .contentShape(Rectangle())
@@ -604,7 +604,7 @@ struct ConnectProfileThreeDView: View {
             Text(text)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -623,7 +623,7 @@ struct ConnectProfileThreeDView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
         }
     }
 

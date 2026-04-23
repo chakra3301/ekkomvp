@@ -529,7 +529,7 @@ struct ProfileView: View {
             // Subtle "Editing" banner so it's obvious the page is in edit mode.
             HStack(spacing: 6) {
                 Image(systemName: "pencil.circle.fill")
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
                 Text("Editing — tap any section to change it")
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
@@ -585,7 +585,7 @@ struct ProfileView: View {
             Spacer()
             Image(systemName: "person.crop.circle")
                 .font(.system(size: 48))
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
 
             Text("No Connect Profile Yet")
                 .font(.title3.bold())

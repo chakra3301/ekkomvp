@@ -54,13 +54,6 @@ struct MangaShareCard: View {
                 }
                 .padding(30)
             }
-            .overlay(alignment: .bottomLeading) {
-                SpeechBubble(
-                    text: "\u{201C}\(profile.about.prefix(72))…\u{201D}"
-                )
-                .padding(.leading, 50)
-                .padding(.bottom, 180)
-            }
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(paper, lineWidth: 3)
@@ -106,40 +99,3 @@ struct MangaShareCard: View {
     }
 }
 
-private struct SpeechBubble: View {
-    let text: String
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(text)
-                .font(ShareCardFont.sans(22, weight: .semibold))
-                .foregroundStyle(.black)
-                .lineSpacing(6)
-                .padding(.horizontal, 26)
-                .padding(.top, 18)
-                .padding(.bottom, 22)
-                .frame(maxWidth: 420, alignment: .leading)
-                .background(
-                    RoundedRectangle(cornerRadius: 28).fill(.white)
-                )
-                .shadow(color: .black, radius: 0, x: 0, y: 6)
-
-            // Tail
-            Triangle()
-                .fill(.white)
-                .overlay(Triangle().stroke(.black, lineWidth: 1))
-                .frame(width: 36, height: 36)
-                .offset(x: 40, y: -1)
-        }
-    }
-}
-
-private struct Triangle: Shape {
-    func path(in rect: CGRect) -> Path {
-        var p = Path()
-        p.move(to: CGPoint(x: rect.width * 0.15, y: 0))
-        p.addLine(to: CGPoint(x: rect.width * 0.85, y: 0))
-        p.addLine(to: CGPoint(x: rect.width * 0.5, y: rect.height))
-        p.closeSubpath()
-        return p
-    }
-}

@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		01D7EE7762A72ADB273C3B93 /* ConnectProfileStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76548A4B2DC105D6ABA1639 /* ConnectProfileStackView.swift */; };
 		042C8F5257012667CCA0605E /* Date+Relative.swift in Sources */ = {isa = PBXBuildFile; fileRef = C308161AFFEF25202B6ECF1F /* Date+Relative.swift */; };
-		058A20F1E669117B3AB702E0 /* ShareCard_Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B34DA2F72B900D97B54A0F4 /* ShareCard_Signal.swift */; };
 		059B52868D1C468D5B2DC47E /* SwipeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */; };
 		0BC9FED059C44D8E0F03BCED /* ArchesRegularItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D7556E0055DF8FFC25312217 /* ArchesRegularItalic.ttf */; };
 		10669041C45250A6A607B0CA /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A698D4ADD418F1A28B37E /* LoginView.swift */; };
@@ -171,7 +170,6 @@
 		462F15F81C0442317081C5EB /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		468EB78A56238C685062ED15 /* ConnectProfileHireView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileHireView.swift; sourceTree = "<group>"; };
 		48BD9923DAEDAA8B026A45DF /* ConnectProfileSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileSplitView.swift; sourceTree = "<group>"; };
-		4B34DA2F72B900D97B54A0F4 /* ShareCard_Signal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Signal.swift; sourceTree = "<group>"; };
 		51A8D108E3C1483EEB5F3C7D /* ConnectProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfile.swift; sourceTree = "<group>"; };
 		5878DD8F54AB84ECFA38FE67 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
 		61EE2C17CD4D7F311478E2D1 /* PromptEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptEditor.swift; sourceTree = "<group>"; };
@@ -418,7 +416,6 @@
 				978F789379297ABB9B2CE5A4 /* ShareCard_Manga.swift */,
 				00F6777A5E20F2C3FC18CC41 /* ShareCard_Poster.swift */,
 				C733FE1EBD6CB9146F61E10C /* ShareCard_Receipt.swift */,
-				4B34DA2F72B900D97B54A0F4 /* ShareCard_Signal.swift */,
 				3FB5D6B525BDAB7193BC4073 /* ShareCard_Terminal.swift */,
 				624FE9BD88FC17FA530D71EE /* ShareCard_TradingCard.swift */,
 				DDEDB01C2A3C4A41223F89D4 /* ShareCard_Vhs.swift */,
@@ -803,7 +800,6 @@
 				97776725B1F40DD729575127 /* ShareCard_Manga.swift in Sources */,
 				EF09DF6289C2DF420CDD05C8 /* ShareCard_Poster.swift in Sources */,
 				1F7BC4BB81ABE50F2E5B2D53 /* ShareCard_Receipt.swift in Sources */,
-				058A20F1E669117B3AB702E0 /* ShareCard_Signal.swift in Sources */,
 				F2EC4C249DD06A05D6A9246B /* ShareCard_Terminal.swift in Sources */,
 				5A695D2174D5074A577A41AE /* ShareCard_TradingCard.swift in Sources */,
 				E385713D089518D261167946 /* ShareCard_Vhs.swift in Sources */,

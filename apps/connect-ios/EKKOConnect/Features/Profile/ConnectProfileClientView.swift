@@ -142,7 +142,7 @@ struct ConnectProfileClientView: View {
             Text(briefs.isEmpty ? "HIRING" : "HIRING \u{B7} \(briefs.count) OPEN")
                 .font(.custom(mono, size: 9))
                 .tracking(2.0)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 4)
@@ -154,7 +154,7 @@ struct ConnectProfileClientView: View {
         HStack(spacing: 4) {
             Image(systemName: "checkmark.seal.fill")
                 .font(.system(size: 9, weight: .bold))
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Text("VERIFIED CLIENT")
                 .font(.custom(mono, size: 9))
                 .tracking(1.5)
@@ -171,7 +171,7 @@ struct ConnectProfileClientView: View {
                 Text("\u{2726}  \(jp)  \u{2726}")
                     .font(.custom(JPFont.family, size: 10))
                     .tracking(2.5)
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
             }
             Text(companyName)
                 .font(.custom(EKKOFont.regular, size: 34))
@@ -346,7 +346,7 @@ struct ConnectProfileClientView: View {
                 Text("\((b.type ?? "open").uppercased()) \u{B7} STARTS \((b.starts ?? "—").uppercased())")
                     .font(.custom(mono, size: 9))
                     .tracking(2.0)
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
                     .padding(.trailing, isUrgent ? 70 : 0)
 
                 Text(b.title)
@@ -361,7 +361,7 @@ struct ConnectProfileClientView: View {
                             Text(t)
                                 .font(.custom(mono, size: 9))
                                 .tracking(0.6)
-                                .foregroundStyle(Color.accentColor)
+                                .foregroundStyle(.tint)
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 3)
                                 .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 4))
@@ -458,7 +458,7 @@ struct ConnectProfileClientView: View {
             Text(String(format: "0%d", idx + 1))
                 .font(.custom(mono, size: 11))
                 .tracking(0.8)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
                 .frame(width: 28, alignment: .leading)
             Text(line)
                 .font(.subheadline)
@@ -604,7 +604,7 @@ struct ConnectProfileClientView: View {
                         ForEach(Array(culture.enumerated()), id: \.offset) { _, c in
                             Text(c)
                                 .font(.caption.weight(.medium))
-                                .foregroundStyle(Color.accentColor)
+                                .foregroundStyle(.tint)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 6)
                                 .background(
@@ -685,7 +685,7 @@ struct ConnectProfileClientView: View {
             Text(text)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -704,7 +704,7 @@ struct ConnectProfileClientView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
         }
     }
 }

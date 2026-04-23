@@ -79,7 +79,7 @@ struct ConnectProfilePhotoView: View {
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
                                 .font(.callout.weight(.semibold))
-                                .foregroundStyle(Color.accentColor)
+                                .foregroundStyle(.tint)
                         }
                     }
 
@@ -283,7 +283,7 @@ struct ConnectProfilePhotoView: View {
         VStack(spacing: 10) {
             Image(systemName: "camera.aperture")
                 .font(.system(size: 36))
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Text("Add photos to fill the frame")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -530,7 +530,7 @@ struct ConnectProfilePhotoView: View {
         Text(text)
             .font(.custom(mono, size: 10))
             .tracking(2.5)
-            .foregroundStyle(Color.accentColor)
+            .foregroundStyle(.tint)
     }
 
     private func placeholderRow(label: String, hint: String) -> some View {
@@ -545,7 +545,7 @@ struct ConnectProfilePhotoView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
         }
     }
 

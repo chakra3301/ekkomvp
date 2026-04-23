@@ -81,7 +81,7 @@ struct ConnectProfileVideoView: View {
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
                                 .font(.callout.weight(.semibold))
-                                .foregroundStyle(Color.accentColor)
+                                .foregroundStyle(.tint)
                         }
                     }
 
@@ -277,7 +277,7 @@ struct ConnectProfileVideoView: View {
         VStack(spacing: 10) {
             Image(systemName: "play.rectangle")
                 .font(.system(size: 36))
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Text("Add videos to fill the reel")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -573,7 +573,7 @@ struct ConnectProfileVideoView: View {
             Text(text)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -592,7 +592,7 @@ struct ConnectProfileVideoView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
         }
     }
 

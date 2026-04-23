@@ -136,7 +136,7 @@ struct ConnectProfileSplitView: View {
             // Vertical works count — large accent display.
             Text("\(sortedMedia.count) works")
                 .font(.custom(EKKOFont.regular, size: 28))
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
                 .lineLimit(1)
                 .fixedSize()
                 .rotationEffect(.degrees(-90))
@@ -160,7 +160,7 @@ struct ConnectProfileSplitView: View {
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
                                 .font(.callout.weight(.semibold))
-                                .foregroundStyle(Color.accentColor)
+                                .foregroundStyle(.tint)
                         }
                     }
 
@@ -211,7 +211,7 @@ struct ConnectProfileSplitView: View {
                 Text("NOW →")
                     .font(.custom(mono, size: 10))
                     .tracking(2.0)
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
                     .textCase(.uppercase)
 
                 if let now = nowProject {
@@ -303,7 +303,7 @@ struct ConnectProfileSplitView: View {
                 Text(String(format: "%02d", index + 1))
                     .font(.custom(mono, size: 9))
                     .tracking(1.4)
-                    .foregroundStyle(Color.accentColor)
+                    .foregroundStyle(.tint)
                     .padding(.horizontal, 6)
                     .padding(.top, 6)
             }
@@ -482,7 +482,7 @@ struct ConnectProfileSplitView: View {
             Text(label)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -495,7 +495,7 @@ struct ConnectProfileSplitView: View {
             Text(label)
                 .font(.custom(mono, size: 11))
                 .tracking(2.5)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
             Rectangle()
                 .fill(Color.secondary.opacity(0.2))
                 .frame(height: 0.5)
@@ -514,7 +514,7 @@ struct ConnectProfileSplitView: View {
             }
             Spacer()
             Image(systemName: "plus.circle")
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.tint)
         }
     }
 }
