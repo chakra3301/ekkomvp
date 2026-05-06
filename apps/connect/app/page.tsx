@@ -106,7 +106,7 @@ export default function LandingPage() {
       <style jsx global>{`
         @font-face {
           font-family: "ArchesEkko";
-          src: url("/fonts/ArchesRegular.ttf") format("truetype");
+          src: url("/fonts/ArchesRegular.otf") format("opentype");
           font-weight: normal;
           font-style: normal;
           font-display: swap;
