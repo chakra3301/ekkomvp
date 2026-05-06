@@ -1,112 +1,251 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
-import { ArrowUpRight, Apple } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 const UnicornScene = dynamic(() => import("unicornstudio-react"), { ssr: false });
 
-const APP_STORE_URL = "https://apps.apple.com/app/ekko-connect";
+type Phase = "typing" | "glitch" | "bsod" | "terminal" | "final";
+
+const CLEAN_TEXT = "#ART is the conscious, skillful creation of works that express";
+const CORRUPT_TAIL = " em0ti0n5, ide@s 4nd ░▒▓ ddkdjsiisjr99284002&2&4$@^%{^¥¥|£€<>|€£…";
+
+const GLITCH_CHARS = "!<>-_\\/[]{}—=+*^?#░▒▓█▀▄■□●○◆◇@$%&";
 
 export default function LandingPage() {
   const [size, setSize] = useState<{ w: number; h: number } | null>(null);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [phase, setPhase] = useState<Phase>("typing");
+  const [typed, setTyped] = useState("");
+  const [shake, setShake] = useState(false);
 
+  // Track viewport size for the Unicorn scene.
   useEffect(() => {
     const onResize = () => setSize({ w: window.innerWidth, h: window.innerHeight });
     onResize();
     window.addEventListener("resize", onResize);
-
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(mq.matches);
-    const onMotion = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
-    mq.addEventListener("change", onMotion);
-
-    return () => {
-      window.removeEventListener("resize", onResize);
-      mq.removeEventListener("change", onMotion);
-    };
+    return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  // Phase 1 → 2: type the clean line, then the glitching tail.
+  useEffect(() => {
+    if (phase !== "typing") return;
+    let i = 0;
+    let cancelled = false;
+
+    const tick = () => {
+      if (cancelled) return;
+      if (i < CLEAN_TEXT.length) {
+        i++;
+        setTyped(CLEAN_TEXT.slice(0, i));
+        const delay = 35 + Math.random() * 50;
+        setTimeout(tick, delay);
+      } else {
+        setTimeout(() => setPhase("glitch"), 600);
+      }
+    };
+    tick();
+    return () => { cancelled = true; };
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "glitch") return;
+    let j = 0;
+    let cancelled = false;
+    const base = CLEAN_TEXT;
+
+    const tick = () => {
+      if (cancelled) return;
+      if (j < CORRUPT_TAIL.length) {
+        j++;
+        // Occasional jitter: scramble a recent chunk briefly.
+        const tail = CORRUPT_TAIL.slice(0, j);
+        const jittered =
+          Math.random() < 0.25 && tail.length > 4
+            ? tail.slice(0, -3) + randChars(3)
+            : tail;
+        setTyped(base + jittered);
+        const delay = 15 + Math.random() * 80;
+        setTimeout(tick, delay);
+      } else {
+        setShake(true);
+        setTimeout(() => setPhase("bsod"), 900);
+      }
+    };
+    tick();
+    return () => { cancelled = true; };
+  }, [phase]);
+
+  // Phase 3: BSOD pause.
+  useEffect(() => {
+    if (phase !== "bsod") return;
+    const t = setTimeout(() => setPhase("terminal"), 2600);
+    return () => clearTimeout(t);
+  }, [phase]);
+
+  // Phase 4: terminal pause.
+  useEffect(() => {
+    if (phase !== "terminal") return;
+    const t = setTimeout(() => setPhase("final"), 2800);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   return (
     <main className="relative h-svh w-full overflow-hidden bg-black text-white">
-      {size && !reduceMotion && (
+      {/* Unicorn scene mounted from the start so it's warm by the final phase. */}
+      {size && (
         <div className="absolute inset-0 z-0">
           <UnicornScene
             projectId="n6VPNW1AlXtEeqAHt9LA"
             width={size.w}
             height={size.h}
             scale={1}
-            dpi={size.w < 768 ? 1 : 1.25}
+            dpi={1.5}
             sdkUrl="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@2.1.12/dist/unicornStudio.umd.js"
           />
         </div>
       )}
 
-      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-black/30 via-transparent to-black/60" />
+      {/* Black mask covering the scene during pre-final phases. */}
+      <div
+        className="absolute inset-0 z-10 bg-black transition-opacity duration-[1200ms] ease-out"
+        style={{ opacity: phase === "final" ? 0 : 1, pointerEvents: "none" }}
+      />
 
-      <header className="relative z-20 flex items-center justify-between px-6 py-5 md:px-10 md:py-7">
-        <div className="flex items-center gap-2.5">
-          <Image src="/elogo.png" alt="EKKO" width={28} height={28} className="rounded-md" priority />
-          <span className="text-sm font-bold tracking-[0.25em] uppercase">EKKO</span>
+      {/* Phase 1+2: typing / glitching */}
+      {(phase === "typing" || phase === "glitch") && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center px-6">
+          <p
+            className={`relative max-w-[90vw] text-center font-mono text-xl md:text-3xl leading-snug whitespace-pre-wrap ${shake ? "animate-shake" : ""}`}
+            style={{
+              filter:
+                phase === "glitch"
+                  ? "drop-shadow(2px 0 0 #ff0040) drop-shadow(-2px 0 0 #00f0ff)"
+                  : "none",
+              transition: "filter 200ms",
+            }}
+          >
+            {typed}
+            <span className="inline-block w-[0.6ch] -mb-0.5 ml-0.5 bg-white align-baseline animate-blink" style={{ height: "1em" }} />
+          </p>
         </div>
-        <Link
-          href="/login"
-          className="text-xs tracking-[0.2em] uppercase opacity-80 hover:opacity-100 transition"
-        >
-          Sign in
-        </Link>
-      </header>
+      )}
 
-      <section className="relative z-20 flex h-[calc(100svh-72px)] flex-col items-center justify-center px-6 text-center">
-        <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[10px] tracking-[0.25em] uppercase text-white/85 backdrop-blur-md">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          Now on iOS
-        </span>
+      {/* Phase 3: Blue Screen of Death */}
+      {phase === "bsod" && (
+        <div className="absolute inset-0 z-30 bg-[#0078D7] text-white font-mono px-8 md:px-20 py-12 md:py-24 overflow-hidden">
+          <div className="text-7xl md:text-9xl font-light leading-none mb-8">:(</div>
+          <p className="text-base md:text-xl max-w-3xl leading-relaxed">
+            EKKO ran into a problem and needs to restart. We&apos;re collecting
+            some error info, and then we&apos;ll restart for you.
+          </p>
+          <p className="mt-8 text-xs md:text-sm opacity-90">
+            Stop code: <span className="font-bold">FATAL_ART_EXCEPTION</span>
+          </p>
+          <p className="mt-2 text-xs md:text-sm opacity-90">
+            What failed: <span className="font-bold">ekko.sys</span>
+          </p>
+        </div>
+      )}
 
-        <h1 className="font-heading text-[clamp(2.75rem,9vw,6rem)] font-bold leading-[0.95] tracking-tight">
-          A network for
-          <br />
-          <span className="italic font-light">creatives</span>.
-        </h1>
+      {/* Phase 4: Terminal */}
+      {phase === "terminal" && (
+        <div className="absolute inset-0 z-30 bg-black text-[#9eff9e] font-mono px-6 md:px-16 py-12 md:py-20 text-sm md:text-lg leading-loose">
+          <TerminalLines />
+        </div>
+      )}
 
-        <p className="mt-6 max-w-md text-base md:text-lg text-white/75 leading-relaxed">
-          Discover collaborators, clients, and the people behind the work.
-          Swipe, match, build.
-        </p>
-
-        <div className="mt-9 flex flex-col sm:flex-row items-center gap-3">
+      {/* Phase 5: Final overlay over the Unicorn scene */}
+      {phase === "final" && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 animate-fade-in pointer-events-none">
+          <p className="font-mono text-base md:text-xl tracking-wider text-white/90 mb-3">
+            . . . listen for the echoes.
+          </p>
+          <p className="font-mono text-sm md:text-base tracking-[0.2em] uppercase text-white/70 mb-8">
+            invitations starting soon
+          </p>
           <a
-            href={APP_STORE_URL}
-            className="group inline-flex items-center gap-3 rounded-2xl bg-white text-black h-14 px-6 font-medium hover:bg-white/90 transition"
+            href="https://www.instagram.com/ekkoconnect"
+            target="_blank"
+            rel="noreferrer"
+            className="pointer-events-auto font-mono text-base md:text-lg text-white underline underline-offset-4 decoration-white/50 hover:decoration-white transition"
           >
-            <Apple className="h-6 w-6" fill="currentColor" />
-            <span className="flex flex-col items-start leading-none">
-              <span className="text-[10px] tracking-[0.2em] uppercase opacity-70">Download on</span>
-              <span className="text-base font-semibold mt-0.5">App Store</span>
-            </span>
+            @ekkoconnect
           </a>
-
-          <Link
-            href="/register"
-            className="group inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white/5 text-white h-14 px-6 font-medium backdrop-blur-md hover:bg-white/10 transition"
-          >
-            <span>Try the web app</span>
-            <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </Link>
         </div>
-      </section>
+      )}
 
-      <footer className="absolute bottom-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-4 md:px-10 text-[10px] tracking-[0.2em] uppercase text-white/50">
-        <span>&copy; {new Date().getFullYear()} EKKO</span>
-        <div className="flex items-center gap-5">
-          <Link href="/privacy" className="hover:text-white/80 transition">Privacy</Link>
-          <Link href="/terms" className="hover:text-white/80 transition">Terms</Link>
-          <Link href="/support" className="hover:text-white/80 transition">Support</Link>
-        </div>
-      </footer>
+      <style jsx global>{`
+        @keyframes blink {
+          0%, 49% { opacity: 1; }
+          50%, 100% { opacity: 0; }
+        }
+        .animate-blink { animation: blink 1s steps(1) infinite; }
+
+        @keyframes shake {
+          0%, 100% { transform: translate(0, 0); }
+          10% { transform: translate(-3px, 1px) skewX(-2deg); }
+          20% { transform: translate(2px, -2px) skewX(1deg); }
+          30% { transform: translate(-1px, 2px); }
+          40% { transform: translate(2px, 1px) skewX(-1deg); }
+          50% { transform: translate(-2px, -1px) skewX(2deg); }
+          60% { transform: translate(1px, 2px); }
+          70% { transform: translate(-2px, 1px); }
+          80% { transform: translate(2px, -2px) skewX(1deg); }
+          90% { transform: translate(-1px, -1px); }
+        }
+        .animate-shake { animation: shake 200ms infinite; }
+
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fade-in 1.6s ease-out forwards; }
+      `}</style>
     </main>
+  );
+}
+
+function randChars(n: number) {
+  let s = "";
+  for (let i = 0; i < n; i++) {
+    s += GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)];
+  }
+  return s;
+}
+
+function TerminalLines() {
+  const [lines, setLines] = useState<string[]>([]);
+  const [showCursor, setShowCursor] = useState(true);
+  const queue = useRef([
+    { text: "system failure . . .", delay: 300 },
+    { text: "> rebooting", delay: 900 },
+  ]);
+
+  useEffect(() => {
+    let i = 0;
+    let cancelled = false;
+    const tick = () => {
+      if (cancelled || i >= queue.current.length) return;
+      const { text, delay } = queue.current[i];
+      setTimeout(() => {
+        if (cancelled) return;
+        setLines((prev) => [...prev, text]);
+        i++;
+        tick();
+      }, delay);
+    };
+    tick();
+
+    const blink = setInterval(() => setShowCursor((c) => !c), 500);
+    return () => { cancelled = true; clearInterval(blink); };
+  }, []);
+
+  return (
+    <div>
+      {lines.map((l, i) => (
+        <div key={i}>{l}</div>
+      ))}
+      <span>{showCursor ? "▊" : " "}</span>
+    </div>
   );
 }
