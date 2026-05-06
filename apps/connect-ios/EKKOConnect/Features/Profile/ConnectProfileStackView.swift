@@ -226,9 +226,23 @@ struct ConnectProfileStackView: View {
             mediaContent(slot: slot)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                // Feather the bottom edge so the image dissolves into the
+                // ambient background instead of meeting it on a hard line.
+                .mask {
+                    LinearGradient(
+                        stops: [
+                            .init(color: .black, location: 0.0),
+                            .init(color: .black, location: 0.88),
+                            .init(color: .black.opacity(0.0), location: 1.0),
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                }
                 .overlay(
                     RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .stroke(Color.white.opacity(0.1), lineWidth: 0.5)
+                        .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+                        .blur(radius: 0.5)
                 )
 
             if isFront {
@@ -249,7 +263,10 @@ struct ConnectProfileStackView: View {
         // Slight rotation on drag for the swipe-card feel.
         .rotationEffect(.degrees(isFront ? Double(dragX) * 0.04 : 0))
         .opacity(opacity)
-        .shadow(color: .black.opacity(isFront ? 0.4 : 0.2), radius: isFront ? 20 : 10, y: 14)
+        // Layered shadows: a tight darker drop + a wide diffuse halo that
+        // bleeds the image outward into the ambient bg, softening the edge.
+        .shadow(color: .black.opacity(isFront ? 0.45 : 0.2), radius: isFront ? 18 : 10, y: 12)
+        .shadow(color: .black.opacity(isFront ? 0.35 : 0.0), radius: isFront ? 60 : 0, y: 0)
         .animation(.spring(response: 0.45, dampingFraction: 0.8), value: deckIndex)
     }
 

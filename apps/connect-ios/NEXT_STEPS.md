@@ -378,24 +378,12 @@ You need screenshots for App Store listing. Required sizes:
 
 ## Step 11: App Review Preparation
 
-### Create a demo account:
-1. Register a test account on the web app: `review@ekkoconnect.app` / `AppReview2024!`
-2. Set up a Connect profile with photos, prompts, bio
-3. Create a second test account and match with the first (so the reviewer can see matches/chat)
-4. Write these credentials in App Store Connect → App Review Information
+App approved on initial review — see App Store Connect for past submission notes.
 
-### Review notes (paste into App Store Connect):
-```
-Demo Account:
-Email: review@ekkoconnect.app
-Password: AppReview2024!
-
-This account has a pre-configured profile with photos and an existing match 
-for testing the messaging feature. The app connects to our backend at 
-ekkoconnect.app which handles authentication via Supabase.
-
-Sign in with Apple is available as the primary login method.
-```
+If a future submission is rejected and a new demo account is needed:
+1. Register a fresh account on the web app, set up a Connect profile, and pair it with a second account so the reviewer can see matches/chat.
+2. Put credentials only in App Store Connect → App Review Information (never commit them to the repo).
+3. Delete the demo accounts from Supabase Auth after re-approval.
 
 ### Common rejection reasons to avoid:
 - **Missing Sign in with Apple**: Already implemented ✓

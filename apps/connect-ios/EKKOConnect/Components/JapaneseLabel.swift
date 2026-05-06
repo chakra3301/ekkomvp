@@ -87,8 +87,9 @@ struct FuriganaTitle: View {
                     .foregroundStyle(.secondary.opacity(0.65))
                     .lineLimit(1)
             }
-            Text(english)
-                .font(.custom(EKKOFont.regular, size: 17))
+            Text(english.uppercased())
+                .font(.custom(EKKOFont.regular, size: 14))
+                .tracking(1.5)
                 .foregroundStyle(.primary)
                 .lineLimit(1)
         }

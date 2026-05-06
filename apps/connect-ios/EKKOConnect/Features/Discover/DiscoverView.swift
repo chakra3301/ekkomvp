@@ -111,6 +111,7 @@ struct DiscoverView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.matchData != nil)
+        .background(AmbientBackground())
         .furiganaTitle("Discover", JPLabels.screens.discover)
         .task {
             viewModel.setup(trpc: appState.trpc, appState: appState)
@@ -495,7 +496,7 @@ struct DiscoverView: View {
             Button {
                 Task { await enableLocation() }
             } label: {
-                Label(locating ? "Locating…" : "Use My Location", systemImage: "location.fill")
+                Label(locating ? "Locating…" : "Continue", systemImage: "location.fill")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 20)

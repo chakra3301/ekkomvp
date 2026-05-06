@@ -36,6 +36,12 @@ enum EKKOTheme {
 }
 
 // MARK: - Glass Morphism ViewModifier
+//
+// Two variants that visually match iOS 26's system "liquid glass" used by
+// toolbars and tab bars. On iOS 26+ we hand off to `.glassEffect(in:)` so
+// our cards composite over the ambient background with the same brightness
+// and blur the system materials use. On iOS 17–25 we fall back to
+// `.ultraThinMaterial`.
 
 struct GlassCard: ViewModifier {
     @Environment(\.colorScheme) private var colorScheme
@@ -43,18 +49,22 @@ struct GlassCard: ViewModifier {
     var cornerRadius: CGFloat = EKKOTheme.cardRadius
 
     func body(content: Content) -> some View {
-        content
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        if #available(iOS 26.0, *) {
+            content.glassEffect(.regular, in: shape)
+        } else {
+            content
+                .background(.ultraThinMaterial)
+                .clipShape(shape)
+                .overlay(
+                    shape.stroke(
                         colorScheme == .dark
                             ? Color.white.opacity(0.1)
                             : Color.white.opacity(0.6),
                         lineWidth: 0.5
                     )
-            )
+                )
+        }
     }
 }
 
@@ -64,32 +74,30 @@ extension View {
     }
 }
 
-// MARK: - Light Glass — heavy blur, white translucent fill
+// MARK: - GlassBubble — interactive variant with shadow
 
 struct GlassBubble: ViewModifier {
     var cornerRadius: CGFloat = 24
     @Environment(\.colorScheme) private var colorScheme
 
     func body(content: Content) -> some View {
-        // Dark mode: tinted dark fill + softer white highlight border so content reads clearly.
-        // Light mode: the existing bright white glass treatment.
-        let fillColor: Color = colorScheme == .dark ? .white.opacity(0.08) : .white.opacity(0.3)
-        let strokeColor: Color = colorScheme == .dark ? .white.opacity(0.18) : .white.opacity(0.4)
-
-        return content
-            .background(
-                ZStack {
-                    Color.clear.background(.ultraThinMaterial)
-                    fillColor
-                }
-                .saturation(1.2)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(strokeColor, lineWidth: 1)
-            )
-            .shadow(color: .black.opacity(colorScheme == .dark ? 0.35 : 0.15), radius: 16, y: 8)
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        if #available(iOS 26.0, *) {
+            content
+                .glassEffect(.regular.interactive(), in: shape)
+                .shadow(color: .black.opacity(colorScheme == .dark ? 0.25 : 0.1), radius: 12, y: 6)
+        } else {
+            content
+                .background(.ultraThinMaterial)
+                .clipShape(shape)
+                .overlay(
+                    shape.stroke(
+                        colorScheme == .dark ? Color.white.opacity(0.18) : Color.white.opacity(0.4),
+                        lineWidth: 1
+                    )
+                )
+                .shadow(color: .black.opacity(colorScheme == .dark ? 0.35 : 0.15), radius: 16, y: 8)
+        }
     }
 }
 

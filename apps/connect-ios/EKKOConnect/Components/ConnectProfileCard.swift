@@ -382,6 +382,21 @@ struct ConnectProfileCard: View {
                 .frame(height: 150)
                 .frame(maxHeight: .infinity, alignment: .bottom)
             }
+            // Feather the very bottom edge so the cover dissolves into the
+            // ambient background instead of cutting off on a hard line.
+            .mask {
+                LinearGradient(
+                    stops: [
+                        .init(color: .black, location: 0.0),
+                        .init(color: .black, location: 0.92),
+                        .init(color: .black.opacity(0.0), location: 1.0),
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+            // Wide diffuse halo so the silhouette bleeds outward.
+            .shadow(color: .black.opacity(0.35), radius: 50, y: 0)
         } else {
             Rectangle()
                 .fill(Color.gray.opacity(0.15))
@@ -418,9 +433,11 @@ struct ConnectProfileCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+                            .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+                            .blur(radius: 0.5)
                     )
-                    .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
+                    .shadow(color: .black.opacity(0.35), radius: 16, y: 10)
+                    .shadow(color: .black.opacity(0.25), radius: 50, y: 0)
                     .padding(.horizontal, 16)
             } else if let url = URL(string: slot.url) {
                 // Photo — natural aspect ratio, padded sides, rounded glass container
@@ -431,9 +448,11 @@ struct ConnectProfileCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+                            .stroke(Color.white.opacity(0.08), lineWidth: 0.5)
+                            .blur(radius: 0.5)
                     )
-                    .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
+                    .shadow(color: .black.opacity(0.35), radius: 16, y: 10)
+                    .shadow(color: .black.opacity(0.25), radius: 50, y: 0)
                     .padding(.horizontal, 16)
             }
         }

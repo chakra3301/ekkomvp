@@ -48,7 +48,7 @@ struct RegisterView: View {
                             .labelsHidden()
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("I agree to the app's policies.")
+                            Text("I agree to the app's policies and understand there is zero tolerance for objectionable content or abusive behavior.")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             HStack(spacing: 10) {

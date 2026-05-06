@@ -237,10 +237,10 @@ struct UpgradeModal: View {
         }()
 
         VStack(spacing: 2) {
-            Text("\(price) / month")
+            Text("Infinite — \(price) per month")
                 .font(.headline)
                 .foregroundStyle(.white.opacity(0.95))
-            Text("Auto-renewing subscription")
+            Text("1-month auto-renewing subscription")
                 .font(.caption)
                 .foregroundStyle(.white.opacity(0.7))
         }

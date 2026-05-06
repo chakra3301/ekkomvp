@@ -6,20 +6,15 @@ struct AppRouter: View {
 
     var body: some View {
         ZStack {
-            // Mesh background for authenticated/loading states
-            if appState.isAuthenticated || appState.isLoading {
+            // Mesh background for authenticated states. The loading splash is
+            // a fullscreen video that paints its own background.
+            if appState.isAuthenticated && !appState.isLoading {
                 MeshBackground()
             }
 
             Group {
                 if appState.isLoading {
-                    VStack(spacing: 12) {
-                        Image(systemName: "eye.fill")
-                            .font(.system(size: 48))
-                            .foregroundStyle(Color.accentColor)
-                        Text("EKKO Connect")
-                            .font(.title2.bold())
-                    }
+                    LoadingScreenVideo()
                 } else if !appState.isAuthenticated {
                     AuthFlowView()
                 } else if appState.currentProfile == nil {
@@ -137,7 +132,6 @@ struct MainTabView: View {
                 }
                 .tag(3)
             }
-            .tint(Color.accentColor)
 
             if showJapanese {
                 CustomTabBar(

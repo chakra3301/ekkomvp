@@ -196,6 +196,10 @@ struct SettingsView: View {
 
                 // Accent color — palette swatches, applied app-wide.
                 AccentColorPicker()
+
+                // Animated background — toggle + style picker. Renders behind
+                // Discover and Profile when enabled.
+                AmbientBackgroundSettings()
             } header: {
                 Text("Appearance")
             }

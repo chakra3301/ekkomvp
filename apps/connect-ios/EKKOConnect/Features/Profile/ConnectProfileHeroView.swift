@@ -253,6 +253,21 @@ struct ConnectProfileHeroView: View {
             }
         }
         .frame(height: coverHeight)
+        // Feather the bottom edge so the cover dissolves into the ambient
+        // background instead of meeting it on a hard line.
+        .mask {
+            LinearGradient(
+                stops: [
+                    .init(color: .black, location: 0.0),
+                    .init(color: .black, location: 0.93),
+                    .init(color: .black.opacity(0.0), location: 1.0),
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        }
+        // Wide diffuse halo so the silhouette bleeds outward into the bg.
+        .shadow(color: .black.opacity(0.35), radius: 50, y: 0)
     }
 
     @ViewBuilder

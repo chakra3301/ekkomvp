@@ -50,79 +50,6 @@ interface SwipeCardStackProps {
   canUndo?: boolean;
 }
 
-const TEST_PROFILES: ProfileData[] = [
-  {
-    id: "test-1",
-    userId: "test-user-1",
-    headline: "music producer & visual artist",
-    lookingFor: "creative collective",
-    bio: "Blending sound design with generative visuals. Looking for collaborators who push boundaries.",
-    location: "Los Angeles, CA",
-    instagramHandle: null,
-    twitterHandle: null,
-    websiteUrl: null,
-    connectTier: null,
-    mediaSlots: [
-      { url: "/lost angels bw.png", mediaType: "PHOTO", sortOrder: 0 },
-      { url: "/lost angels collage.png", mediaType: "PHOTO", sortOrder: 1 },
-    ],
-    prompts: [{ question: "A project I'm proud of", answer: "Built an immersive audiovisual installation for Art Basel that combined live-coded music with reactive projections." }],
-    user: {
-      profile: {
-        displayName: "Maya Chen",
-        avatarUrl: null,
-        disciplines: [{ discipline: { name: "Music" } }, { discipline: { name: "Design" } }],
-      },
-    },
-  },
-  {
-    id: "test-2",
-    userId: "test-user-2",
-    headline: "cinematographer & editor",
-    lookingFor: "directors & storytellers",
-    bio: "Narrative-driven DP with a love for natural light. Let's tell stories that matter.",
-    location: "New York, NY",
-    instagramHandle: null,
-    twitterHandle: null,
-    websiteUrl: null,
-    connectTier: null,
-    mediaSlots: [
-      { url: "/rider.png", mediaType: "PHOTO", sortOrder: 0 },
-    ],
-    prompts: [{ question: "What inspires me", answer: "Golden hour, Wong Kar-wai films, and the way strangers move through cities." }],
-    user: {
-      profile: {
-        displayName: "Jordan Ellis",
-        avatarUrl: null,
-        disciplines: [{ discipline: { name: "Photography" } }, { discipline: { name: "Film" } }],
-      },
-    },
-  },
-  {
-    id: "test-3",
-    userId: "test-user-3",
-    headline: "3D artist & creative technologist",
-    lookingFor: "brands & studios",
-    bio: "Creating surreal digital worlds. Specializing in Blender, Unreal Engine, and motion graphics.",
-    location: "Austin, TX",
-    instagramHandle: null,
-    twitterHandle: null,
-    websiteUrl: null,
-    connectTier: "INFINITE",
-    mediaSlots: [
-      { url: "/fd.png", mediaType: "PHOTO", sortOrder: 0 },
-    ],
-    prompts: [{ question: "My creative superpower", answer: "Turning abstract concepts into tangible 3D experiences that make people stop scrolling." }],
-    user: {
-      profile: {
-        displayName: "Kai Nakamura",
-        avatarUrl: null,
-        disciplines: [{ discipline: { name: "3D Art" } }, { discipline: { name: "Animation" } }],
-      },
-    },
-  },
-];
-
 const SwipeCard = React.memo(function SwipeCard({
   profile,
   onSwipe,
@@ -474,9 +401,6 @@ const SwipeCard = React.memo(function SwipeCard({
 });
 
 export function SwipeCardStack({ profiles, onSwipe, onUndo, canUndo }: SwipeCardStackProps) {
-  const activeProfiles = profiles.length > 0 ? profiles : TEST_PROFILES;
-  const isTestMode = profiles.length === 0;
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const [reportTarget, setReportTarget] = useState<string | null>(null);
   const [pendingLike, setPendingLike] = useState<string | null>(null);
@@ -487,11 +411,10 @@ export function SwipeCardStack({ profiles, onSwipe, onUndo, canUndo }: SwipeCard
 
   const handleSwipe = useCallback(
     (type: "LIKE" | "PASS") => {
-      const current = activeProfiles[currentIndex];
+      const current = profiles[currentIndex];
       if (!current) return;
 
-      if (type === "LIKE" && !isTestMode) {
-        // Show note prompt for likes
+      if (type === "LIKE") {
         setPendingLike(current.userId);
         setLikeNote("");
         setCurrentIndex((i) => i + 1);
@@ -499,12 +422,10 @@ export function SwipeCardStack({ profiles, onSwipe, onUndo, canUndo }: SwipeCard
         return;
       }
 
-      if (!isTestMode) {
-        onSwipe(current.userId, type);
-      }
+      onSwipe(current.userId, type);
       setCurrentIndex((i) => i + 1);
     },
-    [activeProfiles, currentIndex, onSwipe, isTestMode]
+    [profiles, currentIndex, onSwipe]
   );
 
   const submitLike = useCallback(
@@ -519,7 +440,6 @@ export function SwipeCardStack({ profiles, onSwipe, onUndo, canUndo }: SwipeCard
 
   const handleBlock = useCallback(
     async (userId: string) => {
-      if (userId.startsWith("test-")) return;
       if (!confirm("Block this user? They won't appear in your discovery.")) return;
       try {
         await blockUser.mutateAsync(userId);
@@ -532,7 +452,7 @@ export function SwipeCardStack({ profiles, onSwipe, onUndo, canUndo }: SwipeCard
     [blockUser]
   );
 
-  const visibleProfiles = activeProfiles.slice(currentIndex, currentIndex + 2);
+  const visibleProfiles = profiles.slice(currentIndex, currentIndex + 2);
 
   if (visibleProfiles.length === 0) {
     return (

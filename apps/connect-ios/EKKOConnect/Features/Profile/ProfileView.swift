@@ -38,6 +38,7 @@ struct ProfileView: View {
                 emptyState
             }
         }
+        .background(AmbientBackground())
         .furiganaTitle("Profile", JPLabels.screens.profile)
         .toolbar {
             // Hide the gear in edit mode so users can't navigate away accidentally.
