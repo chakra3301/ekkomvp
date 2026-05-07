@@ -74,14 +74,12 @@ export default function ApplyPage() {
   };
 
   return (
-    <>
-      {/* Background lives outside the scrolling document flow. `fixed` + a high
-          negative z-index means it never enters the layout calculation, and the
-          page scrolls normally on top of it. */}
-      <div
-        aria-hidden
-        className="fixed inset-0 -z-10 pointer-events-none bg-black"
-      >
+    <main className="relative bg-black text-white">
+      {/* Background. `fixed` keeps it pinned to the viewport while the content
+          beside it scrolls. `z-0` keeps it inside the same stacking context as
+          the content (z-10) — using a negative z-index here puts it BEHIND
+          body's theme background-color and the page renders white. */}
+      <div aria-hidden className="fixed inset-0 z-0 pointer-events-none">
         {size && (
           <UnicornScene
             key={size.w < 768 ? "mobile" : "desktop"}
@@ -96,7 +94,7 @@ export default function ApplyPage() {
         <div className="absolute inset-0 bg-black/35" />
       </div>
 
-      <main className="relative text-white">
+      <div className="relative z-10">
         <div className="mx-auto max-w-xl px-5 py-14 sm:py-20">
           {submit.isSuccess ? (
             <SuccessCard />
@@ -272,7 +270,7 @@ export default function ApplyPage() {
             </>
           )}
         </div>
-      </main>
+      </div>
 
       <style jsx global>{`
         @font-face {
@@ -389,7 +387,7 @@ export default function ApplyPage() {
           background: rgba(255, 255, 255, 0.24);
         }
       `}</style>
-    </>
+    </main>
   );
 }
 

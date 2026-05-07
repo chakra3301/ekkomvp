@@ -14,6 +14,17 @@ struct LoadingScreenVideo: View {
 
 // MARK: - AmbientBackground
 
+/// Forced-dark dotted ambient backdrop for the auth flow. Always renders
+/// the dark variant regardless of the device color scheme so the chrome
+/// `EkkoFont` mark sits on a consistent dark dotted field across both
+/// LoginView and RegisterView.
+struct AuthDottedBackground: View {
+    var body: some View {
+        LoopingVideo(resource: "AmbientBackgroundDark", ext: "mp4")
+            .ignoresSafeArea()
+    }
+}
+
 /// Slowly-drifting ambient backdrop for Discover and Profile. Picks the
 /// dark or light variant of the user's selected style based on the current
 /// color scheme. The video pauses when the app backgrounds to avoid

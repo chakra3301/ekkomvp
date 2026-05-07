@@ -15,9 +15,16 @@ struct RegisterView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Push content lower on the page so the background image shows at the top
-                Spacer(minLength: 0)
-                    .frame(height: 280)
+                // EKKO chrome wordmark — same logo used on the
+                // ekkoconnect.app landing page.
+                Image("EkkoFont")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 180)
+                    .padding(.top, 40)
+                    .padding(.bottom, 8)
+                    .shadow(color: .black.opacity(0.35), radius: 18, y: 8)
 
                 VStack(spacing: 16) {
                     // Email
@@ -25,10 +32,10 @@ struct RegisterView: View {
                         TextField(
                             "",
                             text: $email,
-                            prompt: Text("you@example.com").foregroundColor(.black.opacity(0.45))
+                            prompt: Text("you@example.com").foregroundColor(.white.opacity(0.55))
                         )
-                        .foregroundStyle(.black)
-                        .tint(Color.accentColor)
+                        .foregroundStyle(.white)
+                        .tint(.white)
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
@@ -42,10 +49,10 @@ struct RegisterView: View {
                         SecureField(
                             "",
                             text: $password,
-                            prompt: Text("At least 8 characters").foregroundColor(.black.opacity(0.45))
+                            prompt: Text("At least 8 characters").foregroundColor(.white.opacity(0.55))
                         )
-                        .foregroundStyle(.black)
-                        .tint(Color.accentColor)
+                        .foregroundStyle(.white)
+                        .tint(.white)
                         .textContentType(.newPassword)
                         .padding(.horizontal, 16)
                         .frame(height: 48)
@@ -62,20 +69,20 @@ struct RegisterView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("I agree to the app's policies and understand there is zero tolerance for objectionable content or abusive behavior.")
                                 .font(.caption)
-                                .foregroundStyle(.black.opacity(0.7))
+                                .foregroundStyle(.white.opacity(0.85))
                             HStack(spacing: 10) {
                                 Button("Terms of Service") {
                                     if let url = LegalURLs.terms { UIApplication.shared.open(url) }
                                 }
                                 .font(.caption.weight(.medium))
-                                .foregroundStyle(.black)
+                                .foregroundStyle(.white)
                                 .underline()
 
                                 Button("Privacy Policy") {
                                     if let url = LegalURLs.privacy { UIApplication.shared.open(url) }
                                 }
                                 .font(.caption.weight(.medium))
-                                .foregroundStyle(.black)
+                                .foregroundStyle(.white)
                                 .underline()
                             }
                         }
@@ -88,11 +95,11 @@ struct RegisterView: View {
                     } label: {
                         Group {
                             if isLoading {
-                                ProgressView().tint(.black)
+                                ProgressView().tint(.white)
                             } else {
                                 Text("Continue")
                                     .font(.system(size: 16, weight: .semibold))
-                                    .foregroundStyle(.black)
+                                    .foregroundStyle(.white)
                             }
                         }
                         .frame(maxWidth: .infinity)
@@ -103,13 +110,16 @@ struct RegisterView: View {
                     .disabled(!agreedToTerms || isLoading)
                     .opacity(!agreedToTerms ? 0.6 : 1)
                 }
+                // White is the inherited tint here so FormField's labels
+                // (which don't set their own foregroundStyle) pick it up.
+                .foregroundStyle(.white)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 40)
         }
         .scrollContentBackground(.hidden)
         .background {
-            LoadingScreenVideo()
+            AuthDottedBackground()
         }
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(false)

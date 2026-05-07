@@ -15,35 +15,43 @@ struct LoginView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                // Push sign-in controls down, but leave room for Sign up at the bottom
-                Spacer(minLength: 0)
-                    .frame(height: 260)
+                // EKKO chrome wordmark — same logo used on the
+                // ekkoconnect.app landing page.
+                Image("EkkoFont")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 180)
+                    .padding(.top, 40)
+                    .padding(.bottom, 8)
+                    .shadow(color: .black.opacity(0.35), radius: 18, y: 8)
 
                 if let error = errorMessage {
                     Text(error)
                         .font(.caption)
-                        .foregroundStyle(EKKOTheme.destructive)
+                        .foregroundStyle(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .frame(maxWidth: .infinity)
-                        .background(EKKOTheme.destructive.opacity(0.1))
+                        .background(EKKOTheme.destructive.opacity(0.35))
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
 
                 if let info = infoMessage {
                     Text(info)
                         .font(.caption)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .frame(maxWidth: .infinity)
-                        .background(Color.green.opacity(0.2))
+                        .background(Color.green.opacity(0.35))
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
 
                 // OAuth Buttons — glass styled
                 VStack(spacing: 12) {
-                    // Apple — sign in with apple (system provides correct logo + styling)
+                    // Apple — sign in with apple (system provides correct logo + styling).
+                    // Use .whiteOutline so the button reads on dark backgrounds too.
                     SignInWithAppleButton(.signIn) { request in
                         let nonce = randomNonceString()
                         currentNonce = nonce
@@ -52,13 +60,9 @@ struct LoginView: View {
                     } onCompletion: { result in
                         Task { await handleAppleSignIn(result) }
                     }
-                    .signInWithAppleButtonStyle(.white)
+                    .signInWithAppleButtonStyle(.whiteOutline)
                     .frame(height: 52)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(Color.white.opacity(0.2), lineWidth: 0.5)
-                    )
 
                     // Google — glass styled with branded "G" logo
                     Button {
@@ -69,7 +73,7 @@ struct LoginView: View {
                                 .frame(width: 18, height: 18)
                             Text("Continue with Google")
                                 .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(.black)
+                                .foregroundStyle(.white)
                         }
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
@@ -80,11 +84,11 @@ struct LoginView: View {
 
                 // Divider
                 HStack {
-                    Rectangle().frame(height: 0.5).foregroundStyle(.black.opacity(0.25))
+                    Rectangle().frame(height: 0.5).foregroundStyle(.white.opacity(0.35))
                     Text("Or continue with email")
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(.black.opacity(0.7))
-                    Rectangle().frame(height: 0.5).foregroundStyle(.black.opacity(0.25))
+                        .foregroundStyle(.white.opacity(0.85))
+                    Rectangle().frame(height: 0.5).foregroundStyle(.white.opacity(0.35))
                 }
 
                 // Legal notice
@@ -92,9 +96,9 @@ struct LoginView: View {
 
                 // Email/Password form
                 VStack(spacing: 12) {
-                    TextField("", text: $email, prompt: Text("you@example.com").foregroundColor(.black.opacity(0.45)))
-                        .foregroundStyle(.black)
-                        .tint(Color.accentColor)
+                    TextField("", text: $email, prompt: Text("you@example.com").foregroundColor(.white.opacity(0.55)))
+                        .foregroundStyle(.white)
+                        .tint(.white)
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
@@ -102,9 +106,9 @@ struct LoginView: View {
                         .frame(height: 48)
                         .glassBubble(cornerRadius: 14)
 
-                    SecureField("", text: $password, prompt: Text("Password").foregroundColor(.black.opacity(0.45)))
-                        .foregroundStyle(.black)
-                        .tint(Color.accentColor)
+                    SecureField("", text: $password, prompt: Text("Password").foregroundColor(.white.opacity(0.55)))
+                        .foregroundStyle(.white)
+                        .tint(.white)
                         .textContentType(.password)
                         .padding(.horizontal, 16)
                         .frame(height: 48)
@@ -117,7 +121,7 @@ struct LoginView: View {
                             Task { await handlePasswordReset() }
                         }
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(.black.opacity(0.75))
+                        .foregroundStyle(.white.opacity(0.9))
                         .underline()
                     }
                 }
@@ -128,11 +132,11 @@ struct LoginView: View {
                 } label: {
                     Group {
                         if isLoading {
-                            ProgressView().tint(.black)
+                            ProgressView().tint(.white)
                         } else {
                             Text("Sign in")
                                 .font(.system(size: 16, weight: .semibold))
-                                .foregroundStyle(.black)
+                                .foregroundStyle(.white)
                         }
                     }
                     .frame(maxWidth: .infinity)
@@ -146,11 +150,11 @@ struct LoginView: View {
                 // Register link
                 HStack(spacing: 4) {
                     Text("Don't have an account?")
-                        .foregroundStyle(.black.opacity(0.7))
+                        .foregroundStyle(.white.opacity(0.85))
                     Button("Sign up") {
                         showRegister = true
                     }
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.white)
                     .fontWeight(.bold)
                 }
                 .font(.subheadline)
@@ -171,7 +175,7 @@ struct LoginView: View {
         VStack(spacing: 4) {
             Text("By signing up for EKKO Connect you agree to our")
                 .font(.caption2)
-                .foregroundStyle(.black.opacity(0.65))
+                .foregroundStyle(.white.opacity(0.8))
             HStack(spacing: 4) {
                 Button {
                     if let url = LegalURLs.terms { UIApplication.shared.open(url) }
@@ -179,18 +183,18 @@ struct LoginView: View {
                     Text("Terms of Service")
                         .font(.caption2.weight(.semibold))
                         .underline()
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.white)
                 }
                 Text("and")
                     .font(.caption2)
-                    .foregroundStyle(.black.opacity(0.65))
+                    .foregroundStyle(.white.opacity(0.8))
                 Button {
                     if let url = LegalURLs.privacy { UIApplication.shared.open(url) }
                 } label: {
                     Text("Privacy Policy")
                         .font(.caption2.weight(.semibold))
                         .underline()
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.white)
                 }
             }
         }

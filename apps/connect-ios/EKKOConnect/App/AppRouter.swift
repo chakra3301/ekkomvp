@@ -46,16 +46,16 @@ struct AppRouter: View {
     }
 }
 
-/// Auth navigation stack — uses the looping loading-screen video as the
-/// shared backdrop so sign in and sign up read as a continuation of the
-/// splash.
+/// Auth navigation stack — uses the same dotted ambient background that
+/// drives Discover/Profile, so sign in and sign up sit on the canonical
+/// EKKO backdrop and adapt to light/dark.
 struct AuthFlowView: View {
     var body: some View {
         NavigationStack {
             LoginView()
                 .scrollContentBackground(.hidden)
                 .background {
-                    LoadingScreenVideo()
+                    AuthDottedBackground()
                 }
                 .toolbarBackground(.hidden, for: .navigationBar)
         }
