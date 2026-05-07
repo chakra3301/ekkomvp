@@ -74,11 +74,12 @@ export default function ApplyPage() {
   };
 
   return (
-    <main className="relative bg-black text-white">
-      {/* Background. `fixed` keeps it pinned to the viewport while the content
-          beside it scrolls. `z-0` keeps it inside the same stacking context as
-          the content (z-10) — using a negative z-index here puts it BEHIND
-          body's theme background-color and the page renders white. */}
+    // The connect app locks `overflow: hidden` on html/body globally
+    // (globals.css:325, intentional for the swipe feed). Make this page its
+    // own scroll container by fixing main to the viewport with overflow-y-auto.
+    <main className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-black text-white">
+      {/* Background pinned to the viewport (fixed positions relative to the
+          viewport regardless of ancestor positioning). */}
       <div aria-hidden className="fixed inset-0 z-0 pointer-events-none">
         {size && (
           <UnicornScene
