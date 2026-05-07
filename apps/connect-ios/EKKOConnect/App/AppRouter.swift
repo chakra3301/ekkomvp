@@ -46,17 +46,16 @@ struct AppRouter: View {
     }
 }
 
-/// Auth navigation stack with sign-in background image
+/// Auth navigation stack — uses the looping loading-screen video as the
+/// shared backdrop so sign in and sign up read as a continuation of the
+/// splash.
 struct AuthFlowView: View {
     var body: some View {
         NavigationStack {
             LoginView()
                 .scrollContentBackground(.hidden)
                 .background {
-                    Image("SignInBackground")
-                        .resizable()
-                        .scaledToFill()
-                        .ignoresSafeArea()
+                    LoadingScreenVideo()
                 }
                 .toolbarBackground(.hidden, for: .navigationBar)
         }

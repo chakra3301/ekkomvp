@@ -6,9 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Loader2, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 import { DISCIPLINES } from "@ekko/config";
@@ -76,10 +74,15 @@ export default function ApplyPage() {
   };
 
   return (
-    <main className="relative min-h-svh w-full overflow-x-hidden bg-black text-white">
-      {/* Unicorn background — same projects as the landing page so the brand reads cohesively */}
-      {size && (
-        <div className="fixed inset-0 z-0 pointer-events-none">
+    <>
+      {/* Background lives outside the scrolling document flow. `fixed` + a high
+          negative z-index means it never enters the layout calculation, and the
+          page scrolls normally on top of it. */}
+      <div
+        aria-hidden
+        className="fixed inset-0 -z-10 pointer-events-none bg-black"
+      >
+        {size && (
           <UnicornScene
             key={size.w < 768 ? "mobile" : "desktop"}
             projectId={size.w < 768 ? "FNbxpXUHThlUBcgNIC2n" : "n6VPNW1AlXtEeqAHt9LA"}
@@ -89,181 +92,187 @@ export default function ApplyPage() {
             dpi={1.5}
             sdkUrl="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@2.1.12/dist/unicornStudio.umd.js"
           />
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
-      )}
-
-      <div className="relative z-10 mx-auto max-w-xl px-5 py-14 sm:py-20">
-        {submit.isSuccess ? (
-          <SuccessCard />
-        ) : (
-          <>
-            <header className="mb-8 text-center">
-              <p className="ekko-arches text-3xl sm:text-4xl text-white tracking-wider mb-2">
-                LISTEN FOR THE ECHOES
-              </p>
-              <p className="font-mono text-[11px] sm:text-xs tracking-[0.25em] uppercase text-white/65">
-                apply for an invitation
-              </p>
-            </header>
-
-            <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 space-y-5">
-              <FormField
-                id="email"
-                label="Email"
-                required
-                hint="Where we'll send your invite if approved."
-              >
-                <Input
-                  id="email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="glass-input border-white/20 bg-white/5 text-white placeholder:text-white/40 focus-visible:ring-white/30"
-                />
-              </FormField>
-
-              <FormField
-                id="portfolio"
-                label="Portfolio link"
-                hint="Personal site, IG, Behance, Are.na, anything that shows your work."
-              >
-                <Input
-                  id="portfolio"
-                  type="url"
-                  inputMode="url"
-                  placeholder="https://"
-                  value={portfolioUrl}
-                  onChange={(e) => setPortfolioUrl(e.target.value)}
-                  className="glass-input border-white/20 bg-white/5 text-white placeholder:text-white/40 focus-visible:ring-white/30"
-                />
-              </FormField>
-
-              <FormField
-                id="disciplines"
-                label="Disciplines"
-                required
-                hint={
-                  selectedDisciplines.length === 0
-                    ? "Pick what you do. Multiple is fine."
-                    : `${selectedDisciplines.length} selected${
-                        selectedDisciplines.length >= MAX_DISCIPLINES ? " (max)" : ""
-                      }`
-                }
-              >
-                <div className="flex flex-wrap gap-2">
-                  {DISCIPLINES.map((d) => {
-                    const active = selectedDisciplines.includes(d.slug);
-                    const disabled =
-                      !active && selectedDisciplines.length >= MAX_DISCIPLINES;
-                    return (
-                      <button
-                        type="button"
-                        key={d.slug}
-                        onClick={() => toggleDiscipline(d.slug)}
-                        disabled={disabled}
-                        aria-pressed={active}
-                        className={cn(
-                          "px-3 py-1.5 text-sm rounded-full border transition-all",
-                          active
-                            ? "bg-white text-black border-white"
-                            : "bg-white/5 text-white/85 border-white/20 hover:bg-white/10",
-                          disabled && "opacity-40 cursor-not-allowed"
-                        )}
-                      >
-                        {d.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </FormField>
-
-              <FormField id="city" label="City" hint="Helps us prioritize density in your scene.">
-                <Input
-                  id="city"
-                  placeholder="Brooklyn, Tokyo, Lagos…"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  maxLength={80}
-                  className="glass-input border-white/20 bg-white/5 text-white placeholder:text-white/40 focus-visible:ring-white/30"
-                />
-              </FormField>
-
-              <FormField
-                id="statement"
-                label="What are you working on right now?"
-                required
-                hint={`${statement.length} / ${STATEMENT_MAX}`}
-              >
-                <Textarea
-                  id="statement"
-                  rows={4}
-                  placeholder="One short paragraph about the project, idea, or scene that's pulling at you."
-                  value={statement}
-                  onChange={(e) => setStatement(e.target.value.slice(0, STATEMENT_MAX))}
-                  required
-                  className="glass-input border-white/20 bg-white/5 text-white placeholder:text-white/40 focus-visible:ring-white/30 resize-none"
-                />
-              </FormField>
-
-              <FormField
-                id="referral"
-                label="Referral code"
-                hint={
-                  initialReferralCode && !touchedReferral
-                    ? "Pre-filled from your invite link."
-                    : "Optional. From an EKKO member."
-                }
-              >
-                <Input
-                  id="referral"
-                  placeholder="ABCD-EFGH"
-                  value={referralCode}
-                  onChange={(e) => {
-                    setTouchedReferral(true);
-                    setReferralCode(
-                      e.target.value
-                        .replace(/[\s-]/g, "")
-                        .toUpperCase()
-                        .slice(0, 16)
-                    );
-                  }}
-                  className="glass-input border-white/20 bg-white/5 text-white placeholder:text-white/40 focus-visible:ring-white/30 font-mono uppercase tracking-wider"
-                />
-              </FormField>
-
-              {submit.error && (
-                <p className="text-sm text-red-300/95 bg-red-500/10 border border-red-400/20 rounded-md px-3 py-2">
-                  {submit.error.message}
-                </p>
-              )}
-
-              <Button
-                type="submit"
-                disabled={!isValid || submit.isPending}
-                className="w-full h-12 btn-liquid-glass text-white text-base font-semibold border border-white/30"
-              >
-                {submit.isPending ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Submitting…
-                  </>
-                ) : (
-                  "Submit application"
-                )}
-              </Button>
-
-              <p className="text-[11px] text-white/55 text-center">
-                Submissions are reviewed by hand. We'll only email you if the answer is yes.
-              </p>
-            </form>
-          </>
         )}
+        <div className="absolute inset-0 bg-black/35" />
       </div>
+
+      <main className="relative text-white">
+        <div className="mx-auto max-w-xl px-5 py-14 sm:py-20">
+          {submit.isSuccess ? (
+            <SuccessCard />
+          ) : (
+            <>
+              <header className="mb-8 text-center">
+                <p className="ekko-arches text-3xl sm:text-4xl text-white tracking-wider mb-2">
+                  LISTEN FOR THE ECHOES
+                </p>
+                <p className="font-mono text-[11px] sm:text-xs tracking-[0.25em] uppercase text-white/65">
+                  apply for an invitation
+                </p>
+              </header>
+
+              <form onSubmit={handleSubmit} className="apple-glass-card p-6 sm:p-8 space-y-5">
+                <FormField
+                  id="email"
+                  label="Email"
+                  required
+                  hint="Where we'll send your invite if approved."
+                >
+                  <input
+                    id="email"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="apple-glass-input"
+                  />
+                </FormField>
+
+                <FormField
+                  id="portfolio"
+                  label="Portfolio link"
+                  hint="Personal site, IG, Behance, Are.na, anything that shows your work."
+                >
+                  <input
+                    id="portfolio"
+                    type="url"
+                    inputMode="url"
+                    placeholder="https://"
+                    value={portfolioUrl}
+                    onChange={(e) => setPortfolioUrl(e.target.value)}
+                    className="apple-glass-input"
+                  />
+                </FormField>
+
+                <FormField
+                  id="disciplines"
+                  label="Disciplines"
+                  required
+                  hint={
+                    selectedDisciplines.length === 0
+                      ? "Pick what you do. Multiple is fine."
+                      : `${selectedDisciplines.length} selected${
+                          selectedDisciplines.length >= MAX_DISCIPLINES ? " (max)" : ""
+                        }`
+                  }
+                >
+                  <div className="flex flex-wrap gap-2">
+                    {DISCIPLINES.map((d) => {
+                      const active = selectedDisciplines.includes(d.slug);
+                      const disabled =
+                        !active && selectedDisciplines.length >= MAX_DISCIPLINES;
+                      return (
+                        <button
+                          type="button"
+                          key={d.slug}
+                          onClick={() => toggleDiscipline(d.slug)}
+                          disabled={disabled}
+                          aria-pressed={active}
+                          className={cn(
+                            "px-3 py-1.5 text-sm rounded-full transition-all",
+                            active
+                              ? "apple-glass-chip-active"
+                              : "apple-glass-chip",
+                            disabled && "opacity-40 cursor-not-allowed"
+                          )}
+                        >
+                          {d.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </FormField>
+
+                <FormField
+                  id="city"
+                  label="City"
+                  hint="Helps us prioritize density in your scene."
+                >
+                  <input
+                    id="city"
+                    placeholder="Brooklyn, Tokyo, Lagos…"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    maxLength={80}
+                    className="apple-glass-input"
+                  />
+                </FormField>
+
+                <FormField
+                  id="statement"
+                  label="What are you working on right now?"
+                  required
+                  hint={`${statement.length} / ${STATEMENT_MAX}`}
+                >
+                  <textarea
+                    id="statement"
+                    rows={4}
+                    placeholder="One short paragraph about the project, idea, or scene that's pulling at you."
+                    value={statement}
+                    onChange={(e) => setStatement(e.target.value.slice(0, STATEMENT_MAX))}
+                    required
+                    className="apple-glass-input resize-none leading-relaxed"
+                  />
+                </FormField>
+
+                <FormField
+                  id="referral"
+                  label="Referral code"
+                  hint={
+                    initialReferralCode && !touchedReferral
+                      ? "Pre-filled from your invite link."
+                      : "Optional. From an EKKO member."
+                  }
+                >
+                  <input
+                    id="referral"
+                    placeholder="ABCD-EFGH"
+                    value={referralCode}
+                    onChange={(e) => {
+                      setTouchedReferral(true);
+                      setReferralCode(
+                        e.target.value
+                          .replace(/[\s-]/g, "")
+                          .toUpperCase()
+                          .slice(0, 16)
+                      );
+                    }}
+                    className="apple-glass-input font-mono uppercase tracking-wider"
+                  />
+                </FormField>
+
+                {submit.error && (
+                  <p className="text-sm text-red-200 bg-red-500/15 border border-red-300/20 rounded-md px-3 py-2">
+                    {submit.error.message}
+                  </p>
+                )}
+
+                <Button
+                  type="submit"
+                  disabled={!isValid || submit.isPending}
+                  className="apple-glass-button w-full h-12 text-white text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submit.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Submitting…
+                    </>
+                  ) : (
+                    "Submit application"
+                  )}
+                </Button>
+
+                <p className="text-[11px] text-white/55 text-center">
+                  Submissions are reviewed by hand. We&apos;ll only email you if the answer is yes.
+                </p>
+              </form>
+            </>
+          )}
+        </div>
+      </main>
 
       <style jsx global>{`
         @font-face {
@@ -277,8 +286,110 @@ export default function ApplyPage() {
           font-family: "ArchesEkko", serif;
           letter-spacing: 0.04em;
         }
+
+        /* Apple ultraThinMaterial-equivalent glass — translucent fill that
+           samples content behind, strong blur with saturation boost, subtle
+           1px white stroke. Tuned for dark backgrounds. */
+        .apple-glass-card {
+          position: relative;
+          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.06);
+          backdrop-filter: blur(30px) saturate(180%);
+          -webkit-backdrop-filter: blur(30px) saturate(180%);
+          border: 1px solid rgba(255, 255, 255, 0.14);
+          box-shadow:
+            0 18px 50px rgba(0, 0, 0, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .apple-glass-input {
+          display: block;
+          width: 100%;
+          height: 44px;
+          padding: 0 14px;
+          color: #fff;
+          font-size: 15px;
+          line-height: 44px;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px) saturate(160%);
+          -webkit-backdrop-filter: blur(20px) saturate(160%);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+          transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+          appearance: none;
+          -webkit-appearance: none;
+        }
+
+        textarea.apple-glass-input {
+          height: auto;
+          line-height: 1.5;
+          padding: 12px 14px;
+        }
+
+        .apple-glass-input::placeholder {
+          color: rgba(255, 255, 255, 0.4);
+        }
+
+        .apple-glass-input:hover {
+          background: rgba(255, 255, 255, 0.07);
+          border-color: rgba(255, 255, 255, 0.16);
+        }
+
+        .apple-glass-input:focus {
+          outline: none;
+          background: rgba(255, 255, 255, 0.09);
+          border-color: rgba(255, 255, 255, 0.28);
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.08),
+            0 0 0 4px rgba(255, 255, 255, 0.06);
+        }
+
+        .apple-glass-input:autofill,
+        .apple-glass-input:-webkit-autofill {
+          -webkit-text-fill-color: #fff;
+          -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.05) inset;
+          caret-color: #fff;
+        }
+
+        .apple-glass-chip {
+          color: rgba(255, 255, 255, 0.85);
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(20px) saturate(160%);
+          -webkit-backdrop-filter: blur(20px) saturate(160%);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .apple-glass-chip:hover {
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .apple-glass-chip-active {
+          color: #000;
+          background: rgba(255, 255, 255, 0.92);
+          border: 1px solid rgba(255, 255, 255, 0.95);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .apple-glass-button {
+          background: rgba(255, 255, 255, 0.14);
+          backdrop-filter: blur(30px) saturate(180%);
+          -webkit-backdrop-filter: blur(30px) saturate(180%);
+          border: 1px solid rgba(255, 255, 255, 0.22);
+          box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.18);
+          transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .apple-glass-button:hover:not(:disabled) {
+          background: rgba(255, 255, 255, 0.2);
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+        .apple-glass-button:active:not(:disabled) {
+          background: rgba(255, 255, 255, 0.24);
+        }
       `}</style>
-    </main>
+    </>
   );
 }
 
@@ -313,7 +424,7 @@ function FormField({
 
 function SuccessCard() {
   return (
-    <div className="glass-card p-8 sm:p-10 text-center space-y-5">
+    <div className="apple-glass-card p-8 sm:p-10 text-center space-y-5">
       <div className="mx-auto w-12 h-12 rounded-full bg-white/15 border border-white/30 flex items-center justify-center">
         <Check className="h-6 w-6 text-white" />
       </div>
@@ -322,7 +433,7 @@ function SuccessCard() {
           APPLICATION RECEIVED
         </h2>
         <p className="text-sm text-white/75 max-w-sm mx-auto leading-relaxed">
-          Every submission is reviewed by hand. If the answer is yes, you'll get an invite code at the email you provided. No reply otherwise.
+          Every submission is reviewed by hand. If the answer is yes, you&apos;ll get an invite code at the email you provided. No reply otherwise.
         </p>
       </div>
       <p className="text-[11px] font-mono tracking-[0.25em] uppercase text-white/45">

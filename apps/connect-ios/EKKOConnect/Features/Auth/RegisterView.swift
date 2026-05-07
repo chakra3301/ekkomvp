@@ -22,22 +22,34 @@ struct RegisterView: View {
                 VStack(spacing: 16) {
                     // Email
                     FormField(label: "Email", error: errors["email"]) {
-                        TextField("you@example.com", text: $email)
-                            .textContentType(.emailAddress)
-                            .keyboardType(.emailAddress)
-                            .textInputAutocapitalization(.never)
-                            .padding(12)
-                            .background(.ultraThinMaterial)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        TextField(
+                            "",
+                            text: $email,
+                            prompt: Text("you@example.com").foregroundColor(.black.opacity(0.45))
+                        )
+                        .foregroundStyle(.black)
+                        .tint(Color.accentColor)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .padding(.horizontal, 16)
+                        .frame(height: 48)
+                        .glassBubble(cornerRadius: 14)
                     }
 
                     // Password
                     FormField(label: "Password", error: errors["password"]) {
-                        SecureField("At least 8 characters", text: $password)
-                            .textContentType(.newPassword)
-                            .padding(12)
-                            .background(.ultraThinMaterial)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        SecureField(
+                            "",
+                            text: $password,
+                            prompt: Text("At least 8 characters").foregroundColor(.black.opacity(0.45))
+                        )
+                        .foregroundStyle(.black)
+                        .tint(Color.accentColor)
+                        .textContentType(.newPassword)
+                        .padding(.horizontal, 16)
+                        .frame(height: 48)
+                        .glassBubble(cornerRadius: 14)
                     }
 
                     // Terms + Privacy agreement
@@ -50,36 +62,46 @@ struct RegisterView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("I agree to the app's policies and understand there is zero tolerance for objectionable content or abusive behavior.")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.black.opacity(0.7))
                             HStack(spacing: 10) {
                                 Button("Terms of Service") {
                                     if let url = LegalURLs.terms { UIApplication.shared.open(url) }
                                 }
                                 .font(.caption.weight(.medium))
-                                .foregroundStyle(Color.accentColor)
+                                .foregroundStyle(.black)
+                                .underline()
 
                                 Button("Privacy Policy") {
                                     if let url = LegalURLs.privacy { UIApplication.shared.open(url) }
                                 }
                                 .font(.caption.weight(.medium))
-                                .foregroundStyle(Color.accentColor)
+                                .foregroundStyle(.black)
+                                .underline()
                             }
                         }
                         Spacer()
                     }
 
-                    // Submit
+                    // Submit — glass styled to match LoginView
                     Button {
                         Task { await handleRegister() }
                     } label: {
-                        if isLoading {
-                            ProgressView().tint(.white)
-                        } else {
-                            Text("Continue")
+                        Group {
+                            if isLoading {
+                                ProgressView().tint(.black)
+                            } else {
+                                Text("Continue")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundStyle(.black)
+                            }
                         }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
                     }
-                    .buttonStyle(PrimaryButtonStyle(isDisabled: !agreedToTerms))
+                    .buttonStyle(.plain)
+                    .glassBubble(cornerRadius: 14)
                     .disabled(!agreedToTerms || isLoading)
+                    .opacity(!agreedToTerms ? 0.6 : 1)
                 }
             }
             .padding(.horizontal, 24)
@@ -87,10 +109,7 @@ struct RegisterView: View {
         }
         .scrollContentBackground(.hidden)
         .background {
-            Image("SignInBackground")
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea()
+            LoadingScreenVideo()
         }
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(false)
