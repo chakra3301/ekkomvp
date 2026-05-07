@@ -65,7 +65,7 @@ export default function LandingPage() {
         </div>
       )}
 
-      <div className="absolute inset-0 z-20 flex flex-col items-center justify-end text-center px-6 pb-[12vh] pointer-events-none">
+      <div className="absolute inset-0 z-20 flex flex-col items-center justify-end text-center px-6 pb-[6vh] pointer-events-none">
         <p className="ekko-arches text-3xl md:text-5xl text-white/95 mb-4 tracking-wider">
           LISTEN FOR THE ECHOES
         </p>
@@ -83,8 +83,6 @@ export default function LandingPage() {
           <model-viewer
             src="/models/ekko-mark.glb"
             alt="EKKO"
-            auto-rotate
-            rotation-per-second="20deg"
             disable-zoom
             disable-pan
             disable-tap
