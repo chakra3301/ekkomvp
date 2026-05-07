@@ -14,6 +14,9 @@ import {
   Trash2,
   Ticket,
   Inbox,
+  Crown,
+  Star,
+  ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -84,6 +87,20 @@ export function AdminDashboard() {
     onSuccess: () => {
       utils.report.getAll.invalidate();
       toast.success("Post deleted");
+    },
+  });
+
+  // Per-user badge toggle. The same mutation backs the CEO / OA / GM
+  // pills below — each pill calls it with one of the optional fields set.
+  // Re-fetches getUsers on success so the toggle reflects fresh state
+  // immediately.
+  const setUserBadges = trpc.admin.setUserBadges.useMutation({
+    onSuccess: () => {
+      utils.admin.getUsers.invalidate();
+      toast.success("Badges updated");
+    },
+    onError: (err) => {
+      toast.error(err.message);
     },
   });
 
@@ -314,65 +331,124 @@ export function AdminDashboard() {
               <div className="text-center py-8 text-muted-foreground">No users found.</div>
             ) : (
               <div className="space-y-2">
-                {userData.users.map((user) => (
-                  <div
-                    key={user.id}
-                    className="flex items-center justify-between p-3 sm:p-4 gap-2 rounded-lg border bg-card"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={user.profile?.avatarUrl || undefined} />
-                        <AvatarFallback className="bg-muted text-sm">
-                          {user.profile?.displayName?.charAt(0).toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-medium text-sm truncate">
-                            {user.profile?.displayName || user.email}
-                          </p>
-                          <Badge variant="outline" className="text-xs">
-                            {user.role}
-                          </Badge>
-                          {user.status === "SUSPENDED" && (
-                            <Badge variant="destructive" className="text-xs">
-                              Suspended
-                            </Badge>
-                          )}
+                {userData.users.map((user) => {
+                  const isAdminUser = user.role === "ADMIN";
+                  return (
+                    <div
+                      key={user.id}
+                      className="flex flex-col gap-3 p-3 sm:p-4 rounded-lg border bg-card"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={user.profile?.avatarUrl || undefined} />
+                            <AvatarFallback className="bg-muted text-sm">
+                              {user.profile?.displayName?.charAt(0).toUpperCase() || "U"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p className="font-medium text-sm truncate">
+                                {user.profile?.displayName || user.email}
+                              </p>
+                              <Badge variant="outline" className="text-xs">
+                                {user.role}
+                              </Badge>
+                              {user.status === "SUSPENDED" && (
+                                <Badge variant="destructive" className="text-xs">
+                                  Suspended
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              @{user.profile?.username || "—"} · {user._count.posts} posts
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          @{user.profile?.username || "—"} · {user._count.posts} posts
-                        </p>
-                      </div>
-                    </div>
 
-                    <div className="flex gap-2">
-                      {user.status === "ACTIVE" ? (
-                        <Button
-                          size="sm"
-                          variant="destructive"
+                        <div className="flex gap-2 shrink-0">
+                          {user.status === "ACTIVE" ? (
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => {
+                                if (confirm(`Suspend ${user.profile?.displayName || user.email}?`)) {
+                                  suspendUser.mutate(user.id);
+                                }
+                              }}
+                            >
+                              <Ban className="h-3.5 w-3.5 mr-1" />
+                              Suspend
+                            </Button>
+                          ) : user.status === "SUSPENDED" ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => unsuspendUser.mutate(user.id)}
+                            >
+                              <Check className="h-3.5 w-3.5 mr-1" />
+                              Unsuspend
+                            </Button>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      {/* Badge toggles. Each chip calls setUserBadges with
+                          ONE field set — the others stay at their current
+                          values server-side. Updates show in iOS within one
+                          profile fetch / pull-to-refresh, no redeploy. */}
+                      <div className="flex flex-wrap gap-2 pt-1 border-t">
+                        <BadgeToggle
+                          label="CEO"
+                          icon={<Crown className="h-3.5 w-3.5" />}
+                          on={user.hasCeoBadge}
+                          tone="ceo"
+                          disabled={setUserBadges.isPending}
+                          onClick={() =>
+                            setUserBadges.mutate({
+                              userId: user.id,
+                              hasCeoBadge: !user.hasCeoBadge,
+                            })
+                          }
+                        />
+                        <BadgeToggle
+                          label="OA"
+                          icon={<Star className="h-3.5 w-3.5" />}
+                          on={user.isOriginalArtist}
+                          tone="oa"
+                          disabled={setUserBadges.isPending}
+                          onClick={() =>
+                            setUserBadges.mutate({
+                              userId: user.id,
+                              isOriginalArtist: !user.isOriginalArtist,
+                            })
+                          }
+                        />
+                        <BadgeToggle
+                          label="GM"
+                          icon={<ShieldCheck className="h-3.5 w-3.5" />}
+                          on={isAdminUser}
+                          tone="gm"
+                          disabled={setUserBadges.isPending}
                           onClick={() => {
-                            if (confirm(`Suspend ${user.profile?.displayName || user.email}?`)) {
-                              suspendUser.mutate(user.id);
+                            const label = user.profile?.displayName || user.email;
+                            const verb = isAdminUser ? "Remove admin from" : "Make admin:";
+                            if (
+                              confirm(
+                                `${verb} ${label}? This grants/revokes full moderation access.`
+                              )
+                            ) {
+                              setUserBadges.mutate({
+                                userId: user.id,
+                                makeAdmin: !isAdminUser,
+                              });
                             }
                           }}
-                        >
-                          <Ban className="h-3.5 w-3.5 mr-1" />
-                          Suspend
-                        </Button>
-                      ) : user.status === "SUSPENDED" ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => unsuspendUser.mutate(user.id)}
-                        >
-                          <Check className="h-3.5 w-3.5 mr-1" />
-                          Unsuspend
-                        </Button>
-                      ) : null}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -396,5 +472,57 @@ export function AdminDashboard() {
         )}
       </div>
     </div>
+  );
+}
+
+// Compact toggle pill for assigning a chrome / iridescent badge to a
+// user. Renders ON/OFF state with a per-tone color for instant scan in
+// the user list.
+function BadgeToggle({
+  label,
+  icon,
+  on,
+  tone,
+  disabled,
+  onClick,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  on: boolean;
+  tone: "ceo" | "oa" | "gm";
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  // Mirror the iridescent palettes used in iOS so the admin UI hints at
+  // the same identity. Subdued when off, saturated when on.
+  const toneClasses: Record<typeof tone, { on: string; off: string }> = {
+    ceo: {
+      on: "bg-violet-500/15 text-violet-300 border-violet-500/40 hover:bg-violet-500/25",
+      off: "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted",
+    },
+    oa: {
+      on: "bg-amber-500/15 text-amber-300 border-amber-500/40 hover:bg-amber-500/25",
+      off: "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted",
+    },
+    gm: {
+      on: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/25",
+      off: "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted",
+    },
+  };
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition disabled:opacity-50 disabled:pointer-events-none",
+        on ? toneClasses[tone].on : toneClasses[tone].off
+      )}
+      aria-pressed={on}
+    >
+      {icon}
+      {label}
+      {on && <Check className="h-3 w-3" />}
+    </button>
   );
 }

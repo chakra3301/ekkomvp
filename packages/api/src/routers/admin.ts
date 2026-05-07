@@ -59,7 +59,16 @@ export const adminRouter = router({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: { createdAt: "desc" },
-        include: {
+        select: {
+          id: true,
+          email: true,
+          role: true,
+          status: true,
+          createdAt: true,
+          // Badge state — surfaced in the admin UI as toggles next to each user.
+          hasCeoBadge: true,
+          isOriginalArtist: true,
+          isFounder: true,
           profile: {
             select: {
               username: true,
@@ -112,5 +121,42 @@ export const adminRouter = router({
         where: { id: postId },
       });
       return { deleted: true };
+    }),
+
+  // Flip the chrome-iridescent badge flags on a user. Each field is
+  // optional — only the ones the caller passes get updated, so the same
+  // mutation backs every per-badge toggle in the admin Users tab.
+  // GM follows from `role === "ADMIN"`, so we expose a `makeAdmin` flag
+  // that swaps the user's role between ADMIN and CREATIVE. Confirmation
+  // happens client-side because making someone an admin is irreversible
+  // from their perspective without another admin's intervention.
+  setUserBadges: adminProcedure
+    .input(
+      z.object({
+        userId: z.string().uuid(),
+        hasCeoBadge: z.boolean().optional(),
+        isOriginalArtist: z.boolean().optional(),
+        makeAdmin: z.boolean().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const data: Record<string, unknown> = {};
+      if (input.hasCeoBadge !== undefined) data.hasCeoBadge = input.hasCeoBadge;
+      if (input.isOriginalArtist !== undefined) data.isOriginalArtist = input.isOriginalArtist;
+      if (input.makeAdmin !== undefined) {
+        data.role = input.makeAdmin ? "ADMIN" : "CREATIVE";
+      }
+      const user = await prisma.user.update({
+        where: { id: input.userId },
+        data,
+        select: {
+          id: true,
+          role: true,
+          hasCeoBadge: true,
+          isOriginalArtist: true,
+          isFounder: true,
+        },
+      });
+      return user;
     }),
 });
