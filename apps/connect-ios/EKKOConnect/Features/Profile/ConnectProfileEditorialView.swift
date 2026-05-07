@@ -22,7 +22,8 @@ struct ConnectProfileEditorialView: View {
     var likesReceivedCount: Int = 0
     var matchesCount: Int = 0
     var isAdmin: Bool = false
-    var hasDarkMatterBadge: Bool = false
+    var hasCeoBadge: Bool = false
+    var isOriginalArtist: Bool = false
     /// When non-nil, sections become tappable and gain edit affordance.
     var editActions: ProfileEditActions? = nil
 
@@ -102,10 +103,12 @@ struct ConnectProfileEditorialView: View {
                         .lineLimit(2)
                         .minimumScaleFactor(0.5)
                         .foregroundStyle(.primary)
-                    if hasDarkMatterBadge {
-                        DarkMatterBadge()
+                    if hasCeoBadge {
+                        IridescentBadge(variant: .ceo, height: 28)
+                    } else if isOriginalArtist {
+                        IridescentBadge(variant: .oa, height: 28)
                     } else if isAdmin {
-                        gmBadge
+                        IridescentBadge(variant: .gm, height: 28)
                     } else if connectTier == .INFINITE {
                         Image(systemName: "infinity")
                             .font(.callout.weight(.semibold))

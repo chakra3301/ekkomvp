@@ -221,10 +221,12 @@ model User {
   cohort          String? // e.g. FOUNDERS_S26, PUBLIC_W26_C1
   invitedByUserId String? @map("invited_by_user_id") @db.Uuid
 
-  // Cryptic "???" badge — opaque to other users, dark-energy / dark-matter
-  // styling. Hand-granted (no UI to award it). Renders alongside / above
-  // the GM and INFINITE badges in profile templates.
-  hasDarkMatterBadge Boolean @default(false) @map("has_dark_matter_badge")
+  // ─── Custom badges (chrome / iridescent renders client-side) ───
+  // CEO — hand-granted only. Highest priority pill in the templates.
+  hasCeoBadge Boolean @default(false) @map("has_ceo_badge")
+  // Original Artist — auto-granted when the user redeems an invite from
+  // a founder (see invite.redeem). Surface to users about that lineage.
+  isOriginalArtist Boolean @default(false) @map("is_original_artist")
 
   invitedBy    User?  @relation("UserInvitedBy", fields: [invitedByUserId], references: [id], onDelete: SetNull)
   invitedUsers User[] @relation("UserInvitedBy")

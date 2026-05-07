@@ -79,6 +79,17 @@ export const inviteRouter = router({
           },
         });
 
+        // Look up the inviter's founder status. Anyone who redeems a code
+        // issued by a founder gets the "Original Artist" badge — that's
+        // the onboarding lineage we want to surface.
+        const inviter = invite.issuedByUserId
+          ? await tx.user.findUnique({
+              where: { id: invite.issuedByUserId },
+              select: { isFounder: true },
+            })
+          : null;
+        const isOriginalArtist = inviter?.isFounder === true;
+
         // Mark the user as gated, set founder bits, link inviter.
         await tx.user.update({
           where: { id: userId },
@@ -87,6 +98,7 @@ export const inviteRouter = router({
             isFounder: invite.isFounder,
             cohort: invite.cohort,
             invitedByUserId: invite.issuedByUserId ?? undefined,
+            isOriginalArtist,
           },
         });
 

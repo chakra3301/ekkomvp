@@ -24,10 +24,12 @@ struct User: Codable, Identifiable {
     let cohort: String?
     let invitedByUserId: String?
 
-    /// Cryptic "???" badge — hand-granted, no UI flow to award it. When true
-    /// the templates render `DarkMatterBadge` alongside / above GM and
-    /// INFINITE.
-    let hasDarkMatterBadge: Bool?
+    /// CEO badge — hand-granted, no UI flow to award it. Highest-priority
+    /// pill in the templates (chrome / iridescent render).
+    let hasCeoBadge: Bool?
+    /// Original Artist — auto-granted when this user redeemed an invite
+    /// from a founder. Renders as the chrome/iridescent OA badge.
+    let isOriginalArtist: Bool?
 
     var profile: Profile?
     var connectProfile: ConnectProfile?
@@ -39,7 +41,8 @@ struct UserWithProfile: Codable, Identifiable {
     let email: String?
     let role: UserRole?
     let lastActiveAt: Date?
-    let hasDarkMatterBadge: Bool?
+    let hasCeoBadge: Bool?
+    let isOriginalArtist: Bool?
     var profile: Profile?
     /// Slim Connect profile fields the server attaches in some nested responses
     /// (e.g. likes-received, swipe history). Typically just id + mediaSlots + headline.
@@ -51,13 +54,14 @@ struct UserWithProfile: Codable, Identifiable {
         email = try container.decodeIfPresent(String.self, forKey: .email)
         role = try container.decodeIfPresent(UserRole.self, forKey: .role)
         lastActiveAt = try container.decodeIfPresent(Date.self, forKey: .lastActiveAt)
-        hasDarkMatterBadge = try container.decodeIfPresent(Bool.self, forKey: .hasDarkMatterBadge)
+        hasCeoBadge = try container.decodeIfPresent(Bool.self, forKey: .hasCeoBadge)
+        isOriginalArtist = try container.decodeIfPresent(Bool.self, forKey: .isOriginalArtist)
         profile = try container.decodeIfPresent(Profile.self, forKey: .profile)
         connectProfile = try container.decodeIfPresent(ConnectProfilePreview.self, forKey: .connectProfile)
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, email, role, lastActiveAt, hasDarkMatterBadge, profile, connectProfile
+        case id, email, role, lastActiveAt, hasCeoBadge, isOriginalArtist, profile, connectProfile
     }
 }
 

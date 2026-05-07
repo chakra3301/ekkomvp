@@ -211,7 +211,8 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 editActions: editActions
             )
 
@@ -232,7 +233,8 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 editActions: editActions
             )
 
@@ -253,7 +255,8 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 editActions: editActions
             )
 
@@ -275,7 +278,8 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 editActions: editActions
             )
 
@@ -297,7 +301,8 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 editActions: editActions
             )
 
@@ -319,7 +324,8 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 editActions: editActions
             )
 
@@ -341,7 +347,8 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 editActions: editActions
             )
 
@@ -363,7 +370,8 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 editActions: editActions
             )
 
@@ -384,7 +392,8 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 clientData: isEditMode ? draft.clientData : profile.clientData,
                 editActions: editActions
             )
@@ -406,7 +415,8 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 hireData: isEditMode ? draft.hireData : profile.hireData,
                 editActions: editActions
             )
@@ -429,7 +439,8 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 editActions: editActions
             )
 
@@ -448,7 +459,8 @@ struct ProfileView: View {
                 websiteUrl: website,
                 connectTier: profile.connectTier,
                 isAdmin: appState.isAdmin,
-                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
+                hasCeoBadge: (profile.user?.hasCeoBadge == true) || (appState.currentUser?.hasCeoBadge == true),
+                isOriginalArtist: (profile.user?.isOriginalArtist == true) || (appState.currentUser?.isOriginalArtist == true),
                 editableAvatar: !isEditMode,
                 editActions: editActions
             )

@@ -21,7 +21,8 @@ struct ConnectProfileCard: View {
     var connectTier: ConnectTier = .FREE
     /// When true, the name gets a "GM" badge instead of the Infinite icon.
     var isAdmin: Bool = false
-    var hasDarkMatterBadge: Bool = false
+    var hasCeoBadge: Bool = false
+    var isOriginalArtist: Bool = false
     var editableAvatar: Bool = false
     /// When non-nil, the card renders in inline-edit mode: each section becomes
     /// tappable, calls the matching closure, and gets a dashed edit affordance.
@@ -298,22 +299,12 @@ struct ConnectProfileCard: View {
             HStack {
                 Text(displayName)
                     .font(.custom(EKKOFont.regular, size: 26))
-                if hasDarkMatterBadge {
-                    DarkMatterBadge()
+                if hasCeoBadge {
+                    IridescentBadge(variant: .ceo, height: 26)
+                } else if isOriginalArtist {
+                    IridescentBadge(variant: .oa, height: 26)
                 } else if isAdmin {
-                    Text("GM")
-                        .font(.caption.bold())
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(
-                            LinearGradient(
-                                colors: [Color.accentColor, Color.purple],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(Capsule())
+                    IridescentBadge(variant: .gm, height: 26)
                 } else if connectTier == .INFINITE {
                     Image(systemName: "infinity")
                         .font(.caption)

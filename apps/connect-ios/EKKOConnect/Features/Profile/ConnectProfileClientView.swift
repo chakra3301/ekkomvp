@@ -24,7 +24,8 @@ struct ConnectProfileClientView: View {
     var likesReceivedCount: Int = 0
     var matchesCount: Int = 0
     var isAdmin: Bool = false
-    var hasDarkMatterBadge: Bool = false
+    var hasCeoBadge: Bool = false
+    var isOriginalArtist: Bool = false
     var clientData: ClientData?
     var editActions: ProfileEditActions? = nil
     /// Set when a non-owner is viewing this profile. Tapping Apply Now

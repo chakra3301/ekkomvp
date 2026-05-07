@@ -21,7 +21,8 @@ struct ConnectProfileStackView: View {
     var likesReceivedCount: Int = 0
     var matchesCount: Int = 0
     var isAdmin: Bool = false
-    var hasDarkMatterBadge: Bool = false
+    var hasCeoBadge: Bool = false
+    var isOriginalArtist: Bool = false
     var editActions: ProfileEditActions? = nil
 
     private let mono = "Menlo"
@@ -67,10 +68,12 @@ struct ConnectProfileStackView: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.6)
                             .foregroundStyle(.primary)
-                        if hasDarkMatterBadge {
-                            DarkMatterBadge()
+                        if hasCeoBadge {
+                            IridescentBadge(variant: .ceo, height: 28)
+                        } else if isOriginalArtist {
+                            IridescentBadge(variant: .oa, height: 28)
                         } else if isAdmin {
-                            gmBadge
+                            IridescentBadge(variant: .gm, height: 28)
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
                                 .font(.callout.weight(.semibold))

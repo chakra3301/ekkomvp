@@ -39,8 +39,12 @@ struct ConnectProfileViewer: View {
         profile.user?.role == .ADMIN
     }
 
-    private var hasDarkMatterBadge: Bool {
-        profile.user?.hasDarkMatterBadge == true
+    private var hasCeoBadge: Bool {
+        profile.user?.hasCeoBadge == true
+    }
+
+    private var isOriginalArtist: Bool {
+        profile.user?.isOriginalArtist == true
     }
 
     private var template: ConnectProfileTemplate {
@@ -76,7 +80,8 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist
             )
 
         case .editorial:
@@ -92,7 +97,8 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist
             )
 
         case .stack:
@@ -108,7 +114,8 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist
             )
 
         case .split:
@@ -125,7 +132,8 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist
             )
 
         case .terminal:
@@ -142,7 +150,8 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist
             )
 
         case .photo:
@@ -159,7 +168,8 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist
             )
 
         case .video:
@@ -176,7 +186,8 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist
             )
 
         case .music:
@@ -193,7 +204,8 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist
             )
 
         case .threeD:
@@ -210,7 +222,8 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist
             )
 
         case .hire:
@@ -226,7 +239,8 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge,
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist,
                 hireData: profile.hireData,
                 inquiryActions: inquiryActions
             )
@@ -244,7 +258,8 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge,
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist,
                 clientData: profile.clientData,
                 inquiryActions: inquiryActions
             )
@@ -260,7 +275,8 @@ struct ConnectProfileViewer: View {
                 websiteUrl: profile.websiteUrl,
                 connectTier: tier,
                 isAdmin: isAdmin,
-                hasDarkMatterBadge: hasDarkMatterBadge
+                hasCeoBadge: hasCeoBadge,
+                isOriginalArtist: isOriginalArtist
             )
         }
     }

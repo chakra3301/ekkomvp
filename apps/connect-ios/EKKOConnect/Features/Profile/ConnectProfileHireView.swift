@@ -25,7 +25,8 @@ struct ConnectProfileHireView: View {
     var likesReceivedCount: Int = 0
     var matchesCount: Int = 0
     var isAdmin: Bool = false
-    var hasDarkMatterBadge: Bool = false
+    var hasCeoBadge: Bool = false
+    var isOriginalArtist: Bool = false
     var hireData: HireData?
     var editActions: ProfileEditActions? = nil
     /// Set when a non-owner is viewing this profile. Tapping the
@@ -91,8 +92,12 @@ struct ConnectProfileHireView: View {
                                 .foregroundStyle(.primary)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.7)
-                            if hasDarkMatterBadge {
-                                DarkMatterBadge()
+                            if hasCeoBadge {
+                                IridescentBadge(variant: .ceo, height: 24)
+                            } else if isOriginalArtist {
+                                IridescentBadge(variant: .oa, height: 24)
+                            } else if isAdmin {
+                                IridescentBadge(variant: .gm, height: 24)
                             }
                         }
                         Text(metaLine)
