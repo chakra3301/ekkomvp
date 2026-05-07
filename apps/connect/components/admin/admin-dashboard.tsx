@@ -113,7 +113,11 @@ export function AdminDashboard() {
   ];
 
   return (
-    <div>
+    // Page sits outside the (main) layout (which normally owns the scroll
+    // container). globals.css sets `html, body { overflow: hidden }` for the
+    // Capacitor mobile shell, so the dashboard has to manage its own
+    // scrolling — h-screen + overflow-y-auto.
+    <div className="h-screen overflow-y-auto overscroll-contain pb-12">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="flex items-center gap-3 px-4 py-3">
