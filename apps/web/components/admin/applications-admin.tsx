@@ -4,14 +4,18 @@ import { useState } from "react";
 import { Check, Clock, Inbox, Loader2, X, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import type { inferRouterOutputs } from "@trpc/server";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
+import type { AppRouter } from "@ekko/api";
+
+type AppItem =
+  inferRouterOutputs<AppRouter>["signupApplication"]["listAdmin"]["items"][number];
 
 type AppStatus = "PENDING" | "APPROVED" | "WAITLISTED" | "DECLINED";
 
@@ -94,10 +98,6 @@ export function ApplicationsAdmin() {
     </div>
   );
 }
-
-type AppItem = NonNullable<
-  ReturnType<typeof trpc.signupApplication.listAdmin.useQuery>["data"]
->["items"][number];
 
 function ApplicationCard({
   app,

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Copy, Loader2, Sparkles, Ticket, X } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import type { inferRouterOutputs } from "@trpc/server";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { trpc } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
+import type { AppRouter } from "@ekko/api";
+
+type InviteRowItem = inferRouterOutputs<AppRouter>["invite"]["adminList"][number];
 
 type StatusFilter = "ALL" | "ACTIVE" | "REDEEMED" | "EXPIRED" | "REVOKED";
 
@@ -255,10 +259,6 @@ export function InvitesAdmin() {
     </div>
   );
 }
-
-type InviteRowItem = NonNullable<
-  ReturnType<typeof trpc.invite.adminList.useQuery>["data"]
->[number];
 
 function InviteRow({
   invite,
