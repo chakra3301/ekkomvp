@@ -67,37 +67,56 @@ struct CompleteProfileView: View {
 
             Spacer()
 
-            // Navigation buttons
+            // Navigation buttons — glass bubbles, sized to match the auth flow
             HStack(spacing: 12) {
                 if currentStep > 0 {
-                    Button("Back") {
+                    Button {
                         withAnimation { currentStep = 0 }
+                    } label: {
+                        Text("Back")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.primary)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
                     }
-                    .buttonStyle(.glass)
-                    .frame(maxWidth: .infinity)
+                    .buttonStyle(.plain)
+                    .glassBubble(cornerRadius: 14)
                 }
 
                 if currentStep == 0 {
-                    Button("Next") {
+                    Button {
                         if validateStep1() {
                             withAnimation { currentStep = 1 }
                         }
+                    } label: {
+                        Text("Next")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.primary)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
                     }
-                    .buttonStyle(PrimaryButtonStyle())
-                    .frame(maxWidth: .infinity)
+                    .buttonStyle(.plain)
+                    .glassBubble(cornerRadius: 14)
                 } else {
                     Button {
                         Task { await handleSubmit() }
                     } label: {
-                        if isLoading {
-                            ProgressView().tint(.white)
-                        } else {
-                            Text("Continue")
+                        Group {
+                            if isLoading {
+                                ProgressView().tint(.primary)
+                            } else {
+                                Text("Continue")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundStyle(.primary)
+                            }
                         }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
                     }
-                    .buttonStyle(PrimaryButtonStyle(isDisabled: role == nil))
+                    .buttonStyle(.plain)
+                    .glassBubble(cornerRadius: 14)
                     .disabled(role == nil || isLoading)
-                    .frame(maxWidth: .infinity)
+                    .opacity(role == nil ? 0.6 : 1)
                 }
             }
             .padding(.horizontal, 24)

@@ -22,6 +22,7 @@ struct ConnectProfileTerminalView: View {
     var likesReceivedCount: Int = 0
     var matchesCount: Int = 0
     var isAdmin: Bool = false
+    var hasDarkMatterBadge: Bool = false
     var editActions: ProfileEditActions? = nil
 
     private let mono = "Menlo"
@@ -78,7 +79,7 @@ struct ConnectProfileTerminalView: View {
         EditableSection(action: editActions?.onTapHeadlineLocation) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .center, spacing: 14) {
-                    AvatarView(url: avatarUrl, name: displayName, size: 56)
+                    ProfileAvatarView(url: avatarUrl, name: displayName, size: 56, isEditing: editActions != nil)
                         .overlay(Circle().stroke(.secondary.opacity(0.3), lineWidth: 0.5))
 
                     VStack(alignment: .leading, spacing: 2) {
@@ -96,7 +97,9 @@ struct ConnectProfileTerminalView: View {
                             .lineLimit(2)
                     }
                     Spacer(minLength: 0)
-                    if isAdmin {
+                    if hasDarkMatterBadge {
+                        DarkMatterBadge()
+                    } else if isAdmin {
                         gmBadge
                     } else if connectTier == .INFINITE {
                         Image(systemName: "infinity")

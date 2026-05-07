@@ -39,6 +39,10 @@ struct ConnectProfileViewer: View {
         profile.user?.role == .ADMIN
     }
 
+    private var hasDarkMatterBadge: Bool {
+        profile.user?.hasDarkMatterBadge == true
+    }
+
     private var template: ConnectProfileTemplate {
         ConnectProfileTemplate.from(profile.profileTemplate)
     }
@@ -71,7 +75,8 @@ struct ConnectProfileViewer: View {
                 connectTier: tier,
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge
             )
 
         case .editorial:
@@ -86,7 +91,8 @@ struct ConnectProfileViewer: View {
                 connectTier: tier,
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge
             )
 
         case .stack:
@@ -101,7 +107,8 @@ struct ConnectProfileViewer: View {
                 connectTier: tier,
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge
             )
 
         case .split:
@@ -117,7 +124,8 @@ struct ConnectProfileViewer: View {
                 connectTier: tier,
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge
             )
 
         case .terminal:
@@ -133,7 +141,8 @@ struct ConnectProfileViewer: View {
                 connectTier: tier,
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge
             )
 
         case .photo:
@@ -149,7 +158,8 @@ struct ConnectProfileViewer: View {
                 connectTier: tier,
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge
             )
 
         case .video:
@@ -165,7 +175,8 @@ struct ConnectProfileViewer: View {
                 connectTier: tier,
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge
             )
 
         case .music:
@@ -181,7 +192,8 @@ struct ConnectProfileViewer: View {
                 connectTier: tier,
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge
             )
 
         case .threeD:
@@ -197,7 +209,8 @@ struct ConnectProfileViewer: View {
                 connectTier: tier,
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge
             )
 
         case .hire:
@@ -213,6 +226,7 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge,
                 hireData: profile.hireData,
                 inquiryActions: inquiryActions
             )
@@ -230,6 +244,7 @@ struct ConnectProfileViewer: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge,
                 clientData: profile.clientData,
                 inquiryActions: inquiryActions
             )
@@ -244,7 +259,8 @@ struct ConnectProfileViewer: View {
                 twitterHandle: profile.twitterHandle,
                 websiteUrl: profile.websiteUrl,
                 connectTier: tier,
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                hasDarkMatterBadge: hasDarkMatterBadge
             )
         }
     }

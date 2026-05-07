@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 @main
 struct EKKOConnectApp: App {
@@ -14,6 +15,15 @@ struct EKKOConnectApp: App {
         if loaded.isEmpty {
             print("[Font] ⚠️ Arches font NOT loaded.")
         }
+
+        // Configure TipKit so first-run profile-edit coach marks can fire
+        // on demand. .immediate keeps EKKO's tips from being throttled by
+        // the system display-frequency heuristic that's tuned for tips
+        // sprinkled across an app over weeks.
+        try? Tips.configure([
+            .displayFrequency(.immediate),
+            .datastoreLocation(.applicationDefault)
+        ])
     }
 
     var body: some Scene {

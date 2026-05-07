@@ -25,11 +25,12 @@ struct ConnectProfileHeroView: View {
     var likesReceivedCount: Int = 0
     var matchesCount: Int = 0
     var isAdmin: Bool = false
+    var hasDarkMatterBadge: Bool = false
     /// When non-nil, sections become tappable and gain edit affordance.
     var editActions: ProfileEditActions? = nil
 
     private let coverHeight: CGFloat = 440
-    private let avatarSize: CGFloat = 96
+    private let avatarSize: CGFloat = 132
 
     private var sortedMedia: [MediaSlot] {
         mediaSlots.sorted { $0.sortOrder < $1.sortOrder }
@@ -44,15 +45,15 @@ struct ConnectProfileHeroView: View {
             // avatar can overlap cleanly without negative padding hacks.
             ZStack(alignment: .bottomLeading) {
                 heroCover
-                AvatarView(url: avatarUrl, name: displayName, size: avatarSize)
+                ProfileAvatarView(url: avatarUrl, name: displayName, size: avatarSize, isEditing: editActions != nil)
                     .overlay(
                         Circle().stroke(Color(.systemBackground), lineWidth: 4)
                     )
                     .shadow(color: .black.opacity(0.25), radius: 12, y: 4)
                     .padding(.leading, 20)
-                    .offset(y: avatarSize / 2) // half of the avatar dips below the cover
+                    .offset(y: avatarSize / 3) // ~third of the avatar dips below the cover
             }
-            .padding(.bottom, avatarSize / 2) // reserve room for the dip
+            .padding(.bottom, avatarSize / 3) // reserve just the dip, no extra gap
 
             VStack(alignment: .leading, spacing: 18) {
                 // Name + headline + location — moved out of the cover so it
@@ -61,7 +62,7 @@ struct ConnectProfileHeroView: View {
                     nameSection
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 12)
+                .padding(.top, 0)
 
                 // Bio
                 if let bio, !bio.isEmpty {
@@ -299,7 +300,9 @@ struct ConnectProfileHeroView: View {
                     .minimumScaleFactor(0.7)
                     .foregroundStyle(.primary)
 
-                if isAdmin {
+                if hasDarkMatterBadge {
+                    DarkMatterBadge()
+                } else if isAdmin {
                     gmBadge
                 } else if connectTier == .INFINITE {
                     Image(systemName: "infinity")

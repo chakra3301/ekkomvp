@@ -1,6 +1,26 @@
 import SwiftUI
 import PhotosUI
 
+/// Display-or-edit avatar wrapper used by every profile template. When
+/// `isEditing` is true (i.e. the surrounding ProfileView is in edit mode)
+/// it renders `EditableAvatarView` so tapping the PFP opens a PhotosPicker
+/// and uploads the new image; otherwise it renders the static `AvatarView`.
+/// One line per template, no template-level PhotosPicker plumbing required.
+struct ProfileAvatarView: View {
+    let url: String?
+    let name: String
+    var size: CGFloat = 80
+    var isEditing: Bool = false
+
+    var body: some View {
+        if isEditing {
+            EditableAvatarView(url: url, name: name, size: size)
+        } else {
+            AvatarView(url: url, name: name, size: size)
+        }
+    }
+}
+
 /// Avatar that can be tapped to upload a new profile picture.
 /// Calls profile.updateAvatar after upload and refreshes AppState.
 struct EditableAvatarView: View {

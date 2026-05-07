@@ -159,6 +159,20 @@ enum ConnectProfileTemplate: String, CaseIterable, Identifiable {
         guard let raw, let t = ConnectProfileTemplate(rawValue: raw) else { return .default }
         return t
     }
+
+    /// Templates surfaced in the first-run signup picker. Excludes `.hire`
+    /// and `.client` (those are the role-specific layouts opted into later
+    /// in profile edit mode), and limits client-role accounts to the
+    /// neutral layouts that don't presume a creative medium.
+    static func selectableForSignup(role: UserRole?) -> [ConnectProfileTemplate] {
+        switch role {
+        case .CLIENT:
+            return [.default, .hero, .editorial, .stack, .split]
+        default:
+            return [.default, .hero, .editorial, .stack, .split,
+                    .terminal, .photo, .video, .music, .threeD]
+        }
+    }
 }
 
 struct MediaSlot: Codable, Equatable {

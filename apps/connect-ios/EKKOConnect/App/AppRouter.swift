@@ -25,10 +25,18 @@ struct AppRouter: View {
                     // Step 1: Name, DOB, role
                     CompleteProfileView()
                 } else if appState.hasCheckedConnectProfile && appState.currentConnectProfile == nil {
-                    // Step 2: Media, prompts, details — required before accessing app features.
-                    // Wrap in a NavigationStack so ProfileSetupView's toolbar works.
-                    NavigationStack {
-                        ProfileSetupView()
+                    // First-run signup, post-CompleteProfileView, pre-ConnectProfile.
+                    // Walks: Theme picker → Avatar picker → ProfileSetupView.
+                    if appState.needsThemePick {
+                        ThemePickerView()
+                    } else if appState.needsAvatar {
+                        AvatarPickerView()
+                    } else {
+                        // Final step: bio/prompts/media. Wrap in a NavigationStack
+                        // so ProfileSetupView's toolbar works.
+                        NavigationStack {
+                            ProfileSetupView()
+                        }
                     }
                 } else {
                     MainTabView()
@@ -150,10 +158,24 @@ struct MainTabView: View {
             unreadRefreshTimer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { _ in
                 Task { await appState.refreshUnreadCounts() }
             }
-            // Show welcome sheet once, right after the user first reaches the main app
-            if !OnboardingTracker.hasSeenWelcome {
-                try? await Task.sleep(for: .milliseconds(600))
-                showWelcome = true
+
+            // First-run hand-off from ProfileSetupView: land on the Profile
+            // tab so ProfileView can flip into edit mode and arm tips.
+            if appState.pendingFirstProfileEdit {
+                appState.selectedTab = 3
+            }
+
+            // Welcome sheet: show only after the first-edit handoff has
+            // fully resolved (tips seen) so it doesn't compete with the
+            // edit-mode coach marks.
+            await maybeShowWelcomeAfterDelay()
+        }
+        .onChange(of: appState.pendingFirstProfileEdit) { _, isPending in
+            // ProfileView clears this AFTER the first edit-mode session ends
+            // (save or cancel). At that point the editor coach marks have
+            // already had their turn, so the welcome sheet can fire.
+            if !isPending {
+                Task { await maybeShowWelcomeAfterDelay() }
             }
         }
         .sheet(isPresented: $showWelcome) {
@@ -167,5 +189,14 @@ struct MainTabView: View {
             // Refresh when user pokes the tab bar
             Task { await appState.refreshUnreadCounts() }
         }
+    }
+
+    /// Shows the WelcomeSheet once, deferred while the first-run profile-edit
+    /// handoff is in flight so it doesn't compete with the editor coach marks.
+    private func maybeShowWelcomeAfterDelay() async {
+        guard !OnboardingTracker.hasSeenWelcome else { return }
+        guard !appState.pendingFirstProfileEdit else { return }
+        try? await Task.sleep(for: .milliseconds(600))
+        showWelcome = true
     }
 }

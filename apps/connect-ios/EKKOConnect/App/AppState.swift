@@ -49,6 +49,37 @@ final class AppState {
         isAuthenticated && currentUser?.accessGranted == false
     }
 
+    // MARK: - First-run onboarding flow
+    //
+    // Decoupled from the existing CompleteProfileView / ProfileSetupView gates.
+    // Once the user has a Profile (name/role) but no ConnectProfile yet, they
+    // walk through Theme picker → Avatar picker → ProfileSetupView. Each
+    // intermediate flag is in-memory only — they're transient steps that just
+    // bridge sign-up to the existing setup wizard. The final
+    // `pendingFirstProfileEdit` flag, set after ProfileSetupView saves, hands
+    // the user off to ProfileView in edit mode with TipKit coach marks.
+
+    /// Set by ThemePickerView and consumed by ProfileSetupView when calling
+    /// `connectProfile.create`. nil before pick, .default-or-other after.
+    var pendingTemplate: ConnectProfileTemplate?
+
+    /// Whether the user still needs to pick a profile theme. Only meaningful
+    /// once they have a `currentProfile` (name/role done) but no
+    /// `currentConnectProfile` yet.
+    var needsThemePick: Bool = true
+
+    /// Whether the user still needs to (optionally) pick an avatar. Goes
+    /// false after they tap "Save" or "Skip" on AvatarPickerView. Defaults
+    /// true so the screen shows once per first-run; if they skip, it stays
+    /// false until the next time the gate sequence re-enters from a clean
+    /// state (e.g. signing out and back in).
+    var needsAvatar: Bool = true
+
+    /// Set by ProfileSetupView right after first save. AppRouter reads it
+    /// to land on the Profile tab, ProfileView reads it to flip into edit
+    /// mode, then both clear it.
+    var pendingFirstProfileEdit: Bool = false
+
     // MARK: - Toast (global user-facing messages)
 
     struct Toast: Identifiable, Equatable {
@@ -236,6 +267,12 @@ final class AppState {
         currentConnectProfile = nil
         hasCheckedConnectProfile = false
         pendingInviteCode = nil
+        // Reset onboarding state so a fresh login walks the picker flow again
+        // if it lands on a fresh account that has no connect profile yet.
+        pendingTemplate = nil
+        needsThemePick = true
+        needsAvatar = true
+        pendingFirstProfileEdit = false
         trpc.setAccessToken(nil)
         await MainActor.run { MatchLiveActivityManager.endAll() }
     }

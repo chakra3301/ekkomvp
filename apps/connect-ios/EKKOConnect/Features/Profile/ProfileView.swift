@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 struct ProfileView: View {
     @Environment(AppState.self) private var appState
@@ -12,11 +13,24 @@ struct ProfileView: View {
     @State private var showLeaveConfirmation = false
     @State private var saveError: String?
 
+    /// Tracks whether this edit session is the first-run handoff from
+    /// ProfileSetupView. Used to arm/disarm the TipKit coach marks and to
+    /// hold `appState.pendingFirstProfileEdit` true through the edit
+    /// session — that flag controls when the WelcomeSheet is allowed to
+    /// fire, so we want to clear it only on edit exit, not on entry.
+    @State private var isFirstEditSession = false
+
     /// Local mirror of the profile while editing. Updated by inline sheets.
     /// Compared to `originalSnapshot` for the unsaved-changes guard.
     @State private var draft: ProfileDraft = .init()
     @State private var originalSnapshot: ProfileDraft = .init()
     @State private var showShareSheet = false
+
+    // First-run TipKit coach marks. Anchored to specific views inside
+    // edit mode below.
+    private let editAnythingTip = EditAnythingTip()
+    private let templateSwitchTip = TemplateSwitchTip()
+    private let saveProfileTip = SaveProfileTip()
 
     /// Read through to AppState so tier changes from a purchase propagate
     /// automatically — no local copy to go stale.
@@ -84,7 +98,14 @@ struct ProfileView: View {
             .presentationDetents([.large])
             .presentationDragIndicator(.hidden)
         }
-        .task { await loadProfile() }
+        .task {
+            await loadProfile()
+            // Auto-enter edit mode + arm TipKit when ProfileSetupView just
+            // handed off after a first-run save. Sequenced after loadProfile
+            // so connectProfile is populated and enterEditMode can snapshot
+            // it into `draft`.
+            handleFirstRunHandoffIfNeeded()
+        }
         .confirmationDialog(
             "Discard changes?",
             isPresented: $showLeaveConfirmation,
@@ -190,6 +211,7 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 editActions: editActions
             )
 
@@ -210,6 +232,7 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 editActions: editActions
             )
 
@@ -230,6 +253,7 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 editActions: editActions
             )
 
@@ -251,6 +275,7 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 editActions: editActions
             )
 
@@ -272,6 +297,7 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 editActions: editActions
             )
 
@@ -293,6 +319,7 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 editActions: editActions
             )
 
@@ -314,6 +341,7 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 editActions: editActions
             )
 
@@ -335,6 +363,7 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 editActions: editActions
             )
 
@@ -355,6 +384,7 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 clientData: isEditMode ? draft.clientData : profile.clientData,
                 editActions: editActions
             )
@@ -376,6 +406,7 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 hireData: isEditMode ? draft.hireData : profile.hireData,
                 editActions: editActions
             )
@@ -398,6 +429,7 @@ struct ProfileView: View {
                 likesReceivedCount: profile.likesReceivedCount,
                 matchesCount: profile.matchesCount,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 editActions: editActions
             )
 
@@ -416,6 +448,7 @@ struct ProfileView: View {
                 websiteUrl: website,
                 connectTier: profile.connectTier,
                 isAdmin: appState.isAdmin,
+                hasDarkMatterBadge: (profile.user?.hasDarkMatterBadge == true) || (appState.currentUser?.hasDarkMatterBadge == true),
                 editableAvatar: !isEditMode,
                 editActions: editActions
             )
@@ -524,6 +557,7 @@ struct ProfileView: View {
                     .opacity(isSaving ? 0.7 : 1.0)
                 }
                 .disabled(isSaving)
+                .popoverTip(saveProfileTip, arrowEdge: .top)
             }
             .padding(.horizontal, 16)
 
@@ -542,6 +576,7 @@ struct ProfileView: View {
                 }
             }
             .padding(.horizontal, 16)
+            .popoverTip(editAnythingTip, arrowEdge: .top)
         }
     }
 
@@ -573,11 +608,13 @@ struct ProfileView: View {
             .clipShape(Capsule())
             .overlay(Capsule().stroke(Color.white.opacity(0.15), lineWidth: 0.5))
         }
+        .popoverTip(templateSwitchTip, arrowEdge: .top)
     }
 
     private var currentTemplateTitle: String {
         ConnectProfileTemplate(rawValue: draft.profileTemplate)?.title ?? "Default"
     }
+
 
     // MARK: - Empty State (first-time setup keeps using ProfileSetupView)
 
@@ -617,6 +654,16 @@ struct ProfileView: View {
         isEditMode = true
     }
 
+    /// Auto-enter edit mode + arm TipKit coach marks when ProfileSetupView
+    /// has just handed control off after a first-run save.
+    private func handleFirstRunHandoffIfNeeded() {
+        guard appState.pendingFirstProfileEdit else { return }
+        guard !isEditMode else { return }
+        enterEditMode()
+        isFirstEditSession = true
+        OnboardingTipsState.arm()
+    }
+
     private func attemptExitEditMode() {
         if hasUnsavedChanges {
             showLeaveConfirmation = true
@@ -630,6 +677,14 @@ struct ProfileView: View {
             draft = originalSnapshot
         }
         isEditMode = false
+
+        // Tear down the first-run handoff: dismiss tips, mark them seen,
+        // and clear the AppState flag so the WelcomeSheet can finally fire.
+        if isFirstEditSession {
+            OnboardingTipsState.disarm(markSeen: true)
+            appState.pendingFirstProfileEdit = false
+            isFirstEditSession = false
+        }
     }
 
     // MARK: - Sheet dispatch
@@ -772,6 +827,9 @@ struct ProfileView: View {
     // MARK: - Network actions
 
     private func loadProfile() async {
+        // Refresh currentUser too, so badges/role/access changes flow through
+        // without needing a sign-out/in. Cheap; auth.me is small.
+        await appState.fetchCurrentUser()
         do {
             let profile: ConnectProfile = try await appState.trpc.query("connectProfile.getCurrent")
             appState.currentConnectProfile = profile
@@ -821,6 +879,13 @@ struct ProfileView: View {
             await appState.refreshConnectProfile()
             originalSnapshot = draft
             isEditMode = false
+
+            // Same first-run teardown as exitEditMode — keep these in sync.
+            if isFirstEditSession {
+                OnboardingTipsState.disarm(markSeen: true)
+                appState.pendingFirstProfileEdit = false
+                isFirstEditSession = false
+            }
         } catch {
             saveError = error.localizedDescription
         }

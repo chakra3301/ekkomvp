@@ -27,12 +27,16 @@ struct ProfileSetupView: View {
     private var isEditing: Bool { existingProfile != nil }
 
     /// Steps differ between first-time setup and edit:
-    /// - Setup keeps the original 4 steps so signup stays fast.
-    /// - Edit prepends a "Template" step so users can switch profile layouts.
+    /// - Setup runs Details → Prompts → Media. Theme + avatar were already
+    ///   chosen in the new sign-up flow (ThemePickerView, AvatarPickerView)
+    ///   so no Template/Preview here — the user lands on ProfileView in
+    ///   edit mode after save and can preview/tweak from there.
+    /// - Edit keeps the Template step + classic Media/Prompts/Details so
+    ///   existing users get the full editor.
     private var steps: [String] {
         isEditing
             ? ["Template", "Media", "Prompts", "Details", "Preview"]
-            : ["Media", "Prompts", "Details", "Preview"]
+            : ["Details", "Prompts", "Media"]
     }
 
     private var currentStepName: String { steps[currentStep] }
@@ -87,36 +91,56 @@ struct ProfileSetupView: View {
                     .padding(.horizontal, 16)
                 }
 
-                // Navigation
+                // Navigation — glass bubbles, sized to match the auth flow
                 HStack(spacing: 12) {
                     if currentStep > 0 {
-                        Button("Back") {
+                        Button {
                             withAnimation { currentStep -= 1 }
+                        } label: {
+                            Text("Back")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(.primary)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 52)
                         }
-                        .buttonStyle(.glass)
-                        .frame(maxWidth: .infinity)
+                        .buttonStyle(.plain)
+                        .glassBubble(cornerRadius: 14)
                     }
 
                     if currentStep < steps.count - 1 {
-                        Button("Next") {
+                        Button {
                             withAnimation { currentStep += 1 }
+                        } label: {
+                            Text("Next")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(.primary)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 52)
                         }
-                        .buttonStyle(PrimaryButtonStyle(isDisabled: !canProceed))
+                        .buttonStyle(.plain)
+                        .glassBubble(cornerRadius: 14)
                         .disabled(!canProceed)
-                        .frame(maxWidth: .infinity)
+                        .opacity(canProceed ? 1 : 0.6)
                     } else {
                         Button {
                             Task { await handleSave() }
                         } label: {
-                            if isSubmitting {
-                                ProgressView().tint(.white)
-                            } else {
-                                Text(isEditing ? "Save Changes" : "Activate Profile")
+                            Group {
+                                if isSubmitting {
+                                    ProgressView().tint(.primary)
+                                } else {
+                                    Text(isEditing ? "Save Changes" : "Activate Profile")
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundStyle(.primary)
+                                }
                             }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
                         }
-                        .buttonStyle(PrimaryButtonStyle())
+                        .buttonStyle(.plain)
+                        .glassBubble(cornerRadius: 14)
                         .disabled(isSubmitting)
-                        .frame(maxWidth: .infinity)
+                        .opacity(isSubmitting ? 0.6 : 1)
                     }
                 }
                 .padding(.horizontal, 16)
@@ -266,9 +290,13 @@ struct ProfileSetupView: View {
     private var stepDescription: String {
         switch currentStepName {
         case "Template": return "Pick how your profile looks. You can change this anytime — it doesn't affect your data."
-        case "Media": return "Add up to 6 photos, videos, audio clips, or 3D models. First slot is featured."
+        case "Media": return isEditing
+            ? "Add up to 6 photos, videos, audio clips, or 3D models. First slot is featured."
+            : "Add at least 2 pieces — photos, videos, audio, or 3D. The first one is featured."
         case "Prompts": return "Answer at least 1 prompt to show your personality and creative interests."
-        case "Details": return "Add a bio, headline, what you're looking for, and social links."
+        case "Details": return isEditing
+            ? "Add a bio, headline, what you're looking for, and social links."
+            : "Tell us a bit about yourself. You can edit any of this later."
         case "Preview": return "Preview your profile card. This is what others will see."
         default: return ""
         }
@@ -306,8 +334,13 @@ struct ProfileSetupView: View {
     private func handleSave() async {
         isSubmitting = true
         do {
-            // Template is an advanced/editing-only field — only send it on edit
-            // so initial signup payload stays minimal.
+            // Template comes from `appState.pendingTemplate` on first-run
+            // (set by ThemePickerView), or the in-form Template step on edit.
+            let chosenTemplate: String? = {
+                if isEditing { return profileTemplate.rawValue }
+                return appState.pendingTemplate?.rawValue
+            }()
+
             let payload = ProfilePayload(
                 headline: headline.isEmpty ? nil : headline,
                 lookingFor: lookingFor.isEmpty ? nil : lookingFor,
@@ -318,7 +351,7 @@ struct ProfileSetupView: View {
                 twitterHandle: twitterHandle.isEmpty ? nil : twitterHandle,
                 websiteUrl: websiteUrl.isEmpty ? nil : websiteUrl,
                 location: location.isEmpty ? nil : location,
-                profileTemplate: isEditing ? profileTemplate.rawValue : nil
+                profileTemplate: chosenTemplate
             )
 
             struct GenericResponse: Codable { let id: String }
@@ -338,6 +371,13 @@ struct ProfileSetupView: View {
                         throw error
                     }
                 }
+            }
+
+            // First-run handoff: tell the router/ProfileView to land on the
+            // Profile tab in edit mode with the TipKit coach marks armed.
+            if !isEditing {
+                appState.pendingFirstProfileEdit = true
+                appState.pendingTemplate = nil
             }
 
             // Refresh AppState so the router advances to MainTabView

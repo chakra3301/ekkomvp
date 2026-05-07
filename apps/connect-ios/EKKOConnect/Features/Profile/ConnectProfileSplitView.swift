@@ -23,6 +23,7 @@ struct ConnectProfileSplitView: View {
     var likesReceivedCount: Int = 0
     var matchesCount: Int = 0
     var isAdmin: Bool = false
+    var hasDarkMatterBadge: Bool = false
     var editActions: ProfileEditActions? = nil
 
     private let mono = "Menlo"
@@ -115,7 +116,7 @@ struct ConnectProfileSplitView: View {
 
     private var leftRail: some View {
         VStack(spacing: 12) {
-            AvatarView(url: avatarUrl, name: displayName, size: avatarSize)
+            ProfileAvatarView(url: avatarUrl, name: displayName, size: avatarSize, isEditing: editActions != nil)
                 .overlay(Circle().stroke(Color(.systemBackground), lineWidth: 4))
                 .shadow(color: .black.opacity(0.25), radius: 12, y: 4)
 
@@ -155,7 +156,9 @@ struct ConnectProfileSplitView: View {
                             .lineLimit(2)
                             .minimumScaleFactor(0.6)
                             .foregroundStyle(.primary)
-                        if isAdmin {
+                        if hasDarkMatterBadge {
+                            DarkMatterBadge()
+                        } else if isAdmin {
                             gmBadge
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")

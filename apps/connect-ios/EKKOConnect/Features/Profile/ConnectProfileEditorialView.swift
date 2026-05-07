@@ -22,6 +22,7 @@ struct ConnectProfileEditorialView: View {
     var likesReceivedCount: Int = 0
     var matchesCount: Int = 0
     var isAdmin: Bool = false
+    var hasDarkMatterBadge: Bool = false
     /// When non-nil, sections become tappable and gain edit affordance.
     var editActions: ProfileEditActions? = nil
 
@@ -101,7 +102,9 @@ struct ConnectProfileEditorialView: View {
                         .lineLimit(2)
                         .minimumScaleFactor(0.5)
                         .foregroundStyle(.primary)
-                    if isAdmin {
+                    if hasDarkMatterBadge {
+                        DarkMatterBadge()
+                    } else if isAdmin {
                         gmBadge
                     } else if connectTier == .INFINITE {
                         Image(systemName: "infinity")
@@ -125,7 +128,7 @@ struct ConnectProfileEditorialView: View {
                         }
                     }
                     Spacer()
-                    AvatarView(url: avatarUrl, name: displayName, size: avatarSize)
+                    ProfileAvatarView(url: avatarUrl, name: displayName, size: avatarSize, isEditing: editActions != nil)
                         .overlay(Circle().stroke(.secondary.opacity(0.3), lineWidth: 0.5))
                 }
                 .padding(.top, 14)

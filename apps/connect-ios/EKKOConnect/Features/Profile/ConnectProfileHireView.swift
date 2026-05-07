@@ -25,6 +25,7 @@ struct ConnectProfileHireView: View {
     var likesReceivedCount: Int = 0
     var matchesCount: Int = 0
     var isAdmin: Bool = false
+    var hasDarkMatterBadge: Bool = false
     var hireData: HireData?
     var editActions: ProfileEditActions? = nil
     /// Set when a non-owner is viewing this profile. Tapping the
@@ -80,15 +81,20 @@ struct ConnectProfileHireView: View {
         EditableSection(action: editActions?.onTapHireData) {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(alignment: .center, spacing: 14) {
-                    AvatarView(url: avatarUrl, name: displayName, size: 68)
+                    ProfileAvatarView(url: avatarUrl, name: displayName, size: 68, isEditing: editActions != nil)
 
                     VStack(alignment: .leading, spacing: 6) {
                         statusPill
-                        Text(displayName)
-                            .font(.custom(EKKOFont.regular, size: 28))
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            Text(displayName)
+                                .font(.custom(EKKOFont.regular, size: 28))
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                            if hasDarkMatterBadge {
+                                DarkMatterBadge()
+                            }
+                        }
                         Text(metaLine)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)

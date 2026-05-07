@@ -29,6 +29,7 @@ struct ConnectProfileVideoView: View {
     var likesReceivedCount: Int = 0
     var matchesCount: Int = 0
     var isAdmin: Bool = false
+    var hasDarkMatterBadge: Bool = false
     var editActions: ProfileEditActions? = nil
 
     private let mono = "Menlo"
@@ -66,7 +67,7 @@ struct ConnectProfileVideoView: View {
     private var compactHeader: some View {
         EditableSection(action: editActions?.onTapHeadlineLocation) {
             HStack(alignment: .center, spacing: 14) {
-                AvatarView(url: avatarUrl, name: displayName, size: 60)
+                ProfileAvatarView(url: avatarUrl, name: displayName, size: 60, isEditing: editActions != nil)
                     .overlay(Circle().stroke(.secondary.opacity(0.3), lineWidth: 0.5))
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -76,7 +77,9 @@ struct ConnectProfileVideoView: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.6)
                             .foregroundStyle(.primary)
-                        if isAdmin {
+                        if hasDarkMatterBadge {
+                            DarkMatterBadge()
+                        } else if isAdmin {
                             gmBadge
                         } else if connectTier == .INFINITE {
                             Image(systemName: "infinity")
