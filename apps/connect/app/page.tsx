@@ -55,7 +55,8 @@ export default function LandingPage() {
       {size && (
         <div className="absolute inset-0 z-0">
           <UnicornScene
-            projectId="n6VPNW1AlXtEeqAHt9LA"
+            key={size.w < 768 ? "mobile" : "desktop"}
+            projectId={size.w < 768 ? "FNbxpXUHThlUBcgNIC2n" : "n6VPNW1AlXtEeqAHt9LA"}
             width={size.w}
             height={size.h}
             scale={1}

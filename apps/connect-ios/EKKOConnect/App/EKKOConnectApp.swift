@@ -122,8 +122,10 @@ struct EKKOConnectApp: App {
     private func handleDeepLink(_ route: String) {
         print("[DeepLink] Route: \(route)")
 
-        // Strip query params for simple path matching
-        let path = route.components(separatedBy: "?").first ?? route
+        // Split path and query for routing + parameter extraction.
+        let parts = route.components(separatedBy: "?")
+        let path = parts.first ?? route
+        let query = parts.count > 1 ? parts[1] : ""
 
         if path.hasPrefix("/matches/") {
             let matchId = String(path.dropFirst("/matches/".count))
@@ -137,7 +139,25 @@ struct EKKOConnectApp: App {
             appState.selectedTab = 0
         } else if path == "/profile" {
             appState.selectedTab = 3
+        } else if path == "/invite" {
+            // Invite gate deep link: stash the code so InviteGateView can
+            // read & redeem it. Works whether the user is already on the
+            // gate screen, signed out, or about to authenticate.
+            if let code = parseQueryParam(query, name: "code"), !code.isEmpty {
+                appState.pendingInviteCode = code
+            }
         }
         // /auth-callback?... is handled by Supabase Swift's session restore
+    }
+
+    /// Extracts a single query param from a raw `a=1&b=2` string.
+    private func parseQueryParam(_ query: String, name: String) -> String? {
+        guard !query.isEmpty else { return nil }
+        for pair in query.components(separatedBy: "&") {
+            let kv = pair.components(separatedBy: "=")
+            guard kv.count == 2, kv[0] == name else { continue }
+            return kv[1].removingPercentEncoding ?? kv[1]
+        }
+        return nil
     }
 }

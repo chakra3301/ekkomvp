@@ -15,6 +15,15 @@ struct User: Codable, Identifiable {
     let createdAt: Date?
     let updatedAt: Date?
 
+    // Invite-only access. `accessGranted` is true once the user has redeemed
+    // an invite or had a signup application approved. Pre-existing accounts
+    // are backfilled to true. New OAuth signups land with false and must
+    // pass the invite gate before reaching the main app.
+    let accessGranted: Bool?
+    let isFounder: Bool?
+    let cohort: String?
+    let invitedByUserId: String?
+
     var profile: Profile?
     var connectProfile: ConnectProfile?
 }

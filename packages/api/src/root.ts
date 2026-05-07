@@ -24,9 +24,13 @@ import { connectDiscoverRouter } from "./routers/connect-discover";
 import { connectMatchRouter } from "./routers/connect-match";
 import { connectChatRouter } from "./routers/connect-chat";
 import { connectInquiryRouter } from "./routers/connect-inquiry";
+import { inviteRouter } from "./routers/invite";
+import { signupApplicationRouter } from "./routers/signup-application";
 
 export const appRouter = router({
   auth: authRouter,
+  invite: inviteRouter,
+  signupApplication: signupApplicationRouter,
   profile: profileRouter,
   portfolio: portfolioRouter,
   post: postRouter,

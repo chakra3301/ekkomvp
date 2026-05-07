@@ -26,12 +26,24 @@ enum DeepLinkHandler {
                 // OAuth callback — the auth flow will handle the code exchange
                 return "/auth-callback?\(url.query ?? "")"
             }
+            // Invite gate deep link: ekkoconnect://invite?code=ABCDEFGH
+            // Preserve the query string so the app can extract `code`.
+            if url.host == "invite" {
+                if let query = url.query, !query.isEmpty {
+                    return "/invite?\(query)"
+                }
+                return "/invite"
+            }
             // Generic deep link: ekkoconnect://matches/abc → /matches/abc
             return "/\(url.host ?? "")\(url.path)"
         }
 
         // Universal Links: https://ekkoconnect.app/matches/abc → /matches/abc
         if url.host?.contains("ekkoconnect.app") == true {
+            // Preserve query for invite links sent from the web.
+            if url.path == "/invite", let query = url.query, !query.isEmpty {
+                return "/invite?\(query)"
+            }
             return url.path
         }
 

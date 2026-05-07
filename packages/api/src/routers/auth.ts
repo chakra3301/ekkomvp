@@ -1,17 +1,20 @@
 import { z } from "zod";
-import { router, publicProcedure, protectedProcedure } from "../trpc";
+import { router, publicProcedure, pregatedProcedure } from "../trpc";
 import { prisma, UserRole } from "@ekko/database";
 
+// Auth router uses pregatedProcedure throughout so a freshly
+// signed-in user (who has not yet redeemed an invite) can still call
+// `me` and `completeUserInfo` to finish onboarding before the gate.
 export const authRouter = router({
   getSession: publicProcedure.query(({ ctx }) => {
     return ctx.user;
   }),
 
-  me: protectedProcedure.query(({ ctx }) => {
+  me: pregatedProcedure.query(({ ctx }) => {
     return ctx.user;
   }),
 
-  completeUserInfo: protectedProcedure
+  completeUserInfo: pregatedProcedure
     .input(
       z.object({
         fullName: z.string().min(2).max(100).optional(),

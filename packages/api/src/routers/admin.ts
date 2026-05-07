@@ -5,13 +5,29 @@ import { router, adminProcedure } from "../trpc";
 
 export const adminRouter = router({
   getDashboardStats: adminProcedure.query(async () => {
-    const [totalUsers, totalPosts, pendingReports, suspendedUsers] = await Promise.all([
+    const [
+      totalUsers,
+      totalPosts,
+      pendingReports,
+      suspendedUsers,
+      pendingApplications,
+      activeInvites,
+    ] = await Promise.all([
       prisma.user.count({ where: { status: "ACTIVE" } }),
       prisma.post.count(),
       prisma.report.count({ where: { status: "PENDING" } }),
       prisma.user.count({ where: { status: "SUSPENDED" } }),
+      prisma.signupApplication.count({ where: { status: "PENDING" } }),
+      prisma.invite.count({ where: { status: "ACTIVE" } }),
     ]);
-    return { totalUsers, totalPosts, pendingReports, suspendedUsers };
+    return {
+      totalUsers,
+      totalPosts,
+      pendingReports,
+      suspendedUsers,
+      pendingApplications,
+      activeInvites,
+    };
   }),
 
   getUsers: adminProcedure

@@ -17,6 +17,10 @@ struct AppRouter: View {
                     LoadingScreenVideo()
                 } else if !appState.isAuthenticated {
                     AuthFlowView()
+                } else if appState.needsInviteGate {
+                    // Invite gate: blocks everything beyond auth until the user
+                    // redeems an invite or has an approved signup application.
+                    InviteGateView()
                 } else if appState.currentProfile == nil {
                     // Step 1: Name, DOB, role
                     CompleteProfileView()

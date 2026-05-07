@@ -12,6 +12,8 @@ import {
   X,
   Eye,
   Trash2,
+  Ticket,
+  Inbox,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -23,7 +25,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { trpc } from "@/lib/trpc/client";
 import { cn } from "@/lib/utils";
 
-type AdminTab = "reports" | "users" | "content";
+import { InvitesAdmin } from "./invites-admin";
+import { ApplicationsAdmin } from "./applications-admin";
+
+type AdminTab = "reports" | "users" | "content" | "invites" | "applications";
 
 export function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<AdminTab>("reports");
@@ -85,6 +90,8 @@ export function AdminDashboard() {
   const tabs: { key: AdminTab; label: string }[] = [
     { key: "reports", label: "Reports" },
     { key: "users", label: "Users" },
+    { key: "invites", label: "Invites" },
+    { key: "applications", label: "Applications" },
     { key: "content", label: "Content" },
   ];
 
@@ -99,7 +106,7 @@ export function AdminDashboard() {
       </header>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 px-4 py-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 px-4 py-4">
         <div className="p-4 rounded-lg border bg-card">
           <div className="flex items-center gap-2 text-muted-foreground mb-1">
             <Users className="h-4 w-4" />
@@ -128,6 +135,26 @@ export function AdminDashboard() {
           </div>
           <p className="text-xl sm:text-2xl font-bold">{stats?.suspendedUsers ?? "—"}</p>
         </div>
+        <button
+          onClick={() => setActiveTab("applications")}
+          className="p-4 rounded-lg border bg-card text-left hover:border-primary/50 transition-colors"
+        >
+          <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <Inbox className="h-4 w-4" />
+            <span className="text-xs font-medium">Pending Apps</span>
+          </div>
+          <p className="text-xl sm:text-2xl font-bold">{stats?.pendingApplications ?? "—"}</p>
+        </button>
+        <button
+          onClick={() => setActiveTab("invites")}
+          className="p-4 rounded-lg border bg-card text-left hover:border-primary/50 transition-colors"
+        >
+          <div className="flex items-center gap-2 text-muted-foreground mb-1">
+            <Ticket className="h-4 w-4" />
+            <span className="text-xs font-medium">Active Invites</span>
+          </div>
+          <p className="text-xl sm:text-2xl font-bold">{stats?.activeInvites ?? "—"}</p>
+        </button>
       </div>
 
       {/* Tabs */}
@@ -350,6 +377,12 @@ export function AdminDashboard() {
             )}
           </div>
         )}
+
+        {/* Invites Tab */}
+        {activeTab === "invites" && <InvitesAdmin />}
+
+        {/* Applications Tab */}
+        {activeTab === "applications" && <ApplicationsAdmin />}
 
         {/* Content Tab */}
         {activeTab === "content" && (

@@ -35,6 +35,20 @@ final class AppState {
     /// Used to avoid flashing the setup wizard before the first fetch completes.
     var hasCheckedConnectProfile = false
 
+    // MARK: - Invite gate
+
+    /// Code captured from an `ekkoconnect://invite?code=...` deep link.
+    /// InviteGateView reads this on appear to pre-fill the input, then clears it.
+    var pendingInviteCode: String?
+
+    /// True when an authenticated user has not yet passed the invite gate.
+    /// Treats nil/missing `accessGranted` (older server response) as ungated
+    /// rather than gated, so a transient auth.me failure can't lock a real
+    /// member out of the app.
+    var needsInviteGate: Bool {
+        isAuthenticated && currentUser?.accessGranted == false
+    }
+
     // MARK: - Toast (global user-facing messages)
 
     struct Toast: Identifiable, Equatable {
@@ -219,6 +233,9 @@ final class AppState {
         session = nil
         currentUser = nil
         currentProfile = nil
+        currentConnectProfile = nil
+        hasCheckedConnectProfile = false
+        pendingInviteCode = nil
         trpc.setAccessToken(nil)
         await MainActor.run { MatchLiveActivityManager.endAll() }
     }

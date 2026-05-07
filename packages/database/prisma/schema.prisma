@@ -211,6 +211,27 @@ model User {
   createdAt     DateTime   @default(now()) @map("created_at")
   updatedAt     DateTime   @updatedAt @map("updated_at")
 
+  // ─── Invite-only access ───
+  // Defaults to false. Flipped true on invite redemption or signup
+  // application approval. Default tRPC procedure rejects calls from
+  // ungated users, so a fresh Supabase auth user can only reach the
+  // gating endpoints (auth.*, invite.redeem, signupApplication.myStatus).
+  accessGranted   Boolean @default(false) @map("access_granted")
+  isFounder       Boolean @default(false) @map("is_founder")
+  cohort          String? // e.g. FOUNDERS_S26, PUBLIC_W26_C1
+  invitedByUserId String? @map("invited_by_user_id") @db.Uuid
+
+  invitedBy    User?  @relation("UserInvitedBy", fields: [invitedByUserId], references: [id], onDelete: SetNull)
+  invitedUsers User[] @relation("UserInvitedBy")
+
+  memberInvite       MemberInvite?
+  invitesIssued      Invite[]            @relation("InviteIssuer")
+  invitesRedeemed    Invite[]            @relation("InviteRedeemer")
+  signupApplications SignupApplication[] @relation("SignupAppReferrer")
+  signupAppsReviewed SignupApplication[] @relation("SignupAppReviewer")
+  referralsAsInviter MemberReferral[]    @relation("ReferralInviter")
+  referralAsInvitee  MemberReferral?     @relation("ReferralInvitee")
+
   // Relations
   profile           Profile?
   portfolioItems    PortfolioItem[]
@@ -1135,4 +1156,107 @@ model ConnectInquiry {
   @@index([toUserId, createdAt(sort: Desc)])
   @@index([fromUserId, createdAt(sort: Desc)])
   @@map("connect_inquiries")
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Invite-only entry: invites, applications, member invite economy.
+// ─────────────────────────────────────────────────────────────────────
+
+enum InviteStatus {
+  ACTIVE
+  REDEEMED
+  EXPIRED
+  REVOKED
+}
+
+enum SignupApplicationStatus {
+  PENDING
+  APPROVED
+  WAITLISTED
+  DECLINED
+}
+
+// 8-char unguessable code (rendered with a hyphen for readability,
+// e.g. "A3F9-K2X7"; stored without the hyphen). Single-use, 30-day
+// default expiry. Founder codes carry isFounder=true so redemption
+// grants INFINITE tier and the founder badge atomically.
+model Invite {
+  code             String       @id @db.VarChar(16)
+  issuedByUserId   String?      @map("issued_by_user_id") @db.Uuid
+  issuedAt         DateTime     @default(now()) @map("issued_at")
+  expiresAt        DateTime     @map("expires_at")
+  redeemedByUserId String?      @unique @map("redeemed_by_user_id") @db.Uuid
+  redeemedAt       DateTime?    @map("redeemed_at")
+  status           InviteStatus @default(ACTIVE)
+  isFounder        Boolean      @default(false) @map("is_founder")
+  cohort           String?
+  // Optional human label for admin-minted batches: "Apple App Review",
+  // "Founders Wave 1", etc. Members never see this.
+  label            String?      @db.VarChar(80)
+
+  issuedBy   User? @relation("InviteIssuer",   fields: [issuedByUserId],   references: [id], onDelete: SetNull)
+  redeemedBy User? @relation("InviteRedeemer", fields: [redeemedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([status, expiresAt])
+  @@index([issuedByUserId])
+  @@map("invites")
+}
+
+// Public sign-up application form. Distinct from the existing
+// `Application` model (which is for work-order applications).
+model SignupApplication {
+  id               String                  @id @default(uuid()) @db.Uuid
+  email            String
+  portfolioUrl     String?                 @map("portfolio_url")
+  // Discipline names (loose strings — no FK so applicants don't need to
+  // match the existing taxonomy exactly). Reviewer normalizes on approve.
+  disciplines      String[]
+  city             String?
+  // 280-char hard cap enforced by the tRPC schema, not the DB column.
+  statement        String
+  referrerUserId   String?                 @map("referrer_user_id") @db.Uuid
+  status           SignupApplicationStatus @default(PENDING)
+  cohort           String?
+  notes            String?                 @db.Text
+  reviewerId       String?                 @map("reviewer_id") @db.Uuid
+  reviewedAt       DateTime?               @map("reviewed_at")
+  submittedAt      DateTime                @default(now()) @map("submitted_at")
+
+  referrer User? @relation("SignupAppReferrer", fields: [referrerUserId], references: [id], onDelete: SetNull)
+  reviewer User? @relation("SignupAppReviewer", fields: [reviewerId],     references: [id], onDelete: SetNull)
+
+  @@index([status, submittedAt])
+  @@index([email])
+  @@map("signup_applications")
+}
+
+// Per-member invite balance. Topped up monthly by a scheduled job for
+// active members (posted, liked, or matched within the last 30 days).
+model MemberInvite {
+  userId         String    @id @map("user_id") @db.Uuid
+  availableCount Int       @default(0) @map("available_count")
+  totalIssued    Int       @default(0) @map("total_issued")
+  lastRefreshAt  DateTime? @map("last_refresh_at")
+  nextRefreshAt  DateTime? @map("next_refresh_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("member_invites")
+}
+
+// Audit trail of who invited whom. `inviteeFirstPostAt` lets us silently
+// flag inviters whose invitees never engage — useful for adjusting
+// future invite counts without punishing the member directly.
+model MemberReferral {
+  inviterUserId      String    @map("inviter_user_id") @db.Uuid
+  inviteeUserId      String    @unique @map("invitee_user_id") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at")
+  inviteeFirstPostAt DateTime? @map("invitee_first_post_at")
+
+  inviter User @relation("ReferralInviter", fields: [inviterUserId], references: [id], onDelete: Cascade)
+  invitee User @relation("ReferralInvitee", fields: [inviteeUserId], references: [id], onDelete: Cascade)
+
+  @@id([inviterUserId, inviteeUserId])
+  @@index([inviterUserId, createdAt(sort: Desc)])
+  @@map("member_referrals")
 }

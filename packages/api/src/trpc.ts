@@ -70,7 +70,37 @@ const trackActivity = middleware(async ({ ctx, next }) => {
   return next();
 });
 
-export const protectedProcedure = t.procedure.use(isAuthed).use(trackActivity);
+// Most endpoints require the user to have passed the invite gate.
+// Endpoints used to PASS the gate (auth.*, invite.redeem,
+// signupApplication.myStatus) use `pregatedProcedure` so a fresh
+// Supabase auth user can complete onboarding before being gated.
+const requireAccess = middleware(async ({ ctx, next }) => {
+  if (!ctx.user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You must be logged in to access this resource",
+    });
+  }
+  if (!ctx.user.accessGranted) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "EKKO is invite-only. Redeem an invite code or wait for application approval.",
+    });
+  }
+  return next({ ctx: { ...ctx, user: ctx.user } });
+});
+
+// Authenticated but pre-gate. Use sparingly — only for endpoints that
+// must work BEFORE invite redemption / application approval flips
+// `accessGranted` true.
+export const pregatedProcedure = t.procedure.use(isAuthed).use(trackActivity);
+
+// Default for all gated functionality. Authenticated + activity-tracked
+// + access-gated.
+export const protectedProcedure = t.procedure
+  .use(isAuthed)
+  .use(trackActivity)
+  .use(requireAccess);
 
 const isAdmin = middleware(async ({ ctx, next }) => {
   if (!ctx.user) {
