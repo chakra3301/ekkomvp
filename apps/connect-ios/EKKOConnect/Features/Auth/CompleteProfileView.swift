@@ -5,7 +5,6 @@ struct CompleteProfileView: View {
     @State private var currentStep = 0
     @State private var displayName = ""
     @State private var dateOfBirth = Date()
-    @State private var dobSet = false
     @State private var role: UserRole? = nil
     @State private var isLoading = false
     @State private var errors: [String: String] = [:]
@@ -67,7 +66,9 @@ struct CompleteProfileView: View {
 
             Spacer()
 
-            // Navigation buttons — glass bubbles, sized to match the auth flow
+            // Navigation buttons — glass bubbles, sized to match the auth flow.
+            // .contentShape(Rectangle()) on each label so the whole 52pt pill
+            // is tappable, not just the rendered glyphs.
             HStack(spacing: 12) {
                 if currentStep > 0 {
                     Button {
@@ -78,6 +79,7 @@ struct CompleteProfileView: View {
                             .foregroundStyle(.primary)
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .glassBubble(cornerRadius: 14)
@@ -94,6 +96,7 @@ struct CompleteProfileView: View {
                             .foregroundStyle(.primary)
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .glassBubble(cornerRadius: 14)
@@ -112,6 +115,7 @@ struct CompleteProfileView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .frame(height: 52)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     .glassBubble(cornerRadius: 14)
@@ -152,7 +156,6 @@ struct CompleteProfileView: View {
                     )
                     .datePickerStyle(.compact)
                     .labelsHidden()
-                    .onChange(of: dateOfBirth) { _, _ in dobSet = true }
 
                     Text("This will not be shown publicly.")
                         .font(.caption)
@@ -199,13 +202,13 @@ struct CompleteProfileView: View {
         if displayName.trimmingCharacters(in: .whitespaces).count < 2 {
             errs["displayName"] = "Name must be at least 2 characters"
         }
-        if !dobSet {
-            errs["dateOfBirth"] = "Date of birth is required"
-        } else {
-            let age = Calendar.current.dateComponents([.year], from: dateOfBirth, to: Date()).year ?? 0
-            if age < 13 {
-                errs["dateOfBirth"] = "You must be at least 13 years old"
-            }
+        // Date defaults to today; if the user hasn't actually picked a DOB
+        // they'll fail the age check (age 0) and see "must be at least 13".
+        // Clearer error than the previous "Date of birth is required" gate
+        // that fired silently on the unchanged DatePicker.
+        let age = Calendar.current.dateComponents([.year], from: dateOfBirth, to: Date()).year ?? 0
+        if age < 13 {
+            errs["dateOfBirth"] = "You must be at least 13 years old"
         }
         errors = errs
         return errs.isEmpty

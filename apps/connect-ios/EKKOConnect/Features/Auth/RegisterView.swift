@@ -4,13 +4,20 @@ struct RegisterView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.dismiss) private var dismiss
 
-    @State private var email = ""
+    /// Email comes in from the splash's smart-continue routing — by the time
+    /// the user lands here we already know the address isn't registered.
+    let prefilledEmail: String
+
     @State private var password = ""
     @State private var agreedToTerms = false
     @State private var isLoading = false
     @State private var errors: [String: String] = [:]
     @State private var showVerificationAlert = false
     @State private var verificationEmail = ""
+
+    private var email: String {
+        prefilledEmail.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+    }
 
     var body: some View {
         ScrollView {
@@ -27,21 +34,19 @@ struct RegisterView: View {
                     .shadow(color: .black.opacity(0.35), radius: 18, y: 8)
 
                 VStack(spacing: 16) {
-                    // Email
-                    FormField(label: "Email", error: errors["email"]) {
-                        TextField(
-                            "",
-                            text: $email,
-                            prompt: Text("you@example.com").foregroundColor(.white.opacity(0.55))
-                        )
-                        .foregroundStyle(.white)
-                        .tint(.white)
-                        .textContentType(.emailAddress)
-                        .keyboardType(.emailAddress)
-                        .textInputAutocapitalization(.never)
-                        .padding(.horizontal, 16)
-                        .frame(height: 48)
-                        .glassBubble(cornerRadius: 14)
+                    // Static email confirmation — we already know this address
+                    // is new (the splash gated via auth.checkEmailExists). No
+                    // re-input, no editing here; users can hit Back to change.
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Creating account for")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.white.opacity(0.75))
+                        Text(email)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 16)
+                            .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+                            .glassBubble(cornerRadius: 14)
                     }
 
                     // Password
@@ -138,7 +143,7 @@ struct RegisterView: View {
         isLoading = true
         do {
             let response = try await appState.supabase.auth.signUp(
-                email: email.trimmingCharacters(in: .whitespaces),
+                email: email,
                 password: password
             )
 
@@ -148,20 +153,17 @@ struct RegisterView: View {
                 dismiss()
             } else {
                 // Email confirmation required — tell the user to verify
-                verificationEmail = email.trimmingCharacters(in: .whitespaces)
+                verificationEmail = email
                 showVerificationAlert = true
             }
         } catch {
-            errors["email"] = error.localizedDescription
+            errors["password"] = error.localizedDescription
         }
         isLoading = false
     }
 
     private func validate() -> Bool {
         var errs: [String: String] = [:]
-        if email.trimmingCharacters(in: .whitespaces).isEmpty {
-            errs["email"] = "Email is required"
-        }
         if password.count < 8 {
             errs["password"] = "Password must be at least 8 characters"
         }

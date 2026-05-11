@@ -34,13 +34,11 @@
 		34BB851FC7CCAEB08DFEFD31 /* EKKOConnectWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C67C7C1606AEFC752EA3E0 /* EKKOConnectWidgets.swift */; };
 		42F7C87B23E2204320184E8A /* coastlines.geojson in Resources */ = {isa = PBXBuildFile; fileRef = 2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */; };
 		46670C24E1C16DB9AA265E6A /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FF82251403BC9D6473DE86 /* RegisterView.swift */; };
+		C3D4E5F60718293A4B5C7080 /* OTPEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718293A4B5C7081 /* OTPEntryView.swift */; };
 		484DEB42319F17DC8DA7A8E0 /* EKKOTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E35A587910461E3D00A183 /* EKKOTheme.swift */; };
 		4A16417D3CD1A2E2FB2F2F60 /* MatchLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98EC1B128A5D776A19153B24 /* MatchLiveActivity.swift */; };
 		4BCC6930BB82281351B4B312 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2F19CF4CF4990526EF8D8357 /* Kingfisher */; };
 		4D4E8AB5F3404AF8016DB657 /* WelcomeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE72F841BC20E473494CA695 /* WelcomeSheet.swift */; };
-		A1B2C3D4E5F60718293A4B5C /* ThemePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5D /* ThemePickerView.swift */; };
-		A1B2C3D4E5F60718293A4B5E /* AvatarPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5F /* AvatarPickerView.swift */; };
-		A1B2C3D4E5F60718293A4B60 /* OnboardingTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B61 /* OnboardingTips.swift */; };
 		4E9766DE04BF9E9ADCBD13C1 /* AmbientWavyLight.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 02DE9833443518899CD9C6B1 /* AmbientWavyLight.mp4 */; };
 		4EB2BB63162F364769BC7150 /* RequestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB8721ED6014A56558D82AD /* RequestsView.swift */; };
 		563DB68F4C430E57C0DF582D /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6C3DE4E19C55050385849AF /* ProfileView.swift */; };
@@ -72,7 +70,6 @@
 		8697DA9C62887B598633DE9F /* LikeNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05B535B091DE1E1D3B9E12B /* LikeNoteSheet.swift */; };
 		8728D8D6C2547F839203D335 /* MatchCelebrationOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */; };
 		88B70FED49166AF787F7C30A /* ConnectProfileCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85FE6C07E51E526F3BC4299A /* ConnectProfileCard.swift */; };
-		B2C3D4E5F60718293A4B5C70 /* IridescentBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F60718293A4B5C71 /* IridescentBadge.swift */; };
 		8D25123188F47A760ADBBDCD /* View+Glass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D4E206CAAC1783C689691E /* View+Glass.swift */; };
 		919981201C4334EC74C4DF19 /* AccentPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4C1B4D550D46924A5208AAE /* AccentPalette.swift */; };
 		97776725B1F40DD729575127 /* ShareCard_Manga.swift in Sources */ = {isa = PBXBuildFile; fileRef = 978F789379297ABB9B2CE5A4 /* ShareCard_Manga.swift */; };
@@ -81,10 +78,14 @@
 		9F1625EB8D4E717444764FA1 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD2EA2BD53985DE45F5B5447 /* User.swift */; };
 		9F660FD92B5AF6F09363B149 /* EditableAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB84A402676772345B26BDE /* EditableAvatarView.swift */; };
 		9FCE93AEAE76CDE0FFE69487 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = E811961274D9DDBD658D7458 /* RevenueCat */; };
+		A1B2C3D4E5F60718293A4B5C /* ThemePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5D /* ThemePickerView.swift */; };
+		A1B2C3D4E5F60718293A4B5E /* AvatarPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5F /* AvatarPickerView.swift */; };
+		A1B2C3D4E5F60718293A4B60 /* OnboardingTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B61 /* OnboardingTips.swift */; };
 		A2588AD1E12B317E65FA3535 /* MeshBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBF50F556894B6B7A2200E4 /* MeshBackground.swift */; };
 		A38ED939CC9229398C5B4FFF /* ProfileSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111182E0860949B7CD2A97E7 /* ProfileSetupView.swift */; };
 		ABA4BC8ADA9FC8D513243026 /* ShareCard_ChromeFoil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1F4697D27F646053CFB506 /* ShareCard_ChromeFoil.swift */; };
 		AF3AFA01D642EAB8610B2760 /* PromptEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61EE2C17CD4D7F311478E2D1 /* PromptEditor.swift */; };
+		B2C3D4E5F60718293A4B5C70 /* IridescentBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F60718293A4B5C71 /* IridescentBadge.swift */; };
 		B3324319A2A650E6B33BA338 /* LegalLinks.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5E3FA89419F1E6D935732C /* LegalLinks.swift */; };
 		B45A9EEDACEFD70001D310F2 /* ConnectMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4477E6AA1C95510FD0FE5B75 /* ConnectMessage.swift */; };
 		B5D6F7AEACEF329BE2579BC4 /* ConnectProfileEditorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */; };
@@ -154,12 +155,12 @@
 /* Begin PBXFileReference section */
 		00F6777A5E20F2C3FC18CC41 /* ShareCard_Poster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Poster.swift; sourceTree = "<group>"; };
 		015ABB13D19287E17C80378A /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
-		02DE9833443518899CD9C6B1 /* AmbientWavyLight.mp4 */ = {isa = PBXFileReference; path = AmbientWavyLight.mp4; sourceTree = "<group>"; };
+		02DE9833443518899CD9C6B1 /* AmbientWavyLight.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = AmbientWavyLight.mp4; sourceTree = "<group>"; };
 		03CC0A84AB371130E6BC4B3B /* ConnectMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectMatch.swift; sourceTree = "<group>"; };
 		06E6159F8DBC428A2811B432 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		0C38CF3D54B542DE50F33D2E /* MediaFullScreenViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFullScreenViewer.swift; sourceTree = "<group>"; };
 		0C524F663CEC490424290CCB /* ShareCardShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardShared.swift; sourceTree = "<group>"; };
-		0DD96C2014906F1C05C17676 /* LoadingScreen.mp4 */ = {isa = PBXFileReference; path = LoadingScreen.mp4; sourceTree = "<group>"; };
+		0DD96C2014906F1C05C17676 /* LoadingScreen.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = LoadingScreen.mp4; sourceTree = "<group>"; };
 		111182E0860949B7CD2A97E7 /* ProfileSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetupView.swift; sourceTree = "<group>"; };
 		112188F5EBEFDFFE01282BB2 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileHeroView.swift; sourceTree = "<group>"; };
@@ -168,12 +169,12 @@
 		1898A246D2F31E797DEED158 /* ConnectProfileClientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileClientView.swift; sourceTree = "<group>"; };
 		1B5099770EB5143E66F61661 /* EKKOFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOFont.swift; sourceTree = "<group>"; };
 		228D601B5509AA4D2A790714 /* JapaneseLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JapaneseLabel.swift; sourceTree = "<group>"; };
-		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		23C67C7C1606AEFC752EA3E0 /* EKKOConnectWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOConnectWidgets.swift; sourceTree = "<group>"; };
 		25464A7A6B8484A571408E6D /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
 		27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchCelebrationOverlay.swift; sourceTree = "<group>"; };
 		2954B95D97E4A99FE6ADD395 /* ConnectProfileMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileMusicView.swift; sourceTree = "<group>"; };
-		2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */ = {isa = PBXFileReference; path = coastlines.geojson; sourceTree = "<group>"; };
+		2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = coastlines.geojson; sourceTree = "<group>"; };
 		37599C761D0200DAE7F3FD8C /* CompleteProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteProfileView.swift; sourceTree = "<group>"; };
 		377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileEditorialView.swift; sourceTree = "<group>"; };
 		3C2A698D4ADD418F1A28B37E /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -191,6 +192,7 @@
 		6C1F4697D27F646053CFB506 /* ShareCard_ChromeFoil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_ChromeFoil.swift; sourceTree = "<group>"; };
 		7081EC23F989E403237DC88F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		70FF82251403BC9D6473DE86 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
+		C3D4E5F60718293A4B5C7081 /* OTPEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPEntryView.swift; sourceTree = "<group>"; };
 		723A91A9A7864B5532F7A751 /* JPLabels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPLabels.swift; sourceTree = "<group>"; };
 		7AB84A402676772345B26BDE /* EditableAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditableAvatarView.swift; sourceTree = "<group>"; };
 		7CA70C2381F53D3DEEA3BE99 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
@@ -198,9 +200,8 @@
 		7F196972C0FE82EA4A7B9468 /* EKKOConnect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EKKOConnect.entitlements; sourceTree = "<group>"; };
 		7FA796FEFEEF21ACBD9272F1 /* ConnectSwipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSwipe.swift; sourceTree = "<group>"; };
 		80BA77A5E707BF3A24517BFA /* LoadingScreenVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreenVideo.swift; sourceTree = "<group>"; };
-		811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		85FE6C07E51E526F3BC4299A /* ConnectProfileCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileCard.swift; sourceTree = "<group>"; };
-		B2C3D4E5F60718293A4B5C71 /* IridescentBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IridescentBadge.swift; sourceTree = "<group>"; };
 		871BC70E098C57BEE2436D76 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
 		8785EFD367E67672B664E3B3 /* TwitterPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterPreview.swift; sourceTree = "<group>"; };
 		881FD345C1D2CAF3424ED9A9 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
@@ -212,13 +213,16 @@
 		937D6CD74F7827950B16C1F7 /* ProfileSectionEditors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSectionEditors.swift; sourceTree = "<group>"; };
 		93A1EB3F55C190724AF3370B /* RealtimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeService.swift; sourceTree = "<group>"; };
 		94763DBB8AE7EE82754BBDB6 /* InstagramPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstagramPreview.swift; sourceTree = "<group>"; };
-		94C891A387AE09544ECE53CF /* AmbientBackgroundLight.mp4 */ = {isa = PBXFileReference; path = AmbientBackgroundLight.mp4; sourceTree = "<group>"; };
+		94C891A387AE09544ECE53CF /* AmbientBackgroundLight.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = AmbientBackgroundLight.mp4; sourceTree = "<group>"; };
 		95847590D257E624076B08A2 /* ReportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportSheet.swift; sourceTree = "<group>"; };
 		978F789379297ABB9B2CE5A4 /* ShareCard_Manga.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCard_Manga.swift; sourceTree = "<group>"; };
 		98EC1B128A5D776A19153B24 /* MatchLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchLiveActivity.swift; sourceTree = "<group>"; };
 		99D29F132143689C326F8305 /* LikesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikesView.swift; sourceTree = "<group>"; };
 		9EB8721ED6014A56558D82AD /* RequestsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestsView.swift; sourceTree = "<group>"; };
 		A043BF395AB7DECF8934F57D /* GlobePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobePin.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5D /* ThemePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemePickerView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5F /* AvatarPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarPickerView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B61 /* OnboardingTips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingTips.swift; sourceTree = "<group>"; };
 		A68E0B6DCF49E20F3E372327 /* StarSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarSprite.swift; sourceTree = "<group>"; };
 		A6A195E3AEED24203034B6E8 /* ConnectProfileViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileViewer.swift; sourceTree = "<group>"; };
 		A8430AAE30284282903E9D26 /* ConnectProfilePhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfilePhotoView.swift; sourceTree = "<group>"; };
@@ -227,14 +231,12 @@
 		AFA357290B949894640624B9 /* GlobeSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeSceneView.swift; sourceTree = "<group>"; };
 		B05B535B091DE1E1D3B9E12B /* LikeNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LikeNoteSheet.swift; sourceTree = "<group>"; };
 		B0D2D8890B2231560DA21604 /* SkeletonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonView.swift; sourceTree = "<group>"; };
+		B2C3D4E5F60718293A4B5C71 /* IridescentBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IridescentBadge.swift; sourceTree = "<group>"; };
 		B4D4E206CAAC1783C689691E /* View+Glass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Glass.swift"; sourceTree = "<group>"; };
 		BB934980B1C0330A1FD48FA0 /* TRPCClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TRPCClient.swift; sourceTree = "<group>"; };
 		BBBF50F556894B6B7A2200E4 /* MeshBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshBackground.swift; sourceTree = "<group>"; };
 		BDBF6E9D03EE9B1A1DE0E7B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		BE72F841BC20E473494CA695 /* WelcomeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSheet.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F60718293A4B5D /* ThemePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemePickerView.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F60718293A4B5F /* AvatarPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarPickerView.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F60718293A4B61 /* OnboardingTips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingTips.swift; sourceTree = "<group>"; };
 		BF0E6B911CF6EF81120FE2D8 /* ShareCardRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardRegistry.swift; sourceTree = "<group>"; };
 		C308161AFFEF25202B6ECF1F /* Date+Relative.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Relative.swift"; sourceTree = "<group>"; };
 		C4C1B4D550D46924A5208AAE /* AccentPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentPalette.swift; sourceTree = "<group>"; };
@@ -244,9 +246,9 @@
 		CD2EA2BD53985DE45F5B5447 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		CE5E3FA89419F1E6D935732C /* LegalLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalLinks.swift; sourceTree = "<group>"; };
 		CE6293A856B21826507BDAAD /* MediaSlotGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSlotGrid.swift; sourceTree = "<group>"; };
-		D08B3118FD262A697877D048 /* Products.storekit */ = {isa = PBXFileReference; path = Products.storekit; sourceTree = "<group>"; };
+		D08B3118FD262A697877D048 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		D0D70B1A8956D3C537DF6621 /* ConnectProfileVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileVideoView.swift; sourceTree = "<group>"; };
-		D28D728C2BBE0AE70774584E /* EKKOConnectWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = EKKOConnectWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D28D728C2BBE0AE70774584E /* EKKOConnectWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EKKOConnectWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2B61B9994A7B2E2DFB0D5A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D7556E0055DF8FFC25312217 /* ArchesRegularItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ArchesRegularItalic.ttf; sourceTree = "<group>"; };
 		DD9F5F79C21AB212732A7643 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
@@ -263,11 +265,11 @@
 		E9B2983FEC60425BB2002CBB /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		EB9478C8C0DE104FC8483C57 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		F1E9E97572DF4DE816EE020F /* GlobeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeView.swift; sourceTree = "<group>"; };
-		F3BFE771C7969C50E459F9AD /* AmbientBackgroundDark.mp4 */ = {isa = PBXFileReference; path = AmbientBackgroundDark.mp4; sourceTree = "<group>"; };
+		F3BFE771C7969C50E459F9AD /* AmbientBackgroundDark.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = AmbientBackgroundDark.mp4; sourceTree = "<group>"; };
 		F5E35A587910461E3D00A183 /* EKKOTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOTheme.swift; sourceTree = "<group>"; };
 		F751F506688A2D55E2B49DD6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		FA892215FACB6BF82AA3E680 /* SocialLogos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLogos.swift; sourceTree = "<group>"; };
-		FB205460648CA890E4EB0C1D /* AmbientWavyDark.mp4 */ = {isa = PBXFileReference; path = AmbientWavyDark.mp4; sourceTree = "<group>"; };
+		FB205460648CA890E4EB0C1D /* AmbientWavyDark.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = AmbientWavyDark.mp4; sourceTree = "<group>"; };
 		FB39030676E81329E1BC87B5 /* EKKOConnectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOConnectApp.swift; sourceTree = "<group>"; };
 		FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -330,6 +332,7 @@
 				ACE08572EDB361457163CECD /* InviteGateView.swift */,
 				3C2A698D4ADD418F1A28B37E /* LoginView.swift */,
 				70FF82251403BC9D6473DE86 /* RegisterView.swift */,
+				C3D4E5F60718293A4B5C7081 /* OTPEntryView.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -702,11 +705,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-					FD8336ECB0B238202B2AD9B0 = {
-						DevelopmentTeam = "";
-					};
-				};
 			};
 			buildConfigurationList = 5EE46B4119D061763E04ED6B /* Build configuration list for PBXProject "EKKOConnect" */;
 			developmentRegion = en;
@@ -832,6 +830,7 @@
 				C0F197E04602B03E5B2E98B9 /* PushManager.swift in Sources */,
 				3110F7976710874B222F2D1C /* RealtimeService.swift in Sources */,
 				46670C24E1C16DB9AA265E6A /* RegisterView.swift in Sources */,
+				C3D4E5F60718293A4B5C7080 /* OTPEntryView.swift in Sources */,
 				1A8EF3890E4F06100109896F /* ReportSheet.swift in Sources */,
 				4EB2BB63162F364769BC7150 /* RequestsView.swift in Sources */,
 				F6812A414C7CAB9026E367FC /* SettingsView.swift in Sources */,
@@ -890,8 +889,8 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 15;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -899,7 +898,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = app.ekkoconnect.connect;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
@@ -1029,7 +1028,8 @@
 		5012590BD2CFDD15FE325047 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnectWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -1038,7 +1038,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = app.ekkoconnect.connect.widgets;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1054,8 +1054,8 @@
 				CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION = YES;
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 15;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -1063,7 +1063,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = app.ekkoconnect.connect;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
@@ -1074,7 +1074,8 @@
 		A79E4B18543A220536C4EB90 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 4;
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnectWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -1083,7 +1084,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.1;
+				MARKETING_VERSION = 2.0.3;
 				PRODUCT_BUNDLE_IDENTIFIER = app.ekkoconnect.connect.widgets;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
