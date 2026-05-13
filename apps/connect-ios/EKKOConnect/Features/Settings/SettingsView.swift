@@ -109,6 +109,21 @@ struct SettingsView: View {
                 Text("Subscription")
             }
 
+            // ============ INVITES ============
+            Section {
+                NavigationLink(destination: InvitesView()) {
+                    Label {
+                        Text("Invites")
+                            .font(.subheadline)
+                    } icon: {
+                        Image(systemName: "envelope")
+                            .foregroundStyle(Color.accentColor)
+                    }
+                }
+            } header: {
+                Text("Invites")
+            }
+
             // ============ ACCOUNT SETTINGS ============
             Section {
                 if editingDisplayName {

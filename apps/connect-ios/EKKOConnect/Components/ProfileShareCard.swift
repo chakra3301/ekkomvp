@@ -376,7 +376,7 @@ struct ProfileShareSheet: View {
     var accentHex: String? = nil
 
     @Environment(\.dismiss) private var dismiss
-    @State private var selected: ShareCardSlug = .defaultCard
+    @State private var selected: ShareCardSlug = .chromeFoil
     @State private var heroImage: UIImage?
     @State private var avatarImage: UIImage?
     @State private var renderedImage: UIImage?
@@ -553,7 +553,7 @@ struct ProfileShareSheet: View {
                     slug: slug,
                     profile: shareProfile,
                     accent: accent,
-                    legacy: slug == .defaultCard ? legacyPayload : nil
+                    legacy: nil
                 )
                 .scaleEffect(scale, anchor: .topLeading)
                 .frame(width: 1080 * scale, height: 1920 * scale, alignment: .topLeading)
@@ -609,7 +609,7 @@ struct ProfileShareSheet: View {
                 slug: slug,
                 profile: profile,
                 accent: resolvedAccent,
-                legacy: slug == .defaultCard ? legacy : nil
+                legacy: nil
             )
             guard slug == selected else { return }
             renderedImage = img

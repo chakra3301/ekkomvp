@@ -437,7 +437,7 @@ struct LikesView: View {
             )
             expandedProfile = profile
         } catch {
-            appState.showError("Couldn't load profile — try again.")
+            appState.showLoadError("Couldn't load profile — try again.", error: error)
         }
     }
 

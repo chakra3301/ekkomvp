@@ -846,7 +846,15 @@ struct ProfileView: View {
             let profile: ConnectProfile = try await appState.trpc.query("connectProfile.getCurrent")
             appState.currentConnectProfile = profile
         } catch {
-            appState.currentConnectProfile = nil
+            // CRITICAL: don't nil out currentConnectProfile on a transient
+            // failure. Pushing Settings (or any navigation that cancels this
+            // in-flight request) would otherwise wipe the profile and the
+            // AppRouter would immediately re-route to ThemePickerView since
+            // `needsThemePick` defaults to true from app boot.
+            // Only `signOut()` should clear connect profile state.
+            #if DEBUG
+            print("[ProfileView] loadProfile failed (keeping stale): \(error)")
+            #endif
         }
         isLoading = false
     }

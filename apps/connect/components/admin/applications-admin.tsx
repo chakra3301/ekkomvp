@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Clock, Inbox, Loader2, X, ExternalLink } from "lucide-react";
+import { AlertTriangle, Check, Clock, Inbox, Loader2, Mail, X, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import type { inferRouterOutputs } from "@trpc/server";
@@ -223,11 +223,26 @@ function ApplicationCard({
             </Button>
           </div>
         </div>
-      ) : app.notes ? (
-        <p className="text-xs text-muted-foreground border-t pt-2">
-          <span className="font-semibold">Admin note:</span> {app.notes}
-        </p>
-      ) : null}
+      ) : (
+        <div className="space-y-1 border-t pt-2">
+          {app.notes && (
+            <p className="text-xs text-muted-foreground">
+              <span className="font-semibold">Admin note:</span> {app.notes}
+            </p>
+          )}
+          {app.notifiedAt ? (
+            <p className="text-xs text-muted-foreground inline-flex items-center gap-1">
+              <Mail className="h-3 w-3" />
+              Notified {formatDistanceToNow(new Date(app.notifiedAt), { addSuffix: true })}
+            </p>
+          ) : (app.status === "APPROVED" || app.status === "WAITLISTED") ? (
+            <p className="text-xs text-amber-600 dark:text-amber-400 inline-flex items-center gap-1">
+              <AlertTriangle className="h-3 w-3" />
+              Email not sent — check Resend logs
+            </p>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }

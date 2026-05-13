@@ -91,7 +91,9 @@ struct ProfileSetupView: View {
                     .padding(.horizontal, 16)
                 }
 
-                // Navigation — glass bubbles, sized to match the auth flow
+                // Navigation — glass bubbles, sized to match the auth flow.
+                // .contentShape(Rectangle()) on each label so the whole pill
+                // is tappable, not just the rendered glyphs.
                 HStack(spacing: 12) {
                     if currentStep > 0 {
                         Button {
@@ -102,6 +104,7 @@ struct ProfileSetupView: View {
                                 .foregroundStyle(.primary)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 52)
+                                .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                         .glassBubble(cornerRadius: 14)
@@ -116,6 +119,7 @@ struct ProfileSetupView: View {
                                 .foregroundStyle(.primary)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 52)
+                                .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                         .glassBubble(cornerRadius: 14)
@@ -136,6 +140,7 @@ struct ProfileSetupView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
+                            .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                         .glassBubble(cornerRadius: 14)

@@ -1228,6 +1228,10 @@ model SignupApplication {
   reviewerId       String?                 @map("reviewer_id") @db.Uuid
   reviewedAt       DateTime?               @map("reviewed_at")
   submittedAt      DateTime                @default(now()) @map("submitted_at")
+  // Timestamp of the approve/waitlist email send. NULL means no email
+  // was sent (DECLINED, or send failed). Set inside the review mutation
+  // only on the first PENDING→terminal transition.
+  notifiedAt       DateTime?               @map("notified_at")
 
   referrer User? @relation("SignupAppReferrer", fields: [referrerUserId], references: [id], onDelete: SetNull)
   reviewer User? @relation("SignupAppReviewer", fields: [reviewerId],     references: [id], onDelete: SetNull)

@@ -14,22 +14,6 @@ export const authRouter = router({
     return ctx.user;
   }),
 
-  // Pre-auth existence check used by the splash to decide between the OTP
-  // login path (existing users) and the signup path (new emails). Public
-  // so the splash can call it before the user is signed in. Yes, this
-  // technically lets someone probe whether an address is registered —
-  // acceptable for an invite-only product, and no worse than what most
-  // password-reset flows expose implicitly.
-  checkEmailExists: publicProcedure
-    .input(z.object({ email: z.string().email().max(254) }))
-    .query(async ({ input }) => {
-      const u = await prisma.user.findUnique({
-        where: { email: input.email.toLowerCase() },
-        select: { id: true },
-      });
-      return { exists: u !== null };
-    }),
-
   completeUserInfo: pregatedProcedure
     .input(
       z.object({

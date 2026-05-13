@@ -4,32 +4,18 @@ import UIKit
 // Central registry listing every share-card variant available to the user.
 // Order here is the order shown in the carousel.
 //
-// Slug "default" is the original EKKO-branded ProfileShareCard — the "this is
-// my profile" screenshot style. The other 8 entries are the designer-supplied
-// poster variants ported from share-cards/ (Chrome Foil → Terminal).
+// Temporarily reduced to just Chrome Foil while the other variants are being
+// reworked. The other variant files (ShareCard_*.swift, ProfileShareCard, etc.)
+// stay on disk — re-add cases here when each one is ready to ship.
 
 enum ShareCardSlug: String, CaseIterable, Identifiable {
-    case defaultCard = "default"
-    case chromeFoil  = "chrome-foil"
-    case receipt     = "receipt"
-    case manga       = "manga"
-    case tradingCard = "trading-card"
-    case vhs         = "vhs"
-    case poster      = "poster"
-    case terminal    = "terminal"
+    case chromeFoil = "chrome-foil"
 
     var id: String { rawValue }
 
     var label: String {
         switch self {
-        case .defaultCard: return "EKKO"
-        case .chromeFoil:  return "Chrome Foil"
-        case .receipt:     return "Receipt"
-        case .manga:       return "Manga"
-        case .tradingCard: return "Trading Card"
-        case .vhs:         return "VHS"
-        case .poster:      return "Poster"
-        case .terminal:    return "Terminal"
+        case .chromeFoil: return "Chrome Foil"
         }
     }
 }
@@ -41,9 +27,8 @@ struct ShareCardView: View {
     let profile: ShareProfile
     /// User-chosen accent, or nil to use the card default (sakura pink).
     let accent: Color?
-    /// Only consumed by slug == .defaultCard. Display name / username /
-    /// headline / etc. that the EKKO-branded card uses directly instead of
-    /// going through ShareProfile.
+    /// Reserved for the EKKO-branded default card. Currently unused while the
+    /// default is being reworked; ignored by Chrome Foil.
     let legacy: LegacyPayload?
 
     struct LegacyPayload {
@@ -56,35 +41,7 @@ struct ShareCardView: View {
 
     var body: some View {
         switch slug {
-        case .defaultCard:
-            if let legacy {
-                ProfileShareCard(
-                    displayName: legacy.displayName,
-                    username: legacy.username,
-                    headline: legacy.headline,
-                    location: legacy.location,
-                    isInfinite: legacy.isInfinite,
-                    heroImage: profile.heroImage,
-                    avatarImage: profile.avatarImage
-                )
-            } else {
-                ProfileShareCard(
-                    displayName: profile.name,
-                    username: profile.handle.replacingOccurrences(of: "@", with: ""),
-                    headline: profile.role,
-                    location: profile.location,
-                    isInfinite: profile.isInfinite,
-                    heroImage: profile.heroImage,
-                    avatarImage: profile.avatarImage
-                )
-            }
-        case .chromeFoil:  ChromeFoilShareCard(profile: profile, accent: resolvedAccent)
-        case .receipt:     ReceiptShareCard(profile: profile, accent: resolvedAccent)
-        case .manga:       MangaShareCard(profile: profile, accent: resolvedAccent)
-        case .tradingCard: TradingShareCard(profile: profile, accent: resolvedAccent)
-        case .vhs:         VhsShareCard(profile: profile, accent: resolvedAccent)
-        case .poster:      PosterShareCard(profile: profile, accent: resolvedAccent)
-        case .terminal:    TerminalShareCard(profile: profile, accent: resolvedAccent)
+        case .chromeFoil: ChromeFoilShareCard(profile: profile, accent: resolvedAccent)
         }
     }
 

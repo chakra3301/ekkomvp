@@ -16,6 +16,7 @@
     "@ekko/database": "workspace:*",
     "@trpc/server": "^11.0.0-rc.342",
     "apn": "^2.2.0",
+    "resend": "^6.12.3",
     "superjson": "^2.2.1",
     "zod": "^3.22.4"
   },

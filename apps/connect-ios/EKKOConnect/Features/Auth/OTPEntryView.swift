@@ -21,7 +21,15 @@ struct OTPEntryView: View {
 
     @FocusState private var codeFieldFocused: Bool
 
-    private var isCodeReady: Bool { code.count == 6 }
+    // Supabase's OTP length is configurable in Studio (defaults to 6, range
+    // 6–10). Accept anything in that range so the app doesn't break if the
+    // project setting drifts.
+    private let minCodeLength = 6
+    private let maxCodeLength = 10
+
+    private var isCodeReady: Bool {
+        code.count >= minCodeLength && code.count <= maxCodeLength
+    }
 
     var body: some View {
         ScrollView {
@@ -61,12 +69,14 @@ struct OTPEntryView: View {
                 }
 
                 // Single TextField styled as a code box. Monospaced + tracked
-                // wide so the 6 digits read like discrete cells without
-                // wrestling SwiftUI focus across multiple fields.
+                // wide so the digits read like discrete cells without
+                // wrestling SwiftUI focus across multiple fields. Length is
+                // dynamic (Supabase's OTP setting can vary 6–10).
                 TextField(
                     "",
                     text: $code,
-                    prompt: Text("••••••").foregroundColor(.white.opacity(0.35))
+                    prompt: Text(String(repeating: "•", count: minCodeLength))
+                        .foregroundColor(.white.opacity(0.35))
                 )
                 .keyboardType(.numberPad)
                 .textContentType(.oneTimeCode)
@@ -77,11 +87,13 @@ struct OTPEntryView: View {
                 .multilineTextAlignment(.center)
                 .focused($codeFieldFocused)
                 .onChange(of: code) { _, newValue in
-                    // Strip non-digits and clamp to 6 chars.
                     let cleaned = newValue.filter(\.isNumber)
-                    let clamped = String(cleaned.prefix(6))
+                    let clamped = String(cleaned.prefix(maxCodeLength))
                     if clamped != newValue { code = clamped }
-                    if clamped.count == 6 {
+                    // Auto-submit only when the user hits the max length —
+                    // for shorter codes they tap Verify, since we don't know
+                    // exactly how many digits the project is configured for.
+                    if clamped.count == maxCodeLength {
                         Task { await verify() }
                     }
                 }

@@ -28,6 +28,7 @@ enum JPLabels {
         static let settings     = "設定"
         static let profileSetup = "プロフィール作成"
         static let editProfile  = "プロフィール編集"
+        static let invites      = "招待"
     }
 
     enum status {

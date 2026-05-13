@@ -469,7 +469,7 @@ struct InquiryDetailSheet: View {
             fetchedProfile = p
             showProfile = true
         } catch {
-            appState.showError("Couldn't load profile.")
+            appState.showLoadError("Couldn't load profile.", error: error)
         }
     }
 }

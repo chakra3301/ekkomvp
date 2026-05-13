@@ -50,6 +50,7 @@ struct AvatarPickerView: View {
                     .foregroundStyle(.primary)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .glassBubble(cornerRadius: 14)

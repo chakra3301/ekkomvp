@@ -150,8 +150,10 @@ final class DiscoverViewModel {
             )
             profiles = result
         } catch {
+            // Fail silently on cancellation (user nav-away). Surface
+            // anything else so they know to retry.
             errorMessage = error.localizedDescription
-            appState?.showError("Couldn't load creatives — pull to retry.")
+            appState?.showLoadError("Couldn't load creatives — pull to retry.", error: error)
         }
         isLoading = false
     }

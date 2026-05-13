@@ -2,6 +2,11 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { router, publicProcedure, pregatedProcedure, adminProcedure } from "../trpc";
 import { prisma, SignupApplicationStatus } from "@ekko/database";
+import {
+  sendTransactionalEmail,
+  applicationApprovedTemplate,
+  applicationWaitlistedTemplate,
+} from "../lib/email";
 
 // Public sign-up application: someone without an invite can apply via
 // the website. Distinct from the existing `Application` model used for
@@ -122,7 +127,18 @@ export const signupApplicationRouter = router({
             ? SignupApplicationStatus.WAITLISTED
             : SignupApplicationStatus.DECLINED;
 
-      return prisma.signupApplication.update({
+      // Load the existing row so we can tell whether this is the first
+      // PENDING→terminal transition (which is the only time we send a
+      // notification email — re-reviews stay silent).
+      const existing = await prisma.signupApplication.findUnique({
+        where: { id: input.id },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Application not found." });
+      }
+      const isFirstReview = existing.status === SignupApplicationStatus.PENDING;
+
+      const updated = await prisma.signupApplication.update({
         where: { id: input.id },
         data: {
           status,
@@ -132,6 +148,38 @@ export const signupApplicationRouter = router({
           reviewedAt: new Date(),
         },
       });
+
+      // Only APPROVED and WAITLISTED get an email; DECLINED is silent
+      // (locked decision in CLAUDE.md). Send only on the first review
+      // so toggling between states later doesn't double-mail.
+      if (
+        isFirstReview &&
+        (status === SignupApplicationStatus.APPROVED ||
+          status === SignupApplicationStatus.WAITLISTED)
+      ) {
+        const template =
+          status === SignupApplicationStatus.APPROVED
+            ? applicationApprovedTemplate()
+            : applicationWaitlistedTemplate();
+        const result = await sendTransactionalEmail({
+          to: existing.email,
+          subject: template.subject,
+          html: template.html,
+          text: template.text,
+        });
+        if (result.ok) {
+          return prisma.signupApplication.update({
+            where: { id: input.id },
+            data: { notifiedAt: new Date() },
+          });
+        } else {
+          console.warn(
+            `[signupApplication.review] email send failed for ${existing.email}: ${result.error}`
+          );
+        }
+      }
+
+      return updated;
     }),
 
   // Stats for the admin dashboard sidebar.

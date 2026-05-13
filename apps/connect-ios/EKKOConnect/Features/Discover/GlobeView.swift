@@ -188,7 +188,8 @@ struct GlobeView: View {
                 pins = result.pins
             }
         } catch {
-            appState.showError("Couldn't load the globe — \(error.localizedDescription)")
+            // Silent on cancellation (user left the globe mid-fetch).
+            appState.showLoadError("Couldn't load the globe — \(error.localizedDescription)", error: error)
         }
     }
 

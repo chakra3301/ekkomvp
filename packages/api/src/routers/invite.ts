@@ -1,11 +1,16 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { router, pregatedProcedure, protectedProcedure, adminProcedure } from "../trpc";
-import { prisma, ConnectTier, InviteStatus } from "@ekko/database";
+import { prisma, ConnectTier, InviteStatus, Prisma } from "@ekko/database";
 
 // 32-char alphabet without 0/O/1/I/L to avoid OCR/typo confusion.
 const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const CODE_LENGTH = 8;
+
+// Default invite allowances. Founders seed more reach during the early
+// cohort waves (see CLAUDE.md "Founders' invite count").
+const DEFAULT_INVITES_MEMBER = 3;
+const DEFAULT_INVITES_FOUNDER = 5;
 
 function generateCode(): string {
   let out = "";
@@ -19,6 +24,24 @@ function generateCode(): string {
 // to the canonical storage form: uppercase, no separators.
 function normalizeCode(raw: string): string {
   return raw.replace(/[\s-]/g, "").toUpperCase();
+}
+
+// Lazy-seed a user's invite balance the first time they're asked about it.
+// `MemberInvite` rows are not created anywhere else — backfilled users from
+// 2026-05-07 and new redeemers both land here on first read/generate.
+async function ensureBalance(
+  tx: Prisma.TransactionClient,
+  userId: string,
+  isFounder: boolean
+) {
+  return tx.memberInvite.upsert({
+    where: { userId },
+    create: {
+      userId,
+      availableCount: isFounder ? DEFAULT_INVITES_FOUNDER : DEFAULT_INVITES_MEMBER,
+    },
+    update: {},
+  });
 }
 
 export const inviteRouter = router({
@@ -138,23 +161,24 @@ export const inviteRouter = router({
 
   // ─── Gated: member-facing invite economy.
 
-  // The signed-in member's invite balance + history.
+  // The signed-in member's invite balance + history. First read for any
+  // given user lazy-seeds their MemberInvite row.
   myBalance: protectedProcedure.query(async ({ ctx }) => {
-    const balance = await prisma.memberInvite.findUnique({
-      where: { userId: ctx.user.id },
-    });
-    const issued = await prisma.invite.count({
-      where: { issuedByUserId: ctx.user.id },
-    });
-    const redeemed = await prisma.invite.count({
-      where: { issuedByUserId: ctx.user.id, status: InviteStatus.REDEEMED },
-    });
+    const balance = await prisma.$transaction((tx) =>
+      ensureBalance(tx, ctx.user.id, ctx.user.isFounder)
+    );
+    const [issued, redeemed] = await Promise.all([
+      prisma.invite.count({ where: { issuedByUserId: ctx.user.id } }),
+      prisma.invite.count({
+        where: { issuedByUserId: ctx.user.id, status: InviteStatus.REDEEMED },
+      }),
+    ]);
     return {
-      availableCount: balance?.availableCount ?? 0,
+      availableCount: balance.availableCount,
       totalIssued: issued,
       totalRedeemed: redeemed,
-      lastRefreshAt: balance?.lastRefreshAt ?? null,
-      nextRefreshAt: balance?.nextRefreshAt ?? null,
+      lastRefreshAt: balance.lastRefreshAt,
+      nextRefreshAt: balance.nextRefreshAt,
     };
   }),
 
@@ -175,10 +199,8 @@ export const inviteRouter = router({
   // Member generates a fresh code (decrements balance).
   generate: protectedProcedure.mutation(async ({ ctx }) => {
     return prisma.$transaction(async (tx) => {
-      const balance = await tx.memberInvite.findUnique({
-        where: { userId: ctx.user.id },
-      });
-      if (!balance || balance.availableCount <= 0) {
+      const balance = await ensureBalance(tx, ctx.user.id, ctx.user.isFounder);
+      if (balance.availableCount <= 0) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "You don't have any invites available right now.",

@@ -98,6 +98,15 @@ final class AppState {
     func showError(_ message: String) { showToast(message, kind: .error) }
     func showSuccess(_ message: String) { showToast(message, kind: .success) }
 
+    /// Use for load/refresh operations where a transient cancellation
+    /// (user navigated away mid-fetch) shouldn't bug the user. Surfaces a
+    /// real error toast for everything else.
+    func showLoadError(_ message: String, error: Error) {
+        if error is CancellationError { return }
+        if let url = error as? URLError, url.code == .cancelled { return }
+        showError(message)
+    }
+
     // MARK: - In-app Message Banner
     //
     // Shown when a push-delivered message arrives while the app is foregrounded
@@ -252,10 +261,16 @@ final class AppState {
     }
 
     func updateSession(_ session: Session) async {
+        // Hold the loading splash up while we fetch the User + Profile so the
+        // AppRouter never sees the half-state (`isAuthenticated=true` and
+        // `currentProfile=nil`) — that briefly rendered CompleteProfileView
+        // for users who already had an account.
+        isLoading = true
+        defer { isLoading = false }
+
         self.session = session
         trpc.setAccessToken(session.accessToken)
         await fetchCurrentUser()
-        // Notify listeners that the user changed (for IAP / push sync)
         NotificationCenter.default.post(name: .init("EKKOUserChanged"), object: session.user.id.uuidString)
     }
 
@@ -278,15 +293,19 @@ final class AppState {
     }
 
     func fetchCurrentUser() async {
-        // Fetch the full User record (includes role, which we need for admin/GM).
+        // IMPORTANT: on a transient failure (network blip, request cancelled
+        // because the user navigated away mid-flight, server hiccup) we keep
+        // the existing values rather than clearing them. Clearing made the
+        // AppRouter route to CompleteProfileView whenever a refresh failed —
+        // i.e. fast tab-switching kicked logged-in users back to onboarding.
+        // Explicit signOut is still the only thing that nukes these.
         do {
             let user: User = try await trpc.query("auth.me")
             self.currentUser = user
         } catch {
             #if DEBUG
-            print("[Auth] auth.me failed: \(error)")
+            print("[Auth] auth.me failed (keeping stale user): \(error)")
             #endif
-            self.currentUser = nil
         }
 
         do {
@@ -294,17 +313,17 @@ final class AppState {
             self.currentProfile = profile
         } catch {
             #if DEBUG
-            print("[Auth] profile.getCurrent failed: \(error)")
+            print("[Auth] profile.getCurrent failed (keeping stale profile): \(error)")
             #endif
-            self.currentProfile = nil
         }
 
-        // Also check for a ConnectProfile so the router knows whether to push setup.
         do {
             let connect: ConnectProfile = try await trpc.query("connectProfile.getCurrent")
             self.currentConnectProfile = connect
         } catch {
-            self.currentConnectProfile = nil
+            #if DEBUG
+            print("[Auth] connectProfile.getCurrent failed (keeping stale connect): \(error)")
+            #endif
         }
         hasCheckedConnectProfile = true
     }

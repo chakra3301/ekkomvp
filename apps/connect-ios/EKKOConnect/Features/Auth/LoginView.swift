@@ -3,9 +3,16 @@ import AuthenticationServices
 import CryptoKit
 
 /// Splash login: a single email input + Continue button + Sign in with Apple.
-/// Continue calls `auth.checkEmailExists`:
-///   - existing email → send a 6-digit OTP and push OTPEntryView
-///   - new email      → push RegisterView with the email pre-filled
+/// Continue calls `supabase.auth.signInWithOTP(email:, shouldCreateUser: false)`
+/// which doubles as our existence check:
+///   - success → existing Supabase Auth user, push OTPEntryView
+///   - "Signups not allowed for OTP" → no such auth user, push RegisterView
+///   - other error → surface to the user
+///
+/// We deliberately use Supabase Auth as the source of truth here rather than
+/// `prisma.user` — those two tables can drift when an auth user is deleted
+/// without cleaning up downstream rows. Supabase is the gatekeeper anyway,
+/// so its answer is the one that matters for routing.
 struct LoginView: View {
     @Environment(AppState.self) private var appState
     @State private var email = ""
@@ -177,33 +184,26 @@ struct LoginView: View {
         errorMessage = nil
         defer { isContinuing = false }
 
-        struct ExistsInput: Encodable { let email: String }
-        struct ExistsResult: Decodable { let exists: Bool }
-
         do {
-            let result: ExistsResult = try await appState.trpc.query(
-                "auth.checkEmailExists",
-                input: ExistsInput(email: trimmedEmail)
+            // Try to send a code with shouldCreateUser=false. Supabase only
+            // sends the email if the auth user actually exists; if not, it
+            // surfaces a "Signups not allowed for OTP" error which we treat
+            // as the signal to route to the signup form.
+            try await appState.supabase.auth.signInWithOTP(
+                email: trimmedEmail,
+                shouldCreateUser: false
             )
-
-            if result.exists {
-                // Existing account — send a 6-digit OTP for passwordless login
-                // and hand off to OTPEntryView for code entry.
-                do {
-                    try await appState.supabase.auth.signInWithOTP(
-                        email: trimmedEmail,
-                        shouldCreateUser: false
-                    )
-                    pendingOTPEmail = trimmedEmail
-                } catch {
-                    errorMessage = error.localizedDescription
-                }
-            } else {
-                // New email — push the signup form (password + terms).
-                pendingRegisterEmail = trimmedEmail
-            }
+            pendingOTPEmail = trimmedEmail
         } catch {
-            errorMessage = error.localizedDescription
+            let msg = error.localizedDescription.lowercased()
+            // Supabase returns this exact phrasing when the email isn't
+            // registered and shouldCreateUser is false. Use it as the
+            // "new user" signal.
+            if msg.contains("signups not allowed") || msg.contains("user not found") {
+                pendingRegisterEmail = trimmedEmail
+            } else {
+                errorMessage = error.localizedDescription
+            }
         }
     }
 

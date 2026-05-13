@@ -185,7 +185,7 @@ struct ChatView: View {
                 await realtimeService?.sendRead(userId: userId)
             }
         } catch {
-            appState.showError("Couldn't load messages: \(error.localizedDescription)")
+            appState.showLoadError("Couldn't load messages: \(error.localizedDescription)", error: error)
         }
     }
 
