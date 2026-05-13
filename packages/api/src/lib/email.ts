@@ -1,4 +1,9 @@
+import * as React from "react";
 import { Resend } from "resend";
+import { render } from "@react-email/render";
+
+import ApprovedEmail from "../../emails/approved";
+import WaitlistedEmail from "../../emails/waitlisted";
 
 // Lazy-init so the SDK isn't constructed at import time on Edge runtimes
 // that may not have RESEND_API_KEY set during build.
@@ -11,7 +16,6 @@ function client(): Resend | null {
 }
 
 const FROM = process.env.RESEND_FROM ?? "EKKO <hello@ekkoconnect.app>";
-const APP_STORE_URL = "https://apps.apple.com/ca/app/ekko/id6759824029";
 
 type SendArgs = {
   to: string;
@@ -48,73 +52,40 @@ export async function sendTransactionalEmail(args: SendArgs): Promise<SendResult
 
 // ─── Templates ───────────────────────────────────────────────────────────
 //
-// HTML is intentionally minimal — system fonts, brand black/white, single
-// CTA. Easier to render reliably across Gmail/iOS Mail/Outlook than a
-// full templated layout.
+// Templates live as React components in /packages/api/emails. Preview them
+// locally with `pnpm --filter @ekko/api preview-emails` (boots react-email
+// dev server with hot reload at http://localhost:3000).
 
-function shell(bodyHtml: string): string {
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>EKKO</title>
-</head>
-<body style="margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#f5f5f5;">
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#0a0a0a;">
-<tr><td align="center" style="padding:48px 16px;">
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:520px;">
-<tr><td style="padding-bottom:32px;">
-<div style="font-size:24px;font-weight:700;letter-spacing:2px;">EKKO</div>
-</td></tr>
-${bodyHtml}
-<tr><td style="padding-top:48px;border-top:1px solid #1f1f1f;color:#7a7a7a;font-size:12px;line-height:18px;">
-EKKO is invite-only by design. This email was sent because you applied at ekkoconnect.app/apply.
-</td></tr>
-</table>
-</td></tr>
-</table>
-</body>
-</html>`;
+export async function applicationApprovedTemplate(): Promise<{
+  subject: string;
+  html: string;
+  text: string;
+}> {
+  const element = React.createElement(ApprovedEmail);
+  const [html, text] = await Promise.all([
+    render(element),
+    render(element, { plainText: true }),
+  ]);
+  return {
+    subject: "You're in — welcome to EKKO.",
+    html,
+    text,
+  };
 }
 
-export function applicationApprovedTemplate(): { subject: string; html: string; text: string } {
-  const subject = "You're in — welcome to EKKO.";
-  const html = shell(`
-<tr><td style="font-size:32px;font-weight:700;line-height:1.2;padding-bottom:16px;">You're in.</td></tr>
-<tr><td style="font-size:16px;line-height:1.6;color:#cfcfcf;padding-bottom:32px;">
-Your application's approved. EKKO is invite-only — sign in with this email address to claim your spot.
-</td></tr>
-<tr><td style="padding-bottom:24px;">
-<a href="${APP_STORE_URL}" style="display:inline-block;background:#ffffff;color:#0a0a0a;text-decoration:none;font-weight:600;font-size:15px;padding:14px 28px;border-radius:12px;">Get EKKO on the App Store</a>
-</td></tr>
-<tr><td style="font-size:13px;line-height:1.6;color:#7a7a7a;">
-Already have the app? Just sign in with this email and you'll land straight in.
-</td></tr>`);
-  const text = `You're in.
-
-Your application's approved. EKKO is invite-only — sign in with this email address to claim your spot.
-
-Get EKKO on the App Store: ${APP_STORE_URL}
-
-Already have the app? Just sign in with this email and you'll land straight in.`;
-  return { subject, html, text };
-}
-
-export function applicationWaitlistedTemplate(): { subject: string; html: string; text: string } {
-  const subject = "Thanks for applying to EKKO";
-  const html = shell(`
-<tr><td style="font-size:32px;font-weight:700;line-height:1.2;padding-bottom:16px;">Thanks for applying.</td></tr>
-<tr><td style="font-size:16px;line-height:1.6;color:#cfcfcf;padding-bottom:16px;">
-EKKO is in its early invite-only phase, and we can't accept every application right now.
-</td></tr>
-<tr><td style="font-size:16px;line-height:1.6;color:#cfcfcf;">
-We'll review your work again in 60 days. If our take changes, we'll be in touch.
-</td></tr>`);
-  const text = `Thanks for applying.
-
-EKKO is in its early invite-only phase, and we can't accept every application right now.
-
-We'll review your work again in 60 days. If our take changes, we'll be in touch.`;
-  return { subject, html, text };
+export async function applicationWaitlistedTemplate(): Promise<{
+  subject: string;
+  html: string;
+  text: string;
+}> {
+  const element = React.createElement(WaitlistedEmail);
+  const [html, text] = await Promise.all([
+    render(element),
+    render(element, { plainText: true }),
+  ]);
+  return {
+    subject: "Thanks for applying to EKKO",
+    html,
+    text,
+  };
 }

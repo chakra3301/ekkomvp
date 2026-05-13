@@ -159,8 +159,8 @@ export const signupApplicationRouter = router({
       ) {
         const template =
           status === SignupApplicationStatus.APPROVED
-            ? applicationApprovedTemplate()
-            : applicationWaitlistedTemplate();
+            ? await applicationApprovedTemplate()
+            : await applicationWaitlistedTemplate();
         const result = await sendTransactionalEmail({
           to: existing.email,
           subject: template.subject,
