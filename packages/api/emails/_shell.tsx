@@ -81,7 +81,7 @@ export function EmailShell({
             <Img
               src={`${ASSET_BASE}/ekkofontdark.png`}
               alt="EKKO"
-              width="120"
+              width="144"
               height="auto"
               style={{ margin: "0 auto", display: "block" }}
             />

@@ -1,23 +1,13 @@
 import * as React from "react";
-import { Button, Img, Section, Text } from "@react-email/components";
+import { Button, Section, Text } from "@react-email/components";
 import { EmailShell, emailTokens } from "./_shell";
 
-const { colors, fontStack, ASSET_BASE, glass } = emailTokens;
+const { colors, fontStack, glass } = emailTokens;
 const APP_STORE_URL = "https://apps.apple.com/ca/app/ekko/id6759824029";
 
 export default function ApprovedEmail() {
   return (
     <EmailShell preview="You're in — welcome to EKKO.">
-      <Section style={{ textAlign: "center", paddingBottom: 32 }}>
-        <Img
-          src={`${ASSET_BASE}/email/heading-approved.png`}
-          alt="YOU'RE IN."
-          width="420"
-          height="auto"
-          style={{ margin: "0 auto", display: "block", maxWidth: "100%" }}
-        />
-      </Section>
-
       <Section style={{ ...glass, padding: 28, textAlign: "left" }}>
         <Text
           style={{

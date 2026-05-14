@@ -1,22 +1,12 @@
 import * as React from "react";
-import { Img, Section, Text } from "@react-email/components";
+import { Section, Text } from "@react-email/components";
 import { EmailShell, emailTokens } from "./_shell";
 
-const { colors, fontStack, ASSET_BASE, glass } = emailTokens;
+const { colors, fontStack, glass } = emailTokens;
 
 export default function WaitlistedEmail() {
   return (
     <EmailShell preview="Thanks for applying to EKKO.">
-      <Section style={{ textAlign: "center", paddingBottom: 32 }}>
-        <Img
-          src={`${ASSET_BASE}/email/heading-waitlisted.png`}
-          alt="THANKS FOR APPLYING."
-          width="440"
-          height="auto"
-          style={{ margin: "0 auto", display: "block", maxWidth: "100%" }}
-        />
-      </Section>
-
       <Section style={{ ...glass, padding: 28, textAlign: "left" }}>
         <Text
           style={{
