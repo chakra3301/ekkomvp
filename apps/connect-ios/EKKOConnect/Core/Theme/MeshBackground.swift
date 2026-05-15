@@ -3,13 +3,11 @@ import SwiftUI
 /// Animated mesh gradient background using stacked radial gradients.
 /// Provides depth and color so glass morphism elements have something to blur over.
 struct MeshBackground: View {
-    @Environment(\.colorScheme) private var colorScheme
     @State private var animate = false
 
     var body: some View {
         ZStack {
-            // Base color
-            (colorScheme == .dark ? Color(hex: "#0A0A0F") : Color(hex: "#FAFAFC"))
+            Color(hex: "#0A0A0F")
                 .ignoresSafeArea()
 
             // Three radial gradient blobs, slowly drifting
@@ -67,21 +65,7 @@ struct MeshBackground: View {
 
     // MARK: - Mesh Colors
 
-    private var meshColor1: Color {
-        colorScheme == .dark
-            ? Color(hex: "#3B0764").opacity(0.55) // deep purple
-            : Color(hex: "#DBEAFE").opacity(0.85) // soft blue
-    }
-
-    private var meshColor2: Color {
-        colorScheme == .dark
-            ? Color(hex: "#0C4A6E").opacity(0.55) // deep cyan
-            : Color(hex: "#FCE7F3").opacity(0.85) // soft pink
-    }
-
-    private var meshColor3: Color {
-        colorScheme == .dark
-            ? Color(hex: "#831843").opacity(0.45) // deep magenta
-            : Color(hex: "#DDD6FE").opacity(0.85) // soft violet
-    }
+    private var meshColor1: Color { Color(hex: "#3B0764").opacity(0.55) }
+    private var meshColor2: Color { Color(hex: "#0C4A6E").opacity(0.55) }
+    private var meshColor3: Color { Color(hex: "#831843").opacity(0.45) }
 }

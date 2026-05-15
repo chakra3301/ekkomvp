@@ -32,7 +32,7 @@ struct EKKOConnectApp: App {
                 .environment(appState)
                 .environment(pushManager)
                 .environment(purchaseManager)
-                .preferredColorScheme(appState.colorSchemeOverride)
+                .preferredColorScheme(.dark)
                 // Reads @AppStorage("connectAccentHex") and applies .tint
                 // app-wide so every Color.accentColor downstream picks up
                 // the user's chosen accent.

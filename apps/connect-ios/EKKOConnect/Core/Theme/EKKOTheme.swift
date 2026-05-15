@@ -7,17 +7,10 @@ enum EKKOTheme {
     static let primaryForeground = Color.white
     static let destructive = Color(red: 0.92, green: 0.28, blue: 0.33)
 
-    // Light mode
-    static let backgroundLight = Color.white
-    static let cardLight = Color.white.opacity(0.6)
-    static let mutedForegroundLight = Color(hex: "#4B5563")
-    static let borderLight = Color(hex: "#E5E7EB")
-
-    // Dark mode
-    static let backgroundDark = Color(hue: 220/360, saturation: 0.13, brightness: 0.13)
-    static let cardDark = Color.white.opacity(0.08)
-    static let mutedForegroundDark = Color(hex: "#9CA3AF")
-    static let borderDark = Color.white.opacity(0.1)
+    static let background = Color(hue: 220/360, saturation: 0.13, brightness: 0.13)
+    static let card = Color.white.opacity(0.08)
+    static let mutedForeground = Color(hex: "#9CA3AF")
+    static let border = Color.white.opacity(0.1)
 
     // MARK: - Corners
 
@@ -44,8 +37,6 @@ enum EKKOTheme {
 // `.ultraThinMaterial`.
 
 struct GlassCard: ViewModifier {
-    @Environment(\.colorScheme) private var colorScheme
-
     var cornerRadius: CGFloat = EKKOTheme.cardRadius
 
     func body(content: Content) -> some View {
@@ -56,14 +47,7 @@ struct GlassCard: ViewModifier {
             content
                 .background(.ultraThinMaterial)
                 .clipShape(shape)
-                .overlay(
-                    shape.stroke(
-                        colorScheme == .dark
-                            ? Color.white.opacity(0.1)
-                            : Color.white.opacity(0.6),
-                        lineWidth: 0.5
-                    )
-                )
+                .overlay(shape.stroke(Color.white.opacity(0.1), lineWidth: 0.5))
         }
     }
 }
@@ -78,25 +62,19 @@ extension View {
 
 struct GlassBubble: ViewModifier {
     var cornerRadius: CGFloat = 24
-    @Environment(\.colorScheme) private var colorScheme
 
     func body(content: Content) -> some View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         if #available(iOS 26.0, *) {
             content
                 .glassEffect(.regular.interactive(), in: shape)
-                .shadow(color: .black.opacity(colorScheme == .dark ? 0.25 : 0.1), radius: 12, y: 6)
+                .shadow(color: .black.opacity(0.25), radius: 12, y: 6)
         } else {
             content
                 .background(.ultraThinMaterial)
                 .clipShape(shape)
-                .overlay(
-                    shape.stroke(
-                        colorScheme == .dark ? Color.white.opacity(0.18) : Color.white.opacity(0.4),
-                        lineWidth: 1
-                    )
-                )
-                .shadow(color: .black.opacity(colorScheme == .dark ? 0.35 : 0.15), radius: 16, y: 8)
+                .overlay(shape.stroke(Color.white.opacity(0.18), lineWidth: 1))
+                .shadow(color: .black.opacity(0.35), radius: 16, y: 8)
         }
     }
 }

@@ -22,9 +22,10 @@ struct CompleteProfileView: View {
                     .foregroundStyle(Color.accentColor)
                 + Text(" Connect")
                     .font(.title2.bold())
+                    .foregroundColor(.white)
                 Text("Set up your profile to get started")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.white.opacity(0.7))
             }
             .padding(.top, 20)
             .padding(.bottom, 16)
@@ -126,6 +127,7 @@ struct CompleteProfileView: View {
             .padding(.horizontal, 24)
             .padding(.bottom, 16)
         }
+        .background { AuthDottedBackground() }
     }
 
     // MARK: - Step 1

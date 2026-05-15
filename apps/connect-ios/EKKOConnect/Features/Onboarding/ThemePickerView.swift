@@ -34,7 +34,7 @@ struct ThemePickerView: View {
 
             footer
         }
-        .background(AmbientBackground())
+        .background(AuthDottedBackground())
     }
 
     private var header: some View {

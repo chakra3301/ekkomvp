@@ -66,6 +66,8 @@ struct InviteGateView: View {
                     .padding(.bottom, 24)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background { AuthDottedBackground() }
         .task {
             // Pre-fill from a deep link that landed before the gate appeared.
             if let pending = appState.pendingInviteCode, !pending.isEmpty {

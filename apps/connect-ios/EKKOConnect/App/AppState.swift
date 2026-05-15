@@ -201,23 +201,6 @@ final class AppState {
         }
     }
 
-    // MARK: - Preferences
-
-    var colorSchemeOverride: ColorScheme? {
-        switch themePreference {
-        case "light": return .light
-        case "dark": return .dark
-        default: return nil
-        }
-    }
-
-    /// Stored property so @Observable notifies on changes. Persisted to UserDefaults via didSet.
-    var themePreference: String = UserDefaults.standard.string(forKey: "theme") ?? "system" {
-        didSet {
-            UserDefaults.standard.set(themePreference, forKey: "theme")
-        }
-    }
-
     // MARK: - Init
 
     init() {

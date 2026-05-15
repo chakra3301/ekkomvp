@@ -158,6 +158,8 @@ struct OTPEntryView: View {
             .padding(.horizontal, 24)
             .padding(.bottom, 24)
         }
+        .scrollContentBackground(.hidden)
+        .background { AuthDottedBackground() }
         .navigationBarBackButtonHidden(false)
         .navigationTitle("")
         .toolbarBackground(.hidden, for: .navigationBar)

@@ -166,46 +166,6 @@ struct SettingsView: View {
 
             // ============ APPEARANCE ============
             Section {
-                HStack(spacing: 12) {
-                    ForEach([
-                        ("light", "Light", "sun.max.fill"),
-                        ("dark", "Dark", "moon.fill"),
-                        ("system", "System", "laptopcomputer"),
-                    ], id: \.0) { value, label, icon in
-                        Button {
-                            appState.themePreference = value
-                        } label: {
-                            VStack(spacing: 6) {
-                                Image(systemName: icon)
-                                    .font(.title3)
-                                Text(label)
-                                    .font(.caption)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(
-                                appState.themePreference == value
-                                ? Color.accentColor.opacity(0.1)
-                                : Color.clear
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(
-                                        appState.themePreference == value
-                                        ? Color.accentColor.opacity(0.3)
-                                        : Color.clear,
-                                        lineWidth: 1
-                                    )
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(
-                            appState.themePreference == value ? Color.accentColor : .secondary
-                        )
-                    }
-                }
-
                 // Japanese sub-labels — purely aesthetic, default on.
                 JapaneseSubLabelsToggle()
 

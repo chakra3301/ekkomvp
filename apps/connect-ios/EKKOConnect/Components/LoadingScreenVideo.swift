@@ -25,24 +25,20 @@ struct AuthDottedBackground: View {
     }
 }
 
-/// Slowly-drifting ambient backdrop for Discover and Profile. Picks the
-/// dark or light variant of the user's selected style based on the current
-/// color scheme. The video pauses when the app backgrounds to avoid
-/// draining battery in-pocket. Renders nothing when the user has turned
-/// the ambient background off in Settings.
+/// Slowly-drifting ambient backdrop for Discover and Profile. The video
+/// pauses when the app backgrounds to avoid draining battery in-pocket.
+/// Renders nothing when the user has turned the ambient background off
+/// in Settings.
 struct AmbientBackground: View {
     @AppStorage(AmbientSettings.enabledKey) private var enabled = AmbientSettings.defaultEnabled
     @AppStorage(AmbientSettings.styleKey) private var styleRaw = AmbientBackgroundStyle.defaultStyle.rawValue
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         if enabled {
             let style = AmbientBackgroundStyle(rawValue: styleRaw) ?? .defaultStyle
-            let resource = colorScheme == .dark ? style.darkResource : style.lightResource
-            LoopingVideo(resource: resource, ext: "mp4")
-                // Force a fresh AVPlayer when the user toggles light/dark
-                // or picks a different style.
-                .id(resource)
+            LoopingVideo(resource: style.resource, ext: "mp4")
+                // Force a fresh AVPlayer when the user picks a different style.
+                .id(style.resource)
                 .ignoresSafeArea()
         }
     }
@@ -50,11 +46,11 @@ struct AmbientBackground: View {
 
 // MARK: - Background styles
 //
-// Each style ships a dark + light mp4 in Resources/. To add a new style:
-//   1. Drop two HEVC mp4s into EKKOConnect/Resources/ named matching the
-//      `darkResource` / `lightResource` strings below.
-//   2. Add a new case to this enum with its display name and resource names.
-//   3. Run `xcodegen generate` so the bundle picks up the files.
+// Each style ships one mp4 in Resources/. To add a new style:
+//   1. Drop a HEVC mp4 into EKKOConnect/Resources/ named matching the
+//      `resource` string below.
+//   2. Add a new case to this enum with its display name and resource name.
+//   3. Run `xcodegen generate` so the bundle picks up the file.
 // The Settings picker iterates `allCases`, so new styles appear automatically.
 
 enum AmbientBackgroundStyle: String, CaseIterable, Identifiable {
@@ -70,17 +66,10 @@ enum AmbientBackgroundStyle: String, CaseIterable, Identifiable {
         }
     }
 
-    var darkResource: String {
+    var resource: String {
         switch self {
         case .dotted: return "AmbientBackgroundDark"
         case .wavy:   return "AmbientWavyDark"
-        }
-    }
-
-    var lightResource: String {
-        switch self {
-        case .dotted: return "AmbientBackgroundLight"
-        case .wavy:   return "AmbientWavyLight"
         }
     }
 

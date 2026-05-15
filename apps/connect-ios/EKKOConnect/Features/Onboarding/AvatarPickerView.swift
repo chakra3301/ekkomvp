@@ -57,6 +57,6 @@ struct AvatarPickerView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 16)
         }
-        .background(AmbientBackground())
+        .background(AuthDottedBackground())
     }
 }

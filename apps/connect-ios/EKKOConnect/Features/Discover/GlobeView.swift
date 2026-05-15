@@ -8,7 +8,6 @@ import SwiftUI
 /// city, so the user can keep discovering creatives in that area.
 struct GlobeView: View {
     @Environment(AppState.self) private var appState
-    @Environment(\.colorScheme) private var colorScheme
     @State private var pins: [GlobePin] = []
     @State private var isLoading = true
     @State private var selectedPin: GlobePin?
@@ -19,12 +18,11 @@ struct GlobeView: View {
 
     var body: some View {
         ZStack {
-            // Fallback background behind SceneKit for safety on load — matches
-            // the palette so there's no flash of the opposite scheme's color.
-            (colorScheme == .dark ? Color.black : Color(red: 0.98, green: 0.98, blue: 1.0))
+            // Fallback background behind SceneKit for safety on load.
+            Color.black
                 .ignoresSafeArea()
 
-            GlobeSceneView(pins: pins, scheme: colorScheme) { pin, zoom in
+            GlobeSceneView(pins: pins, scheme: .dark) { pin, zoom in
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                     selectedPin = pin
                     selectedZoom = zoom
@@ -34,13 +32,8 @@ struct GlobeView: View {
             .ignoresSafeArea(edges: [.bottom, .horizontal])
 
             // Subtle vignette so pins on the silhouette edges don't wash out.
-            // Dark-mode darkens the rim; light-mode lightens it — same intent,
-            // opposite direction.
             RadialGradient(
-                colors: [
-                    .clear,
-                    (colorScheme == .dark ? Color.black : Color.white).opacity(0.55)
-                ],
+                colors: [.clear, Color.black.opacity(0.55)],
                 center: .center,
                 startRadius: 180,
                 endRadius: 520

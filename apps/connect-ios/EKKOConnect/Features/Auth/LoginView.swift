@@ -132,6 +132,8 @@ struct LoginView: View {
             .padding(.horizontal, 24)
             .padding(.bottom, 24)
         }
+        .scrollContentBackground(.hidden)
+        .background { AuthDottedBackground() }
         .navigationBarHidden(true)
         // OTP path: existing email → send code, navigate to entry screen.
         .navigationDestination(item: $pendingOTPEmail) { email in
