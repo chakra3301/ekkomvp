@@ -2,11 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "EKKO Connect",
-    short_name: "Connect",
-    description:
-      "Find your creative match. Discover collaborators, clients, and creatives.",
-    start_url: "/discover",
+    name: "EKKO",
+    short_name: "EKKO",
+    description: "Invite-only by design. Built for taste, not noise.",
+    start_url: "/",
     display: "standalone",
     background_color: "#f5f5f5",
     theme_color: "#0080FF",

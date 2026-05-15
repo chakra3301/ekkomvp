@@ -1,47 +1,16 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-const protectedRoutes = [
-  "/discover",
-  "/profile",
-  "/matches",
-  "/likes",
-  "/settings",
-  "/browse",
-];
-
-const authRoutes = ["/login", "/register"];
-
+// apps/connect is the public surface (landing, /apply, /invite, /admin)
+// + the API backend for the native iOS app. There is no longer any
+// in-browser app UI to gate — the (main) and (auth) route groups were
+// removed when the native iOS app replaced the Capacitor web shell.
+//
+// We still call updateSession so the admin route's tRPC calls can read
+// the Supabase cookie. /admin enforces ADMIN role inside the procedure
+// (see packages/api/src/trpc.ts), so route-level gating isn't needed.
 export async function middleware(request: NextRequest) {
-  const { response, user } = await updateSession(request);
-  const { pathname } = request.nextUrl;
-
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
-
-  if (isProtectedRoute && !user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
-  }
-
-  // Authenticated users on auth pages → send to discover
-  if (isAuthRoute && user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/discover";
-    return NextResponse.redirect(url);
-  }
-
-  // Authenticated users on root → send to discover
-  if (pathname === "/" && user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/discover";
-    return NextResponse.redirect(url);
-  }
-
+  const { response } = await updateSession(request);
   return response;
 }
 
