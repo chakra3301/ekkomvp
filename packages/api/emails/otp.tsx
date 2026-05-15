@@ -11,7 +11,16 @@ const OTP_PLACEHOLDER = "__OTP_CODE__";
 
 export default function OtpEmail() {
   return (
-    <EmailShell preview="Your EKKO sign-in code.">
+    <EmailShell
+      preview="Your EKKO sign-in code."
+      footer={
+        <>
+          EKKO IS INVITE-ONLY BY DESIGN.
+          <br />
+          YOU REQUESTED THIS CODE TO SIGN IN. DIDN&apos;T REQUEST IT? IGNORE THIS EMAIL.
+        </>
+      }
+    >
       <Section style={{ ...glass, padding: 28, textAlign: "center" }}>
         <Text
           style={{

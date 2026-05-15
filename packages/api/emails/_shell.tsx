@@ -46,12 +46,25 @@ const glass: React.CSSProperties = {
 
 export const emailTokens = { colors, fontStack, ASSET_BASE, glass, dottedBg };
 
+// Default footer applies to application-response emails (approved /
+// waitlisted) where the recipient *did* submit a form. OTP and other
+// templates that go to existing members should pass their own.
+const DEFAULT_FOOTER = (
+  <>
+    EKKO IS INVITE-ONLY BY DESIGN.
+    <br />
+    YOU&apos;RE GETTING THIS BECAUSE YOU APPLIED AT EKKOCONNECT.APP/APPLY.
+  </>
+);
+
 export function EmailShell({
   preview,
   children,
+  footer = DEFAULT_FOOTER,
 }: {
   preview: string;
   children: React.ReactNode;
+  footer?: React.ReactNode;
 }) {
   return (
     <Html lang="en">
@@ -107,9 +120,7 @@ export function EmailShell({
                 letterSpacing: 0.5,
               }}
             >
-              EKKO IS INVITE-ONLY BY DESIGN.
-              <br />
-              YOU&apos;RE GETTING THIS BECAUSE YOU APPLIED AT EKKOCONNECT.APP/APPLY.
+              {footer}
             </Text>
           </Section>
         </Container>
