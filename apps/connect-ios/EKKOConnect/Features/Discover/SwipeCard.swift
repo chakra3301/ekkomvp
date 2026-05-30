@@ -164,27 +164,67 @@ struct SwipeCard: View {
     @ViewBuilder
     private var heroImage: some View {
         ZStack {
-            // Opaque branded base — drawn under the photo so a card is never
-            // see-through while its image loads. Without it, a loading card
-            // reveals the card stacked behind it and both name overlays bleed
-            // through, reading as "names stacked on top of each other."
+            // Opaque branded base — drawn under the media so a card is never
+            // see-through while it loads. Without it, a loading card reveals
+            // the card stacked behind it and both name overlays bleed through,
+            // reading as "names stacked on top of each other."
             cardPlaceholder
 
-            if let slot = featuredSlot, let url = URL(string: slot.url) {
-                KFImage(url)
-                    .resizable()
-                    .fade(duration: 0.3)   // crossfade in once decoded, no hard pop
-                    .scaledToFill()
+            if let slot = featuredSlot {
+                heroMedia(for: slot)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .clipped()
             }
         }
     }
 
-    /// Fully opaque placeholder shown while the photo loads (and as the
-    /// no-image fallback). The opaque `EKKOTheme.background` base guarantees
-    /// the card hides whatever sits behind it in the deck.
-    private var cardPlaceholder: some View {
+    /// Renders the featured slot by media type so the deck card matches the
+    /// profile's real hero — not just photos. Video autoplays muted+looping
+    /// (a passive AVPlayerLayer that doesn't fight the swipe drag). The live
+    /// 3D viewer is intentionally NOT used here: it's a gesture-grabbing,
+    /// heavyweight WKWebView, so the collapsed card shows a static poster and
+    /// the interactive model renders when the card is expanded. Audio is the
+    /// same — its tap-to-play control would fight tap-to-expand, so it gets a
+    /// poster too.
+    @ViewBuilder
+    private func heroMedia(for slot: MediaSlot) -> some View {
+        if slot.isVideo {
+            CoverVideoPlayerView(urlString: slot.url)
+        } else if slot.isModel {
+            posterHero(coverUrl: slot.coverUrl, glyph: "cube.transparent")
+        } else if slot.isAudio {
+            posterHero(coverUrl: slot.coverUrl, glyph: "waveform")
+        } else if let url = URL(string: slot.url) {
+            KFImage(url)
+                .resizable()
+                .fade(duration: 0.3)   // crossfade in once decoded, no hard pop
+                .scaledToFill()
+        }
+    }
+
+    /// Static hero for 3D / audio slots: the upload's cover image when one
+    /// exists, otherwise a branded glyph over the opaque base so the card
+    /// reads as intentional rather than empty.
+    @ViewBuilder
+    private func posterHero(coverUrl: String?, glyph: String) -> some View {
+        if let coverUrl, let url = URL(string: coverUrl) {
+            KFImage(url)
+                .resizable()
+                .fade(duration: 0.3)
+                .scaledToFill()
+        } else {
+            ZStack {
+                placeholderBase   // opaque — masks the initial-letter placeholder behind it
+                Image(systemName: glyph)
+                    .font(.system(size: 60, weight: .light))
+                    .foregroundStyle(.white.opacity(0.5))
+            }
+        }
+    }
+
+    /// Opaque dark base + accent tint. Guarantees a card hides whatever sits
+    /// behind it in the deck.
+    private var placeholderBase: some View {
         ZStack {
             EKKOTheme.background
             LinearGradient(
@@ -192,6 +232,14 @@ struct SwipeCard: View {
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
+        }
+    }
+
+    /// Fully opaque placeholder shown while a photo loads (and as the no-media
+    /// fallback): the branded base plus the person's initial.
+    private var cardPlaceholder: some View {
+        ZStack {
+            placeholderBase
             Text(String(displayName.prefix(1)))
                 .font(.system(size: 72, weight: .bold))
                 .foregroundStyle(Color.accentColor.opacity(0.25))

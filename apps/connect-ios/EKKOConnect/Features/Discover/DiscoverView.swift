@@ -303,15 +303,14 @@ struct DiscoverView: View {
                 .aspectRatio(3/4, contentMode: .fit)
                 .overlay {
                     ZStack(alignment: .bottom) {
-                        // Image fills the cell, anything outside is clipped
-                        if let slot = featuredSlot, let url = URL(string: slot.url) {
-                            KFImageView(url: url)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .clipped()
-                        } else {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.15))
-                        }
+                        // Media fills the cell, anything outside is clipped.
+                        // Honors the slot's type so video/3D/audio profiles
+                        // don't render a broken image. Unlike the stack card,
+                        // grid cells never autoplay video (too many on screen)
+                        // — they show the cover image or a media-type glyph.
+                        gridThumb(slot: featuredSlot)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .clipped()
 
                         LinearGradient(
                             colors: [.clear, .black.opacity(0.7)],
@@ -338,6 +337,42 @@ struct DiscoverView: View {
                 .contentShape(RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
+    }
+
+    /// Grid thumbnail honoring the slot's media type. Shows the upload's
+    /// cover image when present, otherwise a media-type glyph over a neutral
+    /// fill — never a broken/empty image for video, 3D, or audio slots.
+    @ViewBuilder
+    private func gridThumb(slot: MediaSlot?) -> some View {
+        if let slot {
+            if slot.isVideo {
+                gridPoster(coverUrl: slot.coverUrl, glyph: "play.rectangle.fill")
+            } else if slot.isModel {
+                gridPoster(coverUrl: slot.coverUrl, glyph: "cube.transparent.fill")
+            } else if slot.isAudio {
+                gridPoster(coverUrl: slot.coverUrl, glyph: "waveform")
+            } else if let url = URL(string: slot.url) {
+                KFImageView(url: url)
+            } else {
+                Rectangle().fill(Color.gray.opacity(0.15))
+            }
+        } else {
+            Rectangle().fill(Color.gray.opacity(0.15))
+        }
+    }
+
+    @ViewBuilder
+    private func gridPoster(coverUrl: String?, glyph: String) -> some View {
+        if let coverUrl, let url = URL(string: coverUrl) {
+            KFImageView(url: url)
+        } else {
+            ZStack {
+                Rectangle().fill(Color.gray.opacity(0.15))
+                Image(systemName: glyph)
+                    .font(.system(size: 30, weight: .light))
+                    .foregroundStyle(.white.opacity(0.45))
+            }
+        }
     }
 
     // MARK: - Globe Mode
