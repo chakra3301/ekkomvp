@@ -163,23 +163,38 @@ struct SwipeCard: View {
 
     @ViewBuilder
     private var heroImage: some View {
-        if let slot = featuredSlot, let url = URL(string: slot.url) {
-            KFImage(url)
-                .resizable()
-                .scaledToFill()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
-        } else {
-            ZStack {
-                LinearGradient(
-                    colors: [Color.accentColor.opacity(0.3), Color.accentColor.opacity(0.1), Color(.systemBackground)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                Text(String(displayName.prefix(1)))
-                    .font(.system(size: 72, weight: .bold))
-                    .foregroundStyle(Color.accentColor.opacity(0.2))
+        ZStack {
+            // Opaque branded base — drawn under the photo so a card is never
+            // see-through while its image loads. Without it, a loading card
+            // reveals the card stacked behind it and both name overlays bleed
+            // through, reading as "names stacked on top of each other."
+            cardPlaceholder
+
+            if let slot = featuredSlot, let url = URL(string: slot.url) {
+                KFImage(url)
+                    .resizable()
+                    .fade(duration: 0.3)   // crossfade in once decoded, no hard pop
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
             }
+        }
+    }
+
+    /// Fully opaque placeholder shown while the photo loads (and as the
+    /// no-image fallback). The opaque `EKKOTheme.background` base guarantees
+    /// the card hides whatever sits behind it in the deck.
+    private var cardPlaceholder: some View {
+        ZStack {
+            EKKOTheme.background
+            LinearGradient(
+                colors: [Color.accentColor.opacity(0.30), Color.accentColor.opacity(0.08), .clear],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            Text(String(displayName.prefix(1)))
+                .font(.system(size: 72, weight: .bold))
+                .foregroundStyle(Color.accentColor.opacity(0.25))
         }
     }
 
