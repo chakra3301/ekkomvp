@@ -159,7 +159,7 @@ export const connectMatchRouter = router({
         if (!input.suppressLikePush) {
           sendPushToUser(input.targetUserId, {
             title: "Ekko Connect",
-            body: "Someone liked your profile ❤️",
+            body: "Someone liked your profile ⚔️",
             url: "/likes",
           }).catch((e) => console.error("[push] like notification failed:", e));
         }
@@ -171,12 +171,12 @@ export const connectMatchRouter = router({
           ]);
           const matchUrl = `/matches/${result.matchId}`;
           sendPushToUser(input.targetUserId, {
-            title: "It's a Match! 🎉",
+            title: "It's a Match! ⚔️",
             body: `You and ${actorProfile?.displayName || "someone"} both liked each other`,
             url: matchUrl,
           }).catch((e) => console.error("[push] match notification failed:", e));
           sendPushToUser(userId, {
-            title: "It's a Match! 🎉",
+            title: "It's a Match! ⚔️",
             body: `You and ${targetProfile?.displayName || "someone"} both liked each other`,
             url: matchUrl,
           }).catch((e) => console.error("[push] match notification failed:", e));
