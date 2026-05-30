@@ -241,16 +241,9 @@ struct LikesView: View {
             }
             .buttonStyle(.plain)
 
-            // Match note
-            if let note = like.matchNote, !note.isEmpty {
-                Text("\"\(note)\"")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .italic()
-                    .lineLimit(2)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-            }
+            // Notes no longer surface here — they're delivered to the
+            // Requests tab as a NOTE inquiry. The Likes card is just the
+            // photo + Pass / Like-back actions.
 
             // Action buttons
             HStack(spacing: 8) {

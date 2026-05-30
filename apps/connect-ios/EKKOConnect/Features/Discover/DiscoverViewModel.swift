@@ -173,12 +173,38 @@ final class DiscoverViewModel {
         await performSwipe(profile: profile, type: type, matchNote: matchNote)
     }
 
-    /// Called from the like note prompt after the user taps Send.
+    /// Called from the like note prompt after the user taps Send. The like is
+    /// registered first (drives match detection / undo), then the note is
+    /// delivered to the recipient's Requests tab as a NOTE inquiry — a message
+    /// — rather than stored on the swipe. The Likes tab no longer shows notes.
     func submitLikeNote(_ note: String?) async {
         guard let profile = pendingLikeProfile else { return }
         pendingLikeUserId = nil
         pendingLikeProfile = nil
-        await performSwipe(profile: profile, type: .LIKE, matchNote: note)
+        await performSwipe(profile: profile, type: .LIKE, matchNote: nil)
+        let trimmed = note?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if !trimmed.isEmpty {
+            await sendNoteInquiry(toUserId: profile.userId, message: trimmed)
+        }
+    }
+
+    /// Delivers a like-note as a NOTE inquiry so it lands in the recipient's
+    /// Requests tab as a message. Best-effort: the like already succeeded, so
+    /// a failure here (content filter, network) shouldn't block the swipe UX.
+    private func sendNoteInquiry(toUserId: String, message: String) async {
+        guard let trpc else { return }
+        do {
+            let _: ConnectInquiry = try await trpc.mutate(
+                "connectInquiry.send",
+                input: SendInquiryInput(
+                    toUserId: toUserId,
+                    type: .NOTE,
+                    payload: .object(["message": .string(message)])
+                )
+            )
+        } catch {
+            // Non-fatal — the like registered; only the note delivery failed.
+        }
     }
 
     /// Called from the like note prompt when the user taps Skip or dismisses.
