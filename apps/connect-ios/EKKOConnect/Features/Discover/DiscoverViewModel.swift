@@ -181,9 +181,13 @@ final class DiscoverViewModel {
         guard let profile = pendingLikeProfile else { return }
         pendingLikeUserId = nil
         pendingLikeProfile = nil
-        await performSwipe(profile: profile, type: .LIKE, matchNote: nil)
         let trimmed = note?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        if !trimmed.isEmpty {
+        let hasNote = !trimmed.isEmpty
+        // Suppress the generic "someone liked you" push when a note rides along
+        // — the note inquiry fires its own, more informative "X sent you a note"
+        // push, so the recipient gets one notification, not two contradictory ones.
+        let liked = await performSwipe(profile: profile, type: .LIKE, matchNote: nil, suppressLikePush: hasNote)
+        if hasNote && liked {
             await sendNoteInquiry(toUserId: profile.userId, message: trimmed)
         }
     }
@@ -216,8 +220,11 @@ final class DiscoverViewModel {
     }
 
     /// Does the actual network call — bypasses the "pending note" gate.
-    private func performSwipe(profile: ConnectProfile, type: SwipeType, matchNote: String?) async {
-        guard let trpc else { return }
+    /// Returns true if the swipe was accepted by the server (used by the
+    /// note flow to decide whether to deliver the note inquiry).
+    @discardableResult
+    private func performSwipe(profile: ConnectProfile, type: SwipeType, matchNote: String?, suppressLikePush: Bool = false) async -> Bool {
+        guard let trpc else { return false }
 
         do {
             let result: SwipeResult = try await trpc.mutate(
@@ -225,7 +232,8 @@ final class DiscoverViewModel {
                 input: SwipeInput(
                     targetUserId: profile.userId,
                     type: type,
-                    matchNote: matchNote?.isEmpty == true ? nil : matchNote
+                    matchNote: matchNote?.isEmpty == true ? nil : matchNote,
+                    suppressLikePush: suppressLikePush
                 )
             )
 
@@ -251,6 +259,7 @@ final class DiscoverViewModel {
                     )
                 }
             }
+            return true
         } catch {
             let msg = error.localizedDescription.lowercased()
             if msg.contains("daily like limit") || msg.contains("rate limit") || msg.contains("too_many_requests") {
@@ -259,6 +268,7 @@ final class DiscoverViewModel {
                 errorMessage = error.localizedDescription
                 appState?.showError("Swipe failed — please try again.")
             }
+            return false
         }
     }
 

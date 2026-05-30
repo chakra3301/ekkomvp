@@ -15,6 +15,10 @@ export const connectMatchRouter = router({
         likedContentType: z.enum(["PHOTO", "VIDEO", "AUDIO", "MODEL", "PROMPT"]).optional(),
         likedContentIndex: z.number().int().min(0).optional(),
         matchNote: z.string().max(CONNECT_LIMITS.MATCH_NOTE_MAX).optional(),
+        // When the client delivers the like-note as a separate NOTE inquiry
+        // (which sends its own push), it sets this so we skip the generic
+        // "someone liked your profile" push and avoid a double notification.
+        suppressLikePush: z.boolean().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -150,11 +154,15 @@ export const connectMatchRouter = router({
 
       // Side effects outside the transaction (non-blocking pushes)
       if (input.type === "LIKE") {
-        sendPushToUser(input.targetUserId, {
-          title: "Ekko Connect",
-          body: "Someone liked your profile ❤️",
-          url: "/likes",
-        }).catch((e) => console.error("[push] like notification failed:", e));
+        // Skip the generic like push when a note is being delivered as its own
+        // inquiry — that fires a richer "X sent you a note" push instead.
+        if (!input.suppressLikePush) {
+          sendPushToUser(input.targetUserId, {
+            title: "Ekko Connect",
+            body: "Someone liked your profile ❤️",
+            url: "/likes",
+          }).catch((e) => console.error("[push] like notification failed:", e));
+        }
 
         if (result.matched) {
           const [actorProfile, targetProfile] = await Promise.all([

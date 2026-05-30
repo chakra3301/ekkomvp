@@ -215,6 +215,9 @@ struct InquiryDetailSheet: View {
     @State private var fetchedProfile: ConnectProfile?
     @State private var isFetchingProfile = false
     @State private var showProfile = false
+    @State private var likeBackState: LikeBackState = .idle
+
+    enum LikeBackState: Equatable { case idle, sending, liked, matched, alreadyLiked }
 
     var body: some View {
         NavigationStack {
@@ -285,20 +288,23 @@ struct InquiryDetailSheet: View {
 
     @ViewBuilder
     private var statusBadge: some View {
-        let (label, color): (String, Color) = {
-            switch inquiry.status {
-            case .PENDING:  return ("PENDING",  .orange)
-            case .ACCEPTED: return ("ACCEPTED", .green)
-            case .DECLINED: return ("DECLINED", .red)
-            }
-        }()
-        Text(label)
+        // Notes aren't accept/decline requests — no status to show.
+        if inquiry.type != .NOTE {
+            let (label, color): (String, Color) = {
+                switch inquiry.status {
+                case .PENDING:  return ("PENDING",  .orange)
+                case .ACCEPTED: return ("ACCEPTED", .green)
+                case .DECLINED: return ("DECLINED", .red)
+                }
+            }()
+            Text(label)
             .font(.system(size: 9, weight: .bold).monospaced())
             .tracking(1.5)
             .foregroundStyle(color)
             .padding(.horizontal, 6)
             .padding(.vertical, 3)
             .background(color.opacity(0.12), in: Capsule())
+        }
     }
 
     @ViewBuilder
@@ -405,51 +411,122 @@ struct InquiryDetailSheet: View {
         .buttonStyle(.plain)
     }
 
+    @ViewBuilder
     private var actions: some View {
         VStack(spacing: 8) {
+            if inquiry.type == .NOTE {
+                // A note rides along with a like — the meaningful response is
+                // to like back (→ match), not accept/decline. Make it one tap.
+                likeBackButton
+                viewProfileButton
+            } else {
+                viewProfileButton
+                decideButtons
+            }
+        }
+    }
+
+    private var viewProfileButton: some View {
+        Button {
+            Task { await fetchAndShowProfile() }
+        } label: {
+            HStack {
+                Image(systemName: "person.crop.circle")
+                Text("View profile")
+            }
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.primary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var decideButtons: some View {
+        HStack(spacing: 8) {
             Button {
-                Task { await fetchAndShowProfile() }
+                onStatusChange?(.DECLINED)
+                dismiss()
             } label: {
-                HStack {
-                    Image(systemName: "person.crop.circle")
-                    Text("View profile")
-                }
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                Text("Decline")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.secondary.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
             }
             .buttonStyle(.plain)
+            .disabled(inquiry.status == .DECLINED)
 
-            HStack(spacing: 8) {
-                Button {
-                    onStatusChange?(.DECLINED)
-                    dismiss()
-                } label: {
-                    Text("Decline")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.primary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.secondary.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
-                }
-                .buttonStyle(.plain)
-                .disabled(inquiry.status == .DECLINED)
+            Button {
+                onStatusChange?(.ACCEPTED)
+                dismiss()
+            } label: {
+                Text("Accept")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.black)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 12))
+            }
+            .buttonStyle(.plain)
+            .disabled(inquiry.status == .ACCEPTED)
+        }
+    }
 
-                Button {
-                    onStatusChange?(.ACCEPTED)
-                    dismiss()
-                } label: {
-                    Text("Accept")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.black)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 12))
+    private var likeBackButton: some View {
+        let (icon, label): (String, String) = {
+            switch likeBackState {
+            case .idle:        return ("heart.fill",            "Like back")
+            case .sending:     return ("",                      "")
+            case .liked:       return ("checkmark",             "Liked back")
+            case .matched:     return ("checkmark.circle.fill", "It's a match!")
+            case .alreadyLiked:return ("checkmark",             "Already liked")
+            }
+        }()
+        return Button {
+            Task { await likeBack() }
+        } label: {
+            HStack(spacing: 6) {
+                if likeBackState == .sending {
+                    ProgressView().tint(.black)
+                } else {
+                    Image(systemName: icon)
+                    Text(label)
                 }
-                .buttonStyle(.plain)
-                .disabled(inquiry.status == .ACCEPTED)
+            }
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.black)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
+        .disabled(likeBackState != .idle)
+    }
+
+    /// Likes the note's sender back. Since the note arrived alongside their
+    /// like, this normally produces an immediate match.
+    private func likeBack() async {
+        likeBackState = .sending
+        do {
+            let result: SwipeResult = try await appState.trpc.mutate(
+                "connectMatch.swipe",
+                input: SwipeInput(targetUserId: inquiry.fromUserId, type: .LIKE, matchNote: nil)
+            )
+            likeBackState = result.matched ? .matched : .liked
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        } catch {
+            let msg = error.localizedDescription.lowercased()
+            if msg.contains("already swiped") {
+                likeBackState = .alreadyLiked
+            } else if msg.contains("daily like limit") || msg.contains("too_many_requests") || msg.contains("rate limit") {
+                likeBackState = .idle
+                appState.showError("Daily like limit reached — upgrade for more.")
+            } else {
+                likeBackState = .idle
+                appState.showError("Couldn't like back — try again.")
             }
         }
     }

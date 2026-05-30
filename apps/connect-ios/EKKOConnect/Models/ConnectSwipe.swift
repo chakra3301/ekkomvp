@@ -21,6 +21,9 @@ struct SwipeInput: Codable {
     var likedContentType: ConnectContentType?
     var likedContentIndex: Int?
     var matchNote: String?
+    /// When true, the server skips the generic "someone liked your profile"
+    /// push (used when a note rides along and sends its own, richer push).
+    var suppressLikePush: Bool?
 }
 
 struct SwipeResult: Codable {
