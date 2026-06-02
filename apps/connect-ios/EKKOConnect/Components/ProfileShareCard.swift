@@ -84,8 +84,8 @@ struct ProfileShareCard: View {
                     .frame(width: size, height: size)
                     .foregroundStyle(
                         green
-                        ? Color(red: 0.0, green: 1.0, blue: 0.32).opacity(0.35)
-                        : Color(red: 1.0, green: 0.08, blue: 0.56).opacity(0.35)
+                        ? EKKOTheme.Neon.green.opacity(0.35)
+                        : EKKOTheme.Neon.pink.opacity(0.35)
                     )
                     .offset(x: x, y: y)
             }
@@ -119,10 +119,10 @@ struct ProfileShareCard: View {
                         if isInfinite {
                             Image(systemName: "infinity")
                                 .font(.system(size: 32, weight: .bold))
-                                .foregroundStyle(Color(red: 0.85, green: 0.0, blue: 1.0))
+                                .foregroundStyle(EKKOTheme.Neon.purple)
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 6)
-                                .background(Color(red: 0.85, green: 0.0, blue: 1.0).opacity(0.18))
+                                .background(EKKOTheme.Neon.purple.opacity(0.18))
                                 .clipShape(Capsule())
                         }
                     }
@@ -150,9 +150,9 @@ struct ProfileShareCard: View {
                     .stroke(
                         LinearGradient(
                             colors: [
-                                Color(red: 0.0, green: 1.0, blue: 0.32).opacity(0.7),
-                                Color(red: 1.0, green: 0.08, blue: 0.56).opacity(0.7),
-                                Color(red: 0.85, green: 0.0, blue: 1.0).opacity(0.7),
+                                EKKOTheme.Neon.green.opacity(0.7),
+                                EKKOTheme.Neon.pink.opacity(0.7),
+                                EKKOTheme.Neon.purple.opacity(0.7),
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -169,7 +169,7 @@ struct ProfileShareCard: View {
                     .offset(x: -120, y: -180)
                     .allowsHitTesting(false)
             }
-            .shadow(color: Color(red: 1.0, green: 0.08, blue: 0.56).opacity(0.4), radius: 40, y: 20)
+            .shadow(color: EKKOTheme.Neon.pink.opacity(0.4), radius: 40, y: 20)
     }
 
     /// Passport-style holographic wordmark stamp. Three compositing layers:

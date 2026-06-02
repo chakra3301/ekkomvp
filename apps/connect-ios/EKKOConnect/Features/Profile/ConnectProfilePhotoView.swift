@@ -112,22 +112,6 @@ struct ConnectProfilePhotoView: View {
         .padding(.bottom, 16)
     }
 
-    private var gmBadge: some View {
-        Text("GM")
-            .font(.caption.bold())
-            .foregroundStyle(.white)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(
-                LinearGradient(
-                    colors: [Color.accentColor, .purple],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .clipShape(Capsule())
-    }
-
     // MARK: - Featured frame (big 3:4)
 
     private var featuredFrame: some View {
@@ -201,7 +185,7 @@ struct ConnectProfilePhotoView: View {
         } else if slot.isVideo {
             CoverVideoPlayerView(urlString: slot.url)
         } else if let url = URL(string: slot.url) {
-            KFImage(url).resizable().scaledToFill()
+            KFImage(url).downsampled(to: CardTarget.fullWidthPhoto).resilient().resizable().scaledToFill()
         }
     }
 

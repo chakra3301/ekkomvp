@@ -139,6 +139,8 @@ struct MediaSlotGrid: View {
                     // back to the gradient + waveform otherwise.
                     if let coverStr = slot.coverUrl, let coverURL = URL(string: coverStr) {
                         KFImage(coverURL)
+                            .downsampled(to: CGSize(width: 240, height: 240))
+                            .resilient(glyph: "waveform")
                             .resizable()
                             .scaledToFill()
                         // Subtle dim so the cover-action button stays legible.
@@ -182,6 +184,8 @@ struct MediaSlotGrid: View {
                     }
             } else if let url = URL(string: slot.url) {
                 KFImage(url)
+                    .downsampled(to: CGSize(width: 240, height: 240))
+                    .resilient()
                     .resizable()
                     .scaledToFill()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

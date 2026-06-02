@@ -47,6 +47,25 @@ targets:
         embed: true
         codeSign: true
 
+  # Unit tests, hosted by the EKKOConnect app so `@testable import EKKOConnect`
+  # resolves the app's internal symbols (models, extensions, pure helpers).
+  # xcodegen sets TEST_HOST + BUNDLE_LOADER from the `- target: EKKOConnect`
+  # dependency below.
+  EKKOConnectTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: EKKOConnectTests
+    dependencies:
+      - target: EKKOConnect
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.ekkoconnect.connect.tests
+        GENERATE_INFOPLIST_FILE: true
+        SWIFT_VERSION: "5.9"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        TARGETED_DEVICE_FAMILY: "1"
+
   # WidgetKit extension that owns the "New match" Live Activity. Shares
   # MatchActivityAttributes with the app target via an explicit source entry
   # so both processes decode the same schema.

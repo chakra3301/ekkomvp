@@ -91,6 +91,16 @@ struct ProfileSetupView: View {
                     .padding(.horizontal, 16)
                 }
 
+                // Inline reason when Next is disabled, so the dimmed button
+                // isn't a silent dead end.
+                if !canProceed, let hint = proceedHint {
+                    Text(hint)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 16)
+                }
+
                 // Navigation — glass bubbles, sized to match the auth flow.
                 // .contentShape(Rectangle()) on each label so the whole pill
                 // is tappable, not just the rendered glyphs.
@@ -171,7 +181,7 @@ struct ProfileSetupView: View {
 
     private var detailsStep: some View {
         VStack(spacing: 16) {
-            FormField(label: "Bio") {
+            FormField(label: "Bio (optional)") {
                 TextEditor(text: $bio)
                     .frame(minHeight: 100)
                     .padding(8)
@@ -185,14 +195,14 @@ struct ProfileSetupView: View {
                     }
             }
 
-            FormField(label: "Headline") {
+            FormField(label: "Headline (optional)") {
                 TextField("e.g. Graphic Designer & Illustrator", text: $headline)
                     .padding(12)
                     .background(.ultraThinMaterial)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
 
-            FormField(label: "What are you looking for?") {
+            FormField(label: "What are you looking for? (optional)") {
                 TextEditor(text: $lookingFor)
                     .frame(minHeight: 80)
                     .padding(8)
@@ -200,7 +210,7 @@ struct ProfileSetupView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
 
-            FormField(label: "Location") {
+            FormField(label: "Location (optional)") {
                 TextField("e.g. Los Angeles, CA", text: $location)
                     .padding(12)
                     .background(.ultraThinMaterial)
@@ -292,12 +302,26 @@ struct ProfileSetupView: View {
         }
     }
 
+    /// Inline reason shown by a disabled Next button so the gate isn't silent.
+    /// nil when the current step has no unmet requirement. Uses the real
+    /// ConnectLimits so the copy stays in sync with `canProceed`.
+    private var proceedHint: String? {
+        switch currentStepName {
+        case "Media":
+            return "Add at least \(ConnectLimits.minMediaSlots) item\(ConnectLimits.minMediaSlots == 1 ? "" : "s") to continue."
+        case "Prompts":
+            return "Answer at least \(ConnectLimits.minPrompts) prompt\(ConnectLimits.minPrompts == 1 ? "" : "s") to continue."
+        default:
+            return nil
+        }
+    }
+
     private var stepDescription: String {
         switch currentStepName {
         case "Template": return "Pick how your profile looks. You can change this anytime — it doesn't affect your data."
         case "Media": return isEditing
             ? "Add up to 6 photos, videos, audio clips, or 3D models. First slot is featured."
-            : "Add at least 2 pieces — photos, videos, audio, or 3D. The first one is featured."
+            : "Add at least one piece — photo, video, audio, or 3D. The first one is featured. (Up to 6.)"
         case "Prompts": return "Answer at least 1 prompt to show your personality and creative interests."
         case "Details": return isEditing
             ? "Add a bio, headline, what you're looking for, and social links."
@@ -370,7 +394,10 @@ struct ProfileSetupView: View {
                     // 409 CONFLICT = profile already exists, use update instead
                     if case .httpError(let code) = error, code == 409 {
                         let _: GenericResponse = try await appState.trpc.mutate("connectProfile.update", input: payload)
-                    } else if case .serverError(let code, _) = error, code == "CONFLICT" {
+                    } else if case .serverError(let code, _) = error, code == "CONFLICT" || code == "HTTP_409" {
+                        // validateResponse synthesizes "HTTP_409" for a 409 body (the
+                        // "CONFLICT" branch never fired), so match both — the create
+                        // raced an existing profile; fall back to update.
                         let _: GenericResponse = try await appState.trpc.mutate("connectProfile.update", input: payload)
                     } else {
                         throw error
@@ -388,6 +415,10 @@ struct ProfileSetupView: View {
             // Refresh AppState so the router advances to MainTabView
             // (when setup was required as a first-run gate).
             await appState.refreshConnectProfile()
+
+            // Confirm the save. ToastHost lives on AppRouter (above this view),
+            // so the toast survives the dismiss below.
+            appState.showSuccess(isEditing ? "Changes saved" : "Profile activated")
 
             // If we were invoked from inside a NavigationStack (edit flow),
             // pop back. When used as the first-run gate, there's nothing to dismiss —

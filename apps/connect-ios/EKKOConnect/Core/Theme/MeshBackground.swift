@@ -4,6 +4,7 @@ import SwiftUI
 /// Provides depth and color so glass morphism elements have something to blur over.
 struct MeshBackground: View {
     @State private var animate = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -34,6 +35,10 @@ struct MeshBackground: View {
             .blur(radius: 60)
         }
         .onAppear {
+            // Respect Reduce Motion: leave the blobs at their static start
+            // positions instead of running a forever drift animation under
+            // (nearly) every screen in the app.
+            guard !reduceMotion else { return }
             withAnimation(
                 .easeInOut(duration: 12)
                 .repeatForever(autoreverses: true)

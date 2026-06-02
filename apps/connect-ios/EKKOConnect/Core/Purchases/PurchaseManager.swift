@@ -64,7 +64,7 @@ final class PurchaseManager {
             // from StoreKit on expiration, cancellation, refund, or a previous
             // sync that failed. If they disagree, push the truth to the server
             // so every tier-gated feature unlocks (or re-locks) immediately.
-            let serverTier = appState?.currentConnectProfile?.connectTier ?? .FREE
+            let serverTier = await MainActor.run { appState?.currentConnectProfile?.connectTier ?? .FREE }
             if (hasInfinite && serverTier != .INFINITE) || (!hasInfinite && serverTier == .INFINITE) {
                 await syncTierWithBackend(hasInfinite ? .INFINITE : .FREE)
             }

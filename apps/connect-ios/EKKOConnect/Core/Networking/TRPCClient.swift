@@ -163,7 +163,10 @@ final class TRPCClient {
     }
 
     /// Recursively searches a JSON structure for an "error.message" / "message" field.
-    private func extractErrorMessage(from json: Any) -> String? {
+    /// `depth` bounds the recursion so a pathologically deep response can't run away.
+    /// Internal (not private) so unit tests can pin the error-shape parsing.
+    func extractErrorMessage(from json: Any, depth: Int = 0) -> String? {
+        guard depth < 6 else { return nil }
         if let dict = json as? [String: Any] {
             // Common tRPC shape: { "error": { "message": "..." } }
             if let error = dict["error"] as? [String: Any],
@@ -182,11 +185,11 @@ final class TRPCClient {
             }
             // Dive into values
             for v in dict.values {
-                if let msg = extractErrorMessage(from: v) { return msg }
+                if let msg = extractErrorMessage(from: v, depth: depth + 1) { return msg }
             }
         } else if let arr = json as? [Any] {
             for v in arr {
-                if let msg = extractErrorMessage(from: v) { return msg }
+                if let msg = extractErrorMessage(from: v, depth: depth + 1) { return msg }
             }
         }
         return nil

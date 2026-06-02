@@ -188,19 +188,25 @@ struct SettingsView: View {
                 } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(connectProfile?.location ?? "Turn On Location")
+                            Text(locating ? "Detecting your location…" : (connectProfile?.location ?? "Turn On Location"))
                                 .font(.subheadline)
                                 .foregroundStyle(.primary)
-                            if connectProfile?.latitude == nil {
+                            if !locating, connectProfile?.latitude == nil {
                                 Text("Required to discover creatives near you")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
                         }
                         Spacer()
-                        Image(systemName: locating ? "arrow.circlepath" : "location.fill")
-                            .font(.caption)
-                            .foregroundStyle(Color.accentColor)
+                        if locating {
+                            ProgressView()
+                                .controlSize(.small)
+                                .tint(Color.accentColor)
+                        } else {
+                            Image(systemName: "location.fill")
+                                .font(.caption)
+                                .foregroundStyle(Color.accentColor)
+                        }
                     }
                 }
                 .buttonStyle(.plain)

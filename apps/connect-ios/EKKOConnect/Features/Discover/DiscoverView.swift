@@ -1,8 +1,10 @@
 import SwiftUI
+import TipKit
 
 struct DiscoverView: View {
     @Environment(AppState.self) private var appState
     @State private var viewModel = DiscoverViewModel()
+    private let swipeDeckTip = SwipeDeckTip()
     @State private var reportTargetUserId: String?
     @State private var showUpgradeSheet = false
     @State private var locating = false
@@ -236,6 +238,7 @@ struct DiscoverView: View {
                         profile: profile,
                         isTop: index == 0,
                         onSwipe: { type in
+                            swipeDeckTip.invalidate(reason: .actionPerformed)
                             if type == .PASS {
                                 // Pass is non-destructive — recycle to bottom of the stack
                                 // so the user can revisit later.
@@ -256,7 +259,14 @@ struct DiscoverView: View {
                         onBlock: {
                             viewModel.removeProfile(userId: profile.userId)
                             Task {
-                                try? await appState.trpc.mutate("block.block", input: ["userId": profile.userId])
+                                do {
+                                    try await appState.trpc.mutate("block.block", input: ["userId": profile.userId])
+                                } catch {
+                                    // The card was optimistically removed; if the block
+                                    // didn't land, tell the user (it reappears on the next
+                                    // fetch) rather than silently implying success.
+                                    appState.showError("Couldn't block — try again.")
+                                }
                             }
                         },
                         onReport: {
@@ -270,6 +280,10 @@ struct DiscoverView: View {
                 }
             }
             .frame(width: geo.size.width, height: geo.size.height)
+            // One-time "swipe to connect" coach mark anchored to the deck
+            // (the whole card stack, not a per-card view) so it's a single
+            // stable attachment. Dismissed on first swipe via invalidate().
+            .popoverTip(swipeDeckTip)
         }
         .animation(.spring(response: 0.3), value: viewModel.canUndo)
     }
@@ -597,7 +611,7 @@ struct DiscoverView: View {
             VStack(spacing: 6) {
                 Text("You've seen everyone nearby")
                     .font(.headline)
-                Text("Here's where to go next.")
+                Text("Nice work — you're all caught up. New creatives show up as they join.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -609,8 +623,8 @@ struct DiscoverView: View {
                     title: "Explore the globe",
                     subtitle: appState.hasInfiniteAccess
                         ? "See creatives worldwide"
-                        : "Unlock with Infinite",
-                    accent: Color(red: 0.85, green: 0.0, blue: 1.0)
+                        : "See creatives worldwide with Infinite",
+                    accent: EKKOTheme.Neon.purple
                 ) {
                     if appState.hasInfiniteAccess {
                         withAnimation(.spring(response: 0.35)) {
@@ -626,7 +640,7 @@ struct DiscoverView: View {
                     icon: "dot.radiowaves.left.and.right",
                     title: "Widen the radius",
                     subtitle: "Currently \(appState.discoveryFilters.maxDistanceMiles) mi → \(min(appState.discoveryFilters.maxDistanceMiles + 50, 500)) mi",
-                    accent: Color(red: 0.0, green: 1.0, blue: 0.32)
+                    accent: EKKOTheme.Neon.green
                 ) {
                     let current = appState.discoveryFilters.maxDistanceMiles
                     guard current < 500 else {
@@ -652,7 +666,7 @@ struct DiscoverView: View {
                         icon: "person.2.badge.plus",
                         title: "Invite a creative",
                         subtitle: "More people, better matches",
-                        accent: Color(red: 1.0, green: 0.08, blue: 0.56)
+                        accent: EKKOTheme.Neon.pink
                     )
                 }
                 .buttonStyle(.plain)
@@ -738,6 +752,8 @@ private struct KFImageView: View {
 
     var body: some View {
         KFImage(url)
+            .downsampled(to: CardTarget.gridThumb)
+            .resilient()
             .resizable()
             .scaledToFill()
     }

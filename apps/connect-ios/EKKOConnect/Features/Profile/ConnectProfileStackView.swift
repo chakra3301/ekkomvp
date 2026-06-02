@@ -105,22 +105,6 @@ struct ConnectProfileStackView: View {
         .padding(.bottom, 18)
     }
 
-    private var gmBadge: some View {
-        Text("GM")
-            .font(.caption.bold())
-            .foregroundStyle(.white)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(
-                LinearGradient(
-                    colors: [Color.accentColor, .purple],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .clipShape(Capsule())
-    }
-
     // MARK: - About
 
     @ViewBuilder
@@ -229,7 +213,7 @@ struct ConnectProfileStackView: View {
         let dragX = isFront ? dragOffset.width : 0
 
         ZStack(alignment: .bottomLeading) {
-            mediaContent(slot: slot)
+            mediaContent(slot: slot, isActive: isFront)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 // Feather the bottom edge so the image dissolves into the
@@ -331,15 +315,17 @@ struct ConnectProfileStackView: View {
     }
 
     @ViewBuilder
-    private func mediaContent(slot: MediaSlot) -> some View {
+    private func mediaContent(slot: MediaSlot, isActive: Bool = true) -> some View {
         if slot.isAudio {
-            CoverAudioPlayerView(urlString: slot.url, coverUrl: slot.coverUrl, controlSize: 64)
+            CoverAudioPlayerView(urlString: slot.url, coverUrl: slot.coverUrl, controlSize: 64, isActive: isActive)
         } else if slot.isModel {
             ModelViewerView(urlString: slot.url)
         } else if slot.isVideo {
-            CoverVideoPlayerView(urlString: slot.url)
+            // Only the front deck card plays; back cards pause + rewind so a
+            // stack of video slots doesn't run several hidden AVPlayers.
+            CoverVideoPlayerView(urlString: slot.url, isActive: isActive)
         } else if let url = URL(string: slot.url) {
-            KFImage(url).resizable().scaledToFill()
+            KFImage(url).downsampled(to: CardTarget.fullBleed).resilient().resizable().scaledToFill()
         } else {
             LinearGradient(
                 colors: [Color.accentColor.opacity(0.4), .black],

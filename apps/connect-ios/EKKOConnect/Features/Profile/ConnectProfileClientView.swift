@@ -94,6 +94,8 @@ struct ConnectProfileClientView: View {
         if let coverUrl = mediaSlots.sorted(by: { $0.sortOrder < $1.sortOrder }).first(where: { !$0.isAudio && !$0.isModel })?.url,
            let url = URL(string: coverUrl) {
             KFImage(url)
+                .downsampled(to: CardTarget.fullBleed)
+                .resilient()
                 .resizable()
                 .scaledToFill()
         } else {

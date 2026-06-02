@@ -186,6 +186,19 @@ struct MatchesView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
+
+            Button {
+                appState.selectedTab = 0
+            } label: {
+                Text("Find someone")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 12)
+                    .background(Color.accentColor)
+                    .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
+            }
+            .padding(.top, 4)
             Spacer()
         }
     }

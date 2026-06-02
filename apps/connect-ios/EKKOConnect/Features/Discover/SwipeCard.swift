@@ -17,6 +17,7 @@ struct SwipeCard: View {
     @State private var activePulse = false
 
     @Environment(AppState.self) private var appState
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private struct PendingSwipeInquiry: Identifiable {
         let id = UUID()
@@ -72,7 +73,7 @@ struct SwipeCard: View {
                 }
             : nil
         )
-        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: offset)
+        .animation(.spring(response: 0.28, dampingFraction: 0.78), value: offset)
         .fullScreenCover(isPresented: $isExpanded) {
             expandedProfile
         }
@@ -87,12 +88,12 @@ struct SwipeCard: View {
         if isTop {
             ZStack {
                 streakLayer(
-                    color: Color(red: 0.0, green: 1.0, blue: 0.32),   // matrix green
+                    color: EKKOTheme.Neon.green,
                     anchor: .trailing,
                     intensity: likeOpacity
                 )
                 streakLayer(
-                    color: Color(red: 1.0, green: 0.08, blue: 0.56),  // neon hot pink
+                    color: EKKOTheme.Neon.pink,
                     anchor: .leading,
                     intensity: passOpacity
                 )
@@ -189,13 +190,19 @@ struct SwipeCard: View {
     @ViewBuilder
     private func heroMedia(for slot: MediaSlot) -> some View {
         if slot.isVideo {
-            CoverVideoPlayerView(urlString: slot.url)
+            // Only the top card's video plays; the covered back card pauses +
+            // rewinds (isActive flips synchronously with the deck, unlike the
+            // back card's deferred onDisappear). When a swipe promotes the back
+            // card to top, isTop becomes true and its video starts.
+            CoverVideoPlayerView(urlString: slot.url, isActive: isTop)
         } else if slot.isModel {
             posterHero(coverUrl: slot.coverUrl, glyph: "cube.transparent")
         } else if slot.isAudio {
             posterHero(coverUrl: slot.coverUrl, glyph: "waveform")
         } else if let url = URL(string: slot.url) {
             KFImage(url)
+                .downsampled(to: CardTarget.fullBleed)
+                .retrying()
                 .resizable()
                 .fade(duration: 0.3)   // crossfade in once decoded, no hard pop
                 .scaledToFill()
@@ -209,6 +216,8 @@ struct SwipeCard: View {
     private func posterHero(coverUrl: String?, glyph: String) -> some View {
         if let coverUrl, let url = URL(string: coverUrl) {
             KFImage(url)
+                .downsampled(to: CardTarget.fullBleed)
+                .retrying()
                 .resizable()
                 .fade(duration: 0.3)
                 .scaledToFill()
@@ -322,11 +331,14 @@ struct SwipeCard: View {
                         .renderingMode(.template)
                         .resizable()
                         .frame(width: 18, height: 18)
-                        .foregroundStyle(Color(red: 0.0, green: 1.0, blue: 0.32))
-                        .shadow(color: Color(red: 0.0, green: 1.0, blue: 0.32).opacity(0.9), radius: 6)
+                        .foregroundStyle(EKKOTheme.Neon.green)
+                        .shadow(color: EKKOTheme.Neon.green.opacity(0.9), radius: 6)
                         .opacity(activePulse ? 1.0 : 0.55)
                         .scaleEffect(activePulse ? 1.0 : 0.85)
                         .onAppear {
+                            // Reduce Motion: show the "active now" star steady
+                            // at full strength instead of pulsing it forever.
+                            guard !reduceMotion else { activePulse = true; return }
                             withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
                                 activePulse = true
                             }
@@ -411,6 +423,7 @@ struct SwipeCard: View {
                     HStack(spacing: 24) {
                         // Pass button
                         Button {
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
                             isExpanded = false
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 onSwipe(.PASS)
@@ -427,6 +440,7 @@ struct SwipeCard: View {
 
                         // Like button
                         Button {
+                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                             isExpanded = false
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 onSwipe(.LIKE)
@@ -497,10 +511,10 @@ struct SwipeCard: View {
             // Swipe right — LIKE
             let generator = UIImpactFeedbackGenerator(style: .medium)
             generator.impactOccurred()
-            withAnimation(.spring(response: 0.3)) {
+            withAnimation(.spring(response: 0.22, dampingFraction: 0.82)) {
                 offset = CGSize(width: 500, height: 0)
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
                 onSwipe(.LIKE)
                 offset = .zero
             }
@@ -508,16 +522,16 @@ struct SwipeCard: View {
             // Swipe left — PASS
             let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
-            withAnimation(.spring(response: 0.3)) {
+            withAnimation(.spring(response: 0.22, dampingFraction: 0.82)) {
                 offset = CGSize(width: -500, height: 0)
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
                 onSwipe(.PASS)
                 offset = .zero
             }
         } else {
             // Snap back
-            withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+            withAnimation(.spring(response: 0.32, dampingFraction: 0.72)) {
                 offset = .zero
             }
         }

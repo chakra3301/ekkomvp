@@ -84,6 +84,7 @@ struct IridescentBadge: View {
     var height: CGFloat = 28
 
     @State private var angle: Double = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Image(variant.imageName)
@@ -124,6 +125,10 @@ struct IridescentBadge: View {
             .shadow(color: variant.glow.opacity(0.55), radius: 6)
             .shadow(color: variant.glow.opacity(0.30), radius: 14)
             .onAppear {
+                // Respect Reduce Motion: the badge still renders its angular
+                // chrome gradient + sheen statically; it just doesn't spin.
+                // Matters because badges can appear many-at-once in feeds.
+                guard !reduceMotion else { return }
                 withAnimation(.linear(duration: 7).repeatForever(autoreverses: false)) {
                     angle = 360
                 }

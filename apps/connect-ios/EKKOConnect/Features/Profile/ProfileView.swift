@@ -154,8 +154,13 @@ struct ProfileView: View {
             // Hero cover (which starts at the very top of the scroll).
             ZStack(alignment: .top) {
                 ScrollView {
-                    templateBody(template, profile: profile)
-                        .padding(.bottom, 24)
+                    VStack(spacing: 16) {
+                        if !isEditMode {
+                            profileStrengthMeter(profile)
+                        }
+                        templateBody(template, profile: profile)
+                    }
+                    .padding(.bottom, 24)
                 }
                 .coordinateSpace(name: "heroScroll")
                 .refreshable {
@@ -532,6 +537,71 @@ struct ProfileView: View {
                     .shadow(color: .black.opacity(0.2), radius: 6, y: 2)
                 }
             }
+        }
+    }
+
+    // MARK: - Profile strength meter (owner, view mode only)
+
+    /// Completeness checks, equally weighted. Meter hides once everything's done.
+    private struct StrengthCheck { let done: Bool; let cta: String }
+
+    private func strengthChecks(_ profile: ConnectProfile) -> [StrengthCheck] {
+        let mediaCount = profile.mediaSlots.count
+        // Count ALL media types — the gate is mediaCount >= 3, and EKKO profiles
+        // are first-class for video/3D/audio, so the CTA mustn't say "photos".
+        let neededMedia = max(0, 3 - mediaCount)
+        return [
+            StrengthCheck(done: (appState.currentProfile?.avatarUrl?.isEmpty == false),
+                          cta: "Add a profile photo so people recognize you"),
+            StrengthCheck(done: (profile.headline?.isEmpty == false),
+                          cta: "Add a headline to say what you do"),
+            StrengthCheck(done: (profile.bio?.isEmpty == false),
+                          cta: "Write a short bio to stand out"),
+            StrengthCheck(done: mediaCount >= 3,
+                          cta: neededMedia == 1 ? "Add 1 more piece of work to boost discoverability"
+                                                : "Add \(max(neededMedia, 1)) more pieces of work to boost discoverability"),
+            StrengthCheck(done: !profile.prompts.isEmpty,
+                          cta: "Answer a prompt to show your personality"),
+        ]
+    }
+
+    @ViewBuilder
+    private func profileStrengthMeter(_ profile: ConnectProfile) -> some View {
+        let checks = strengthChecks(profile)
+        let done = checks.filter { $0.done }.count
+        let fraction = Double(done) / Double(checks.count)
+        if done < checks.count {
+            let nextCTA = checks.first { !$0.done }?.cta ?? ""
+            Button { enterEditMode() } label: {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text("Profile strength")
+                            .font(.subheadline.weight(.semibold))
+                        Spacer()
+                        Text("\(Int(fraction * 100))%")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(Color.accentColor)
+                    }
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Capsule().fill(Color.secondary.opacity(0.2))
+                            Capsule().fill(Color.accentColor)
+                                .frame(width: geo.size.width * fraction)
+                        }
+                    }
+                    .frame(height: 6)
+                    HStack(spacing: 6) {
+                        Image(systemName: "sparkles").font(.caption)
+                        Text(nextCTA).font(.caption).foregroundStyle(.secondary)
+                        Spacer(minLength: 0)
+                        Image(systemName: "chevron.right").font(.caption2).foregroundStyle(.tertiary)
+                    }
+                }
+                .padding(16)
+                .glassCard()
+                .padding(.horizontal, 16)
+            }
+            .buttonStyle(.plain)
         }
     }
 

@@ -19,6 +19,10 @@ struct MatchCelebrationOverlay: View {
     @State private var showContent = false
     @State private var showTeaser = false
     @State private var teaserPulse = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// Delay before the post-match "N others liked you" teaser slides in.
+    private let teaserDelay: TimeInterval = 0.9
 
     private var teaserVisible: Bool {
         onSeeLikes != nil && otherLikesCount > 0
@@ -103,7 +107,7 @@ struct MatchCelebrationOverlay: View {
             generator.notificationOccurred(.success)
 
             // Teaser arrives slightly after the hero animation
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + teaserDelay) {
                 withAnimation(.spring(response: 0.55, dampingFraction: 0.75)) {
                     showTeaser = true
                 }
@@ -123,8 +127,8 @@ struct MatchCelebrationOverlay: View {
                     .renderingMode(.template)
                     .resizable()
                     .frame(width: 26, height: 26)
-                    .foregroundStyle(Color(red: 0.85, green: 0.0, blue: 1.0))
-                    .shadow(color: Color(red: 0.85, green: 0.0, blue: 1.0).opacity(0.9), radius: 10)
+                    .foregroundStyle(EKKOTheme.Neon.purple)
+                    .shadow(color: EKKOTheme.Neon.purple.opacity(0.9), radius: 10)
                     .opacity(teaserPulse ? 1.0 : 0.7)
                     .scaleEffect(teaserPulse ? 1.05 : 0.9)
 
@@ -149,12 +153,13 @@ struct MatchCelebrationOverlay: View {
             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .stroke(Color(red: 0.85, green: 0.0, blue: 1.0).opacity(0.5), lineWidth: 0.8)
+                    .stroke(EKKOTheme.Neon.purple.opacity(0.5), lineWidth: 0.8)
             )
-            .shadow(color: Color(red: 0.85, green: 0.0, blue: 1.0).opacity(0.3), radius: 16, y: 6)
+            .shadow(color: EKKOTheme.Neon.purple.opacity(0.3), radius: 16, y: 6)
         }
         .buttonStyle(.plain)
         .onAppear {
+            guard !reduceMotion else { teaserPulse = true; return }
             withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) {
                 teaserPulse = true
             }

@@ -139,11 +139,24 @@ struct RequestsView: View {
             Text("No requests yet")
                 .font(.headline)
 
-            Text("When someone books a call or applies to a brief, their note will land here.")
+            Text("When someone sends you a note, books a call, or applies to a brief, it'll land here.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
+
+            Button {
+                appState.selectedTab = 0
+            } label: {
+                Text("Start swiping")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 12)
+                    .background(Color.accentColor)
+                    .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
+            }
+            .padding(.top, 4)
             Spacer()
         }
     }
@@ -167,13 +180,24 @@ struct RequestsView: View {
 
     private func markRead(_ inquiry: ConnectInquiry) async {
         guard inquiry.isUnread else { return }
-        if let idx = inquiries.firstIndex(where: { $0.id == inquiry.id }) {
-            inquiries[idx].readAt = Date()
+        guard let idx = inquiries.firstIndex(where: { $0.id == inquiry.id }) else { return }
+        // Optimistically clear the unread dot, but remember the prior value so a
+        // failed server call doesn't silently desync the dot + tab badge.
+        let previousReadAt = inquiries[idx].readAt
+        inquiries[idx].readAt = Date()
+        do {
+            let _: VoidResponse = try await appState.trpc.mutate(
+                "connectInquiry.markAsRead",
+                input: ["inquiryId": inquiry.id]
+            )
+        } catch {
+            if let i = inquiries.firstIndex(where: { $0.id == inquiry.id }) {
+                inquiries[i].readAt = previousReadAt
+            }
+            #if DEBUG
+            print("[Requests] markAsRead failed: \(error)")
+            #endif
         }
-        let _: VoidResponse? = try? await appState.trpc.mutate(
-            "connectInquiry.markAsRead",
-            input: ["inquiryId": inquiry.id]
-        )
         await appState.refreshInquiryUnreadCount()
     }
 
@@ -244,7 +268,7 @@ struct InquiryDetailSheet: View {
                     .navigationTitle(p.user?.profile?.displayName ?? "Profile")
                     .navigationBarTitleDisplayMode(.inline)
                 } else if isFetchingProfile {
-                    ProgressView().padding(.top, 80)
+                    SkeletonProfile()
                 } else {
                     Text("Couldn't load profile.")
                         .foregroundStyle(.secondary)
@@ -536,6 +560,11 @@ struct InquiryDetailSheet: View {
             showProfile = true
             return
         }
+        // Push the destination immediately so the SkeletonProfile renders during
+        // the ~500ms fetch (otherwise the tap looks dead). The destination's
+        // branches resolve skeleton → profile, or → "Couldn't load profile." on
+        // failure, where the toast also fires.
+        showProfile = true
         isFetchingProfile = true
         defer { isFetchingProfile = false }
         do {
@@ -544,7 +573,6 @@ struct InquiryDetailSheet: View {
                 input: inquiry.fromUserId
             )
             fetchedProfile = p
-            showProfile = true
         } catch {
             appState.showLoadError("Couldn't load profile.", error: error)
         }

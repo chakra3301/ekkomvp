@@ -40,6 +40,8 @@ struct InstagramPreview: View {
 
                     if let picUrl = profilePicUrl, let url = absoluteURL(picUrl) {
                         KFImage(url)
+                            .downsampled(to: CGSize(width: 36, height: 36))
+                            .resilient(glyph: "person.crop.circle")
                             .resizable()
                             .scaledToFill()
                             .frame(width: 36, height: 36)
@@ -63,6 +65,8 @@ struct InstagramPreview: View {
                         ForEach(posts) { post in
                             if let url = absoluteURL(post.imageUrl) {
                                 KFImage(url)
+                                    .downsampled(to: CGSize(width: 130, height: 130))
+                                    .resilient()
                                     .resizable()
                                     .scaledToFill()
                                     .aspectRatio(1, contentMode: .fill)

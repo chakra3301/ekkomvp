@@ -141,22 +141,6 @@ struct ConnectProfileTerminalView: View {
         return "\(role) · \(loc)"
     }
 
-    private var gmBadge: some View {
-        Text("GM")
-            .font(.caption.bold())
-            .foregroundStyle(.white)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(
-                LinearGradient(
-                    colors: [Color.accentColor, .purple],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .clipShape(Capsule())
-    }
-
     // MARK: - Stats bar
 
     private var statsBar: some View {

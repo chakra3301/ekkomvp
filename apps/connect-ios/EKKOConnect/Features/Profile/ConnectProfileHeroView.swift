@@ -47,9 +47,6 @@ struct ConnectProfileHeroView: View {
             ZStack(alignment: .bottomLeading) {
                 heroCover
                 ProfileAvatarView(url: avatarUrl, name: displayName, size: avatarSize, isEditing: editActions != nil)
-                    .overlay(
-                        Circle().stroke(Color(.systemBackground), lineWidth: 4)
-                    )
                     .shadow(color: .black.opacity(0.25), radius: 12, y: 4)
                     .padding(.leading, 20)
                     .offset(y: avatarSize / 3) // ~third of the avatar dips below the cover
@@ -285,6 +282,8 @@ struct ConnectProfileHeroView: View {
             CoverVideoPlayerView(urlString: slot.url)
         } else if let url = URL(string: slot.url) {
             KFImage(url)
+                .downsampled(to: CGSize(width: UIScreen.main.bounds.width, height: 440))
+                .resilient()
                 .resizable()
                 .scaledToFill()
         }
@@ -330,24 +329,6 @@ struct ConnectProfileHeroView: View {
                     .foregroundStyle(.secondary)
             }
         }
-    }
-
-    // MARK: - GM Badge
-
-    private var gmBadge: some View {
-        Text("GM")
-            .font(.caption.bold())
-            .foregroundStyle(.white)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(
-                LinearGradient(
-                    colors: [Color.accentColor, .purple],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .clipShape(Capsule())
     }
 
     // MARK: - Stats Row
@@ -412,9 +393,11 @@ struct ConnectProfileHeroView: View {
                 } else if slot.isModel {
                     ModelViewerView(urlString: slot.url)
                 } else if slot.isVideo {
-                    CoverVideoPlayerView(urlString: slot.url)
+                    // Secondary rail (the hero cover plays separately) — don't
+                    // spin up a live AVPlayer per rail item; show a paused poster.
+                    CoverVideoPlayerView(urlString: slot.url, isActive: false)
                 } else if let url = URL(string: slot.url) {
-                    KFImage(url).resizable().scaledToFill()
+                    KFImage(url).downsampled(to: CGSize(width: 180, height: 220)).resilient().resizable().scaledToFill()
                 }
             }
             .frame(width: 180, height: 220)
@@ -576,12 +559,20 @@ struct ConnectProfileHeroView: View {
 
 struct CoverVideoPlayerView: View {
     let urlString: String
+    /// When false, the player pauses and rewinds to zero even though the view
+    /// stays mounted (a covered deck card, an off-screen rail item). Defaults
+    /// true so every existing call site is unchanged.
+    var isActive: Bool = true
     @State private var player: AVPlayer?
     @State private var loopObserver: NSObjectProtocol?
 
     var body: some View {
-        CoverVideoPlayerRepresentable(player: player)
+        CoverVideoPlayerRepresentable(player: player, isActive: isActive)
             .onAppear { setupAndPlay() }
+            .onChange(of: isActive) { _, active in
+                if active { player?.play() }
+                else { player?.pause(); player?.seek(to: .zero) }
+            }
             .onDisappear {
                 player?.pause()
                 if let loopObserver {
@@ -593,7 +584,7 @@ struct CoverVideoPlayerView: View {
 
     private func setupAndPlay() {
         if let existing = player {
-            existing.play()
+            if isActive { existing.play() }
             return
         }
         guard let url = URL(string: urlString) else { return }
@@ -612,16 +603,29 @@ struct CoverVideoPlayerView: View {
             avPlayer?.play()
         }
 
-        avPlayer.play()
+        if isActive { avPlayer.play() }
     }
 }
 
 private struct CoverVideoPlayerRepresentable: UIViewRepresentable {
     let player: AVPlayer?
+    let isActive: Bool
 
     func makeUIView(context: Context) -> CoverPlayerUIView { CoverPlayerUIView() }
     func updateUIView(_ uiView: CoverPlayerUIView, context: Context) {
         uiView.playerLayer.player = player
+        // SwiftUI re-runs updateUIView whenever `isActive` flips, so this is the
+        // reliable pause hook for a still-mounted card that onDisappear misses.
+        // timeControlStatus guards keep it idempotent vs the loop observer.
+        guard let player else { return }
+        if isActive {
+            if player.timeControlStatus != .playing { player.play() }
+        } else {
+            if player.timeControlStatus != .paused {
+                player.pause()
+                player.seek(to: .zero)
+            }
+        }
     }
 
     final class CoverPlayerUIView: UIView {
@@ -657,6 +661,10 @@ struct CoverAudioPlayerView: View {
     var coverUrl: String? = nil
     /// Diameter of the play/pause glyph (smaller for rail cards).
     var controlSize: CGFloat = 64
+    /// When false, any in-progress playback is force-paused (card covered /
+    /// scrolled off). Audio never auto-plays, so true does NOT auto-resume —
+    /// the user re-taps. Defaults true so existing call sites are unchanged.
+    var isActive: Bool = true
 
     @State private var player: AVPlayer?
     @State private var isPlaying = false
@@ -666,6 +674,8 @@ struct CoverAudioPlayerView: View {
         ZStack {
             if let coverUrl, let coverURL = URL(string: coverUrl) {
                 KFImage(coverURL)
+                    .downsampled(to: CGSize(width: 360, height: 360))
+                    .resilient(glyph: "waveform")
                     .resizable()
                     .scaledToFill()
                 Color.black.opacity(0.35) // dim for control legibility
@@ -691,6 +701,12 @@ struct CoverAudioPlayerView: View {
                     .contentShape(Circle())
             }
             .buttonStyle(.plain)
+        }
+        .onChange(of: isActive) { _, active in
+            if !active {
+                player?.pause()
+                isPlaying = false
+            }
         }
         .onDisappear {
             player?.pause()

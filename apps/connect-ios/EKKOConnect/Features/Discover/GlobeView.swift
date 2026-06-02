@@ -13,6 +13,8 @@ struct GlobeView: View {
     @State private var selectedPin: GlobePin?
     @State private var selectedZoom: GlobeSceneView.ZoomLevel = .close
     @State private var previewOffset: CGFloat = 0
+    /// Downward drag distance (pts) past which the pin preview is dismissed.
+    private let dismissThreshold: CGFloat = 80
 
     var onExpand: (GlobePin, GlobeSceneView.ZoomLevel) -> Void
 
@@ -41,20 +43,33 @@ struct GlobeView: View {
             .allowsHitTesting(false)
             .ignoresSafeArea()
 
-            // Loading indicator (top-trailing)
-            if isLoading {
-                VStack {
-                    HStack {
-                        Spacer()
+            // Loading indicator / manual reload (top-trailing). The globe isn't
+            // a scroll view, so pull-to-refresh can't apply — a reload button is
+            // the recovery affordance if the pin fetch fails.
+            VStack {
+                HStack {
+                    Spacer()
+                    if isLoading {
                         ProgressView()
                             .padding(10)
                             .background(.ultraThinMaterial, in: Capsule())
+                    } else {
+                        Button {
+                            Task { await loadPins() }
+                        } label: {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.primary)
+                                .padding(10)
+                                .background(.ultraThinMaterial, in: Circle())
+                        }
+                        .accessibilityLabel("Reload globe")
                     }
-                    Spacer()
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 4)
+                Spacer()
             }
+            .padding(.horizontal, 16)
+            .padding(.top, 4)
 
             // Mini preview card
             if let pin = selectedPin {
@@ -70,7 +85,7 @@ struct GlobeView: View {
                                     previewOffset = max(0, value.translation.height)
                                 }
                                 .onEnded { value in
-                                    if value.translation.height > 80 {
+                                    if value.translation.height > dismissThreshold {
                                         withAnimation(.easeOut(duration: 0.2)) {
                                             previewOffset = 400
                                         }
@@ -117,7 +132,7 @@ struct GlobeView: View {
                         if pin.isInfinite {
                             Text("∞")
                                 .font(.system(size: 14, weight: .bold))
-                                .foregroundStyle(Color(red: 0.85, green: 0.0, blue: 1.0))
+                                .foregroundStyle(EKKOTheme.Neon.purple)
                         }
                     }
                     Text(pin.city ?? "Somewhere on Earth")
@@ -151,9 +166,9 @@ struct GlobeView: View {
 
     private func accentColor(for pin: GlobePin) -> Color {
         switch pin.tint {
-        case .creative: return Color(red: 0.0,  green: 1.0,  blue: 0.32)  // matrix green
-        case .client:   return Color(red: 1.0,  green: 0.08, blue: 0.56)  // neon hot pink
-        case .infinite: return Color(red: 0.85, green: 0.0,  blue: 1.0)   // electric magenta
+        case .creative: return EKKOTheme.Neon.green   // matrix green
+        case .client:   return EKKOTheme.Neon.pink    // neon hot pink
+        case .infinite: return EKKOTheme.Neon.purple  // electric magenta
         }
     }
 

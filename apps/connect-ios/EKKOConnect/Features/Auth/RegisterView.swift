@@ -19,6 +19,10 @@ struct RegisterView: View {
         prefilledEmail.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     }
 
+    /// The only password rule (mirrors validate()'s `< 8` check). Drives both
+    /// the live hint and the Continue gate so they never disagree.
+    private var isPasswordValid: Bool { password.count >= 8 }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -62,6 +66,17 @@ struct RegisterView: View {
                         .padding(.horizontal, 16)
                         .frame(height: 48)
                         .glassBubble(cornerRadius: 14)
+
+                        // Live requirement hint — flips to a green check once the
+                        // length rule is met, so users aren't rejected only after
+                        // tapping Continue.
+                        HStack(spacing: 6) {
+                            Image(systemName: isPasswordValid ? "checkmark.circle.fill" : "circle")
+                            Text("At least 8 characters")
+                        }
+                        .font(.caption)
+                        .foregroundStyle(isPasswordValid ? EKKOTheme.Neon.green : .white.opacity(0.55))
+                        .animation(.easeInOut(duration: 0.15), value: isPasswordValid)
                     }
 
                     // Terms + Privacy agreement
@@ -112,8 +127,8 @@ struct RegisterView: View {
                     }
                     .buttonStyle(.plain)
                     .glassBubble(cornerRadius: 14)
-                    .disabled(!agreedToTerms || isLoading)
-                    .opacity(!agreedToTerms ? 0.6 : 1)
+                    .disabled(!agreedToTerms || !isPasswordValid || isLoading)
+                    .opacity((!agreedToTerms || !isPasswordValid) ? 0.6 : 1)
                 }
                 // White is the inherited tint here so FormField's labels
                 // (which don't set their own foregroundStyle) pick it up.

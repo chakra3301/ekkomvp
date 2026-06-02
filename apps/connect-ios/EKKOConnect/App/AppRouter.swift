@@ -46,10 +46,17 @@ struct AppRouter: View {
         .animation(.easeInOut(duration: 0.3), value: appState.isLoading)
         .animation(.easeInOut(duration: 0.3), value: appState.isAuthenticated)
         .overlay(alignment: .top) {
+            // Push transient toasts/banners below the persistent offline strip
+            // when offline (e.g. a failed-send toast that co-occurs with it).
             ToastHost()
+                .padding(.top, appState.isOffline ? 56 : 0)
         }
         .overlay(alignment: .top) {
             MessageBannerHost()
+                .padding(.top, appState.isOffline ? 56 : 0)
+        }
+        .overlay(alignment: .top) {
+            OfflineBanner()
         }
     }
 }

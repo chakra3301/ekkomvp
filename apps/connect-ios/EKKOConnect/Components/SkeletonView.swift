@@ -7,6 +7,7 @@ struct SkeletonView: View {
     var cornerRadius: CGFloat = 8
 
     @State private var shimmerOffset: CGFloat = -200
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius)
@@ -23,6 +24,9 @@ struct SkeletonView: View {
                     frame(width: 120)
                     .offset(x: shimmerOffset)
                     .onAppear {
+                        // Reduce Motion: skip the traveling shimmer; the static
+                        // gray fill + "Loading" label still read as a placeholder.
+                        guard !reduceMotion else { return }
                         shimmerOffset = -120
                         withAnimation(
                             .linear(duration: 1.2)

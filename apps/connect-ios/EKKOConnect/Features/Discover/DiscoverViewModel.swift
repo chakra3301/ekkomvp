@@ -1,6 +1,7 @@
 import SwiftUI
 
 /// Manages discover screen state: profile queue, swipe actions, undo, match detection.
+@MainActor
 @Observable
 final class DiscoverViewModel {
     /// The live stack. Top of the stack is `profiles.first`. On PASS we

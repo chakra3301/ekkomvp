@@ -6,6 +6,7 @@ struct ChatView: View {
     let matchId: String
     @Environment(AppState.self) private var appState
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var messages: [ConnectMessage] = []
     @State private var messageText = ""
@@ -82,6 +83,7 @@ struct ChatView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                 }
+                .refreshable { await reloadMessages() }
                 .onChange(of: messages.count) { _, _ in
                     if let last = messages.last {
                         withAnimation {
@@ -215,6 +217,8 @@ struct ChatView: View {
                 // Image message
                 else if let imageUrl = msg.imageUrl, let url = URL(string: imageUrl) {
                     KFImage(url)
+                        .downsampled(to: CGSize(width: 192, height: 144))
+                        .resilient()
                         .resizable()
                         .scaledToFill()
                         .frame(width: 192, height: 144)
@@ -257,6 +261,15 @@ struct ChatView: View {
                     }
                 }
             }
+            .contextMenu {
+                Section(msg.createdAt.exactStamp) {
+                    Button {
+                        UIPasteboard.general.string = msg.createdAt.exactStamp
+                    } label: {
+                        Label("Copy Time", systemImage: "clock")
+                    }
+                }
+            }
 
             if !isMine { Spacer(minLength: 60) }
         }
@@ -273,9 +286,11 @@ struct ChatView: View {
                         .frame(width: 6, height: 6)
                         .offset(y: typingBounceOffset(index: i))
                         .animation(
-                            .easeInOut(duration: 0.4)
-                            .repeatForever()
-                            .delay(Double(i) * 0.15),
+                            reduceMotion
+                                ? nil
+                                : .easeInOut(duration: 0.4)
+                                    .repeatForever()
+                                    .delay(Double(i) * 0.15),
                             value: isOtherTyping
                         )
                 }
@@ -385,7 +400,7 @@ struct ChatView: View {
                 .fill(.red)
                 .frame(width: 8, height: 8)
                 .opacity(audioRecorder.isRecording ? 1 : 0.3)
-                .animation(.easeInOut(duration: 0.7).repeatForever(), value: audioRecorder.isRecording)
+                .animation(reduceMotion ? nil : .easeInOut(duration: 0.7).repeatForever(), value: audioRecorder.isRecording)
 
             // Live amplitude waveform — newest sample on the right. Bars
             // fallback to a minimum height so silent moments aren't invisible.
@@ -473,6 +488,7 @@ struct ChatView: View {
             try? FileManager.default.removeItem(at: fileURL)
         } catch {
             print("[Voice] Send failed: \(error)")
+            appState.showError("Couldn't send voice message. Try again.")
         }
         isSending = false
     }
@@ -513,7 +529,7 @@ struct ChatView: View {
                         }
                     )
                 } else if sheetIsLoading {
-                    ProgressView().padding(.top, 80)
+                    SkeletonProfile()
                 } else if let other = otherUser {
                     // No Connect profile (or fetch failed) — fall back to
                     // a thin display so the sheet isn't empty.
@@ -622,7 +638,7 @@ struct ChatView: View {
             messages.append(msg)
         } catch {
             messageText = text // restore so the user can retry
-            appState.showError("Couldn't send message. Check your connection.")
+            appState.showError("Message not sent — tap send to retry.")
         }
         isSending = false
     }

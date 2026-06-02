@@ -98,6 +98,14 @@ struct ConnectProfileHireView: View {
                                 IridescentBadge(variant: .oa, height: 24)
                             } else if isAdmin {
                                 IridescentBadge(variant: .gm, height: 24)
+                            } else if connectTier == .INFINITE {
+                                Image(systemName: "infinity")
+                                    .font(.callout.weight(.semibold))
+                                    .foregroundStyle(.tint)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.accentColor.opacity(0.12))
+                                    .clipShape(Capsule())
                             }
                         }
                         Text(metaLine)

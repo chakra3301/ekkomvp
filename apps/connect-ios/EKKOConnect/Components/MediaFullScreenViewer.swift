@@ -117,6 +117,8 @@ struct MediaFullScreenViewer: View {
             AutoplayFullscreenVideoPlayer(urlString: slot.url)
         } else if let url = URL(string: slot.url) {
             KFImage(url)
+                .downsampled(to: CardTarget.fullScreen)
+                .resilient()
                 .resizable()
                 .scaledToFit()
                 .scaleEffect(photoZoomed ? 1.6 : 1.0)

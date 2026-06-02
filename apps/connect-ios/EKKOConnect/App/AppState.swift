@@ -3,6 +3,7 @@ import Supabase
 
 /// Global app state holding auth session, tRPC client, and Supabase client.
 /// Injected into the SwiftUI environment via `.environment(appState)`.
+@MainActor
 @Observable
 final class AppState {
     // MARK: - Supabase
@@ -12,6 +13,10 @@ final class AppState {
     // MARK: - Networking
 
     let trpc: TRPCClient
+
+    /// App-wide connectivity watcher. Started in init, lives for the app's
+    /// lifetime, writes `isOffline` on the main actor.
+    let networkMonitor: NetworkMonitor
 
     // MARK: - Auth State
 
@@ -90,6 +95,12 @@ final class AppState {
     }
 
     var activeToast: Toast?
+
+    // MARK: - Connectivity
+    /// True while NWPathMonitor reports no usable network path. Drives the
+    /// app-wide OfflineBanner at the AppRouter root. Written ONLY on the main
+    /// actor (NetworkMonitor hops before assigning).
+    var isOffline: Bool = false
 
     func showToast(_ message: String, kind: Toast.Kind = .info) {
         activeToast = Toast(message: message, kind: kind)
@@ -214,6 +225,7 @@ final class AppState {
             fatalError("Config.trpcBaseURL is not a valid URL: \(Config.trpcBaseURL)")
         }
         self.trpc = TRPCClient(baseURL: trpcBaseURL)
+        self.networkMonitor = NetworkMonitor()
 
         // Always get a fresh token from Supabase for each tRPC request
         self.trpc.tokenProvider = {
@@ -221,6 +233,12 @@ final class AppState {
         }
 
         Task { await restoreSession() }
+
+        // App-wide connectivity monitoring. NetworkMonitor hops to the main
+        // actor before each callback, so writing isOffline here is race-free.
+        networkMonitor.start { [weak self] offline in
+            self?.isOffline = offline
+        }
     }
 
     // MARK: - Session Management

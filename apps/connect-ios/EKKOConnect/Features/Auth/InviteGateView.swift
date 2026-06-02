@@ -120,6 +120,10 @@ struct InviteGateView: View {
                         Task { await redeem() }
                     }
                 }
+
+            Text("8-character code, letters and numbers")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
         }
     }
 

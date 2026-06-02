@@ -4,6 +4,7 @@ import SwiftUI
 struct UpgradeModal: View {
     @Binding var isPresented: Bool
     @Environment(PurchaseManager.self) private var purchaseManager
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var animatePhase: CGFloat = 0
     @State private var showSuccess = false
 
@@ -134,7 +135,9 @@ struct UpgradeModal: View {
             }
         }
         .onAppear {
-            // Kick off the gradient animation
+            // Kick off the gradient animation (static under Reduce Motion —
+            // animatePhase stays 0, so the blobs + button gradient hold still).
+            guard !reduceMotion else { return }
             withAnimation(.linear(duration: 8).repeatForever(autoreverses: false)) {
                 animatePhase = 1
             }
@@ -165,7 +168,7 @@ struct UpgradeModal: View {
 
             RadialGradient(
                 colors: [
-                    Color(red: 0.85, green: 0.0, blue: 1.0).opacity(0.55),
+                    EKKOTheme.Neon.purple.opacity(0.55),
                     Color.clear,
                 ],
                 center: .center,
@@ -325,8 +328,8 @@ struct UpgradeModal: View {
                 )
                 .frame(width: size, height: size)
                 .position(x: geo.size.width * x, y: geo.size.height * y)
-                .animation(.easeInOut(duration: 8).repeatForever(autoreverses: true), value: x)
-                .animation(.easeInOut(duration: 8).repeatForever(autoreverses: true), value: y)
+                .animation(reduceMotion ? nil : .easeInOut(duration: 8).repeatForever(autoreverses: true), value: x)
+                .animation(reduceMotion ? nil : .easeInOut(duration: 8).repeatForever(autoreverses: true), value: y)
         }
     }
 

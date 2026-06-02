@@ -145,22 +145,6 @@ struct ConnectProfileEditorialView: View {
         String(format: "%03d", mediaSlots.count)
     }
 
-    private var gmBadge: some View {
-        Text("GM")
-            .font(.caption.bold())
-            .foregroundStyle(.white)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(
-                LinearGradient(
-                    colors: [Color.accentColor, .purple],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .clipShape(Capsule())
-    }
-
     // MARK: - About (full bio rendered in accent color)
 
     private var dropCapAbout: some View {
@@ -279,10 +263,11 @@ struct ConnectProfileEditorialView: View {
                     // Real <model-viewer> — interactive even at small size.
                     ModelViewerView(urlString: slot.url)
                 } else if slot.isVideo {
-                    // Autoplays muted on loop, fills the cell.
-                    CoverVideoPlayerView(urlString: slot.url)
+                    // Only the featured cell (index 0) autoplays; the rest of the
+                    // grid renders paused posters so N AVPlayers don't run at once.
+                    CoverVideoPlayerView(urlString: slot.url, isActive: index == 0)
                 } else if let url = URL(string: slot.url) {
-                    KFImage(url).resizable().scaledToFill()
+                    KFImage(url).downsampled(to: CardTarget.gridThumb).resilient().resizable().scaledToFill()
                 }
             }
             .aspectRatio(1, contentMode: .fill)

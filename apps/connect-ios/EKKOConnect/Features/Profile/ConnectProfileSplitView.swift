@@ -98,7 +98,7 @@ struct ConnectProfileSplitView: View {
         } else if slot.isVideo {
             CoverVideoPlayerView(urlString: slot.url)
         } else if let url = URL(string: slot.url) {
-            KFImage(url).resizable().scaledToFill()
+            KFImage(url).downsampled(to: CardTarget.fullBleed).resilient().resizable().scaledToFill()
         }
     }
 
@@ -118,7 +118,6 @@ struct ConnectProfileSplitView: View {
     private var leftRail: some View {
         VStack(spacing: 12) {
             ProfileAvatarView(url: avatarUrl, name: displayName, size: avatarSize, isEditing: editActions != nil)
-                .overlay(Circle().stroke(Color(.systemBackground), lineWidth: 4))
                 .shadow(color: .black.opacity(0.25), radius: 12, y: 4)
 
             // Vertical handle text — rotated 270° (clockwise reading bottom→top
@@ -243,22 +242,6 @@ struct ConnectProfileSplitView: View {
         }
     }
 
-    private var gmBadge: some View {
-        Text("GM")
-            .font(.caption.bold())
-            .foregroundStyle(.white)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(
-                LinearGradient(
-                    colors: [Color.accentColor, .purple],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .clipShape(Capsule())
-    }
-
     // MARK: - Full-width 3-col work strip
 
     private var workStrip: some View {
@@ -297,9 +280,10 @@ struct ConnectProfileSplitView: View {
                     } else if slot.isModel {
                         ModelViewerView(urlString: slot.url)
                     } else if slot.isVideo {
-                        CoverVideoPlayerView(urlString: slot.url)
+                        // Secondary grid (the cover plays separately) — paused poster.
+                        CoverVideoPlayerView(urlString: slot.url, isActive: false)
                     } else if let url = URL(string: slot.url) {
-                        KFImage(url).resizable().scaledToFill()
+                        KFImage(url).downsampled(to: CardTarget.gridThumb).resilient().resizable().scaledToFill()
                     }
                 }
                 .aspectRatio(1, contentMode: .fill)

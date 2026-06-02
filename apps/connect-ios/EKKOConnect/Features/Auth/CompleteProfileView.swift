@@ -4,7 +4,7 @@ struct CompleteProfileView: View {
     @Environment(AppState.self) private var appState
     @State private var currentStep = 0
     @State private var displayName = ""
-    @State private var dateOfBirth = Date()
+    @State private var dateOfBirth = Calendar.current.date(byAdding: .year, value: -20, to: Date()) ?? Date()
     @State private var role: UserRole? = nil
     @State private var isLoading = false
     @State private var errors: [String: String] = [:]
@@ -204,10 +204,9 @@ struct CompleteProfileView: View {
         if displayName.trimmingCharacters(in: .whitespaces).count < 2 {
             errs["displayName"] = "Name must be at least 2 characters"
         }
-        // Date defaults to today; if the user hasn't actually picked a DOB
-        // they'll fail the age check (age 0) and see "must be at least 13".
-        // Clearer error than the previous "Date of birth is required" gate
-        // that fired silently on the unchanged DatePicker.
+        // DOB defaults to ~20 years ago (a sensible, age-gate-passing default),
+        // so the user isn't shown an error for a field they perceive as filled.
+        // Validation still enforces >= 13 if they pick a too-recent date.
         let age = Calendar.current.dateComponents([.year], from: dateOfBirth, to: Date()).year ?? 0
         if age < 13 {
             errs["dateOfBirth"] = "You must be at least 13 years old"

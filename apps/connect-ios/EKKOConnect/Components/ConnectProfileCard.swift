@@ -354,6 +354,8 @@ struct ConnectProfileCard: View {
             VideoPlayerView(urlString: slot.url)
         } else if let url = URL(string: slot.url) {
             KFImage(url)
+                .downsampled(to: CardTarget.fullBleed)
+                .resilient()
                 .resizable()
                 .scaledToFill()
         }
@@ -436,6 +438,8 @@ struct ConnectProfileCard: View {
             } else if let url = URL(string: slot.url) {
                 // Photo — natural aspect ratio, padded sides, rounded glass container
                 KFImage(url)
+                    .downsampled(to: CardTarget.fullWidthPhoto)
+                    .resilient()
                     .resizable()
                     .scaledToFit()
                     .frame(maxWidth: .infinity)

@@ -33,6 +33,13 @@ struct LikesView: View {
         appState.hasInfiniteAccess
     }
 
+    /// Authoritative total of likes received — a denormalized counter on the
+    /// owner's own ConnectProfile, available pre-unlock (no identities leaked).
+    /// Preferred over `likes.count`, which is capped at the page size.
+    private var likesCount: Int {
+        appState.currentConnectProfile?.likesReceivedCount ?? 0
+    }
+
     struct MatchCelebrationData: Identifiable {
         let id: String
         let displayName: String
@@ -73,6 +80,20 @@ struct LikesView: View {
         .sheet(item: $expandedProfile) { profile in
             expandedProfileSheet(profile)
         }
+        .overlay {
+            // Tapping a card fetches the full profile (~500ms) before the sheet
+            // can present; show a profile skeleton immediately so the tap reads
+            // as responsive instead of dead. Opaque dark base so the grid behind
+            // doesn't bleed through the gray-on-clear skeleton fill.
+            if isLoadingExpanded {
+                ZStack {
+                    EKKOTheme.background.opacity(0.92).ignoresSafeArea()
+                    SkeletonProfile()
+                }
+                .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isLoadingExpanded)
         .overlay {
             if let match = matchData {
                 MatchCelebrationOverlay(
@@ -208,6 +229,8 @@ struct LikesView: View {
                 ZStack(alignment: .bottom) {
                     if let url = heroUrl, let imageURL = URL(string: url) {
                         KFImage(imageURL)
+                            .downsampled(to: CardTarget.gridThumb)
+                            .resilient()
                             .resizable()
                             .scaledToFill()
                             .frame(maxWidth: .infinity)
@@ -286,6 +309,12 @@ struct LikesView: View {
                     .font(.system(size: 36))
                     .foregroundStyle(Color.accentColor)
 
+                if likesCount > 0 {
+                    Text("\(likesCount) \(likesCount == 1 ? "person has" : "people have") liked you")
+                        .font(.headline)
+                        .foregroundStyle(Color.accentColor)
+                }
+
                 Text("See who likes you")
                     .font(.title3.bold())
 
@@ -338,11 +367,24 @@ struct LikesView: View {
             Text("No likes yet")
                 .font(.headline)
 
-            Text("When someone swipes right on your profile, they'll show up here. A strong profile with great photos gets more attention.")
+            Text("When someone likes your profile, they'll show up here. A strong profile that shows your best work gets more attention.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
+
+            Button {
+                appState.selectedTab = 3
+            } label: {
+                Text("Polish your profile")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 12)
+                    .background(Color.accentColor)
+                    .clipShape(RoundedRectangle(cornerRadius: EKKOTheme.buttonRadius))
+            }
+            .padding(.top, 4)
             Spacer()
         }
     }

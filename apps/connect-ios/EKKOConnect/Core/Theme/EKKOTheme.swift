@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 enum EKKOTheme {
     // MARK: - Colors
@@ -6,6 +7,24 @@ enum EKKOTheme {
     static let primary = Color(hex: "#0080FF")
     static let primaryForeground = Color.white
     static let destructive = Color(red: 0.92, green: 0.28, blue: 0.33)
+
+    // MARK: - Neon brand palette
+    //
+    // The three signature neon accents used across the swipe trail, globe pins,
+    // match celebration, and share cards. Centralized so the palette reads as a
+    // deliberate brand rather than loose literals. Values are byte-identical to
+    // the former inline literals — purely a refactor, no visual change. SceneKit
+    // needs UIColor (pin emission/diffuse), so the *UI variants preserve the exact
+    // original UIColor construction; do NOT derive them from the Color tokens.
+    enum Neon {
+        static let green = Color(red: 0.0, green: 1.0, blue: 0.32)   // #00FF52 matrix green
+        static let pink = Color(red: 1.0, green: 0.08, blue: 0.56)   // #FF148F neon hot pink
+        static let purple = Color(red: 0.85, green: 0.0, blue: 1.0)  // #D900FF electric magenta
+
+        static let greenUI = UIColor(red: 0.0, green: 1.0, blue: 0.32, alpha: 1)
+        static let pinkUI = UIColor(red: 1.0, green: 0.08, blue: 0.56, alpha: 1)
+        static let purpleUI = UIColor(red: 0.85, green: 0.0, blue: 1.0, alpha: 1)
+    }
 
     static let background = Color(hue: 220/360, saturation: 0.13, brightness: 0.13)
     static let card = Color.white.opacity(0.08)

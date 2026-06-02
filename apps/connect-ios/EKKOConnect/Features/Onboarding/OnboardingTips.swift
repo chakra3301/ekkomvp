@@ -57,6 +57,17 @@ struct SaveProfileTip: Tip {
     }
 }
 
+/// One-time coach mark on the Discover deck's top card. Independent of the
+/// profile-edit tips — shows on first visit to Discover and is invalidated on
+/// the first swipe. TipKit persists dismissal so it never re-fires.
+struct SwipeDeckTip: Tip {
+    var title: Text { Text("Swipe to connect") }
+    var message: Text? {
+        Text("Swipe right to like, left to pass. Tap a card to see the full profile.")
+    }
+    var image: Image? { Image(systemName: "hand.draw.fill") }
+}
+
 enum OnboardingTipsState {
     private static let seenKey = "ekko-profile-edit-tips-seen"
 

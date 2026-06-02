@@ -90,10 +90,11 @@ struct OTPEntryView: View {
                     let cleaned = newValue.filter(\.isNumber)
                     let clamped = String(cleaned.prefix(maxCodeLength))
                     if clamped != newValue { code = clamped }
-                    // Auto-submit only when the user hits the max length —
-                    // for shorter codes they tap Verify, since we don't know
-                    // exactly how many digits the project is configured for.
-                    if clamped.count == maxCodeLength {
+                    // Auto-submit at the standard 6-digit length (the Supabase
+                    // default, matching the "6-digit code" copy above). The
+                    // Verify button still covers the 7–10 range manually if the
+                    // project's configured OTP length ever drifts longer.
+                    if clamped.count == minCodeLength {
                         Task { await verify() }
                     }
                 }

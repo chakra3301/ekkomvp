@@ -126,22 +126,6 @@ struct ConnectProfileMusicView: View {
         .padding(.bottom, 16)
     }
 
-    private var gmBadge: some View {
-        Text("GM")
-            .font(.caption.bold())
-            .foregroundStyle(.white)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(
-                LinearGradient(
-                    colors: [Color.accentColor, .purple],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .clipShape(Capsule())
-    }
-
     // MARK: - Now playing card
 
     @ViewBuilder
@@ -203,6 +187,8 @@ struct ConnectProfileMusicView: View {
         ZStack {
             if let coverStr = slot.coverUrl, let coverURL = URL(string: coverStr) {
                 KFImage(coverURL)
+                    .downsampled(to: CGSize(width: 84, height: 84))
+                    .resilient(glyph: "waveform")
                     .resizable()
                     .scaledToFill()
             } else {
@@ -231,6 +217,8 @@ struct ConnectProfileMusicView: View {
         ZStack {
             if let coverStr = slot.coverUrl, let coverURL = URL(string: coverStr) {
                 KFImage(coverURL)
+                    .downsampled(to: CGSize(width: 36, height: 36))
+                    .resilient(glyph: "waveform")
                     .resizable()
                     .scaledToFill()
             } else {

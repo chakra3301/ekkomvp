@@ -149,6 +149,10 @@ struct GlobeSceneView: UIViewRepresentable {
         globeRoot.addChildNode(pinContainer)
         context.coordinator.pinContainer = pinContainer
 
+        // Honor Reduce Motion before pins are built (they read this to decide
+        // whether to attach twinkle/breathe actions) and before auto-rotation.
+        context.coordinator.reduceMotion = context.environment.accessibilityReduceMotion
+
         // Idle auto-rotation
         context.coordinator.startAutoRotation()
 
@@ -170,6 +174,7 @@ struct GlobeSceneView: UIViewRepresentable {
 
     func updateUIView(_ uiView: SCNView, context: Context) {
         context.coordinator.onPinTap = onPinTap
+        context.coordinator.reduceMotion = context.environment.accessibilityReduceMotion
         context.coordinator.updatePins(pins)
         context.coordinator.applyPalette(Self.palette(for: scheme), to: uiView)
     }
@@ -485,6 +490,11 @@ struct GlobeSceneView: UIViewRepresentable {
         private var resumeAutoRotateAt: CFTimeInterval = 0
         private var lastFrameTime: CFTimeInterval = 0
 
+        /// Mirrors the SwiftUI environment's Reduce Motion setting. When true we
+        /// suppress the autonomous spin and the per-pin twinkle/breathe pulses
+        /// (the display link still runs so pan-to-rotate keeps working).
+        var reduceMotion = false
+
         /// Zoom state
         private var cameraZ: Float = 6.5
         private var pinchStartZ: Float = 6.5
@@ -541,8 +551,10 @@ struct GlobeSceneView: UIViewRepresentable {
             let dt = lastFrameTime == 0 ? 1.0 / 60.0 : (now - lastFrameTime)
             lastFrameTime = now
 
-            // Auto-rotate when not interacting (after a short idle delay post-gesture)
-            if !isInteracting && now >= resumeAutoRotateAt {
+            // Auto-rotate when not interacting (after a short idle delay post-gesture).
+            // Suppressed under Reduce Motion — the user can still pan manually
+            // (that path applies rotationX/Y below), it just won't spin on its own.
+            if !isInteracting && now >= resumeAutoRotateAt && !reduceMotion {
                 rotationY += Float(dt) * 0.06 // rad/sec — slow planet-like spin
             }
 
@@ -636,7 +648,7 @@ struct GlobeSceneView: UIViewRepresentable {
                 pinNodesById.removeValue(forKey: id)
             }
             for pin in pins where pinNodesById[pin.userId] == nil {
-                let node = Self.makePinNode(pin: pin, globeRadius: GlobeSceneView.globeRadius, pinRadius: GlobeSceneView.pinRadius)
+                let node = Self.makePinNode(pin: pin, globeRadius: GlobeSceneView.globeRadius, pinRadius: GlobeSceneView.pinRadius, reduceMotion: reduceMotion)
                 container.addChildNode(node)
                 pinNodesById[pin.userId] = node
             }
@@ -645,7 +657,7 @@ struct GlobeSceneView: UIViewRepresentable {
         /// Current camera distance from origin — lets SwiftUI read zoom state.
         var currentCameraZ: Float { cameraZ }
 
-        static func makePinNode(pin: GlobePin, globeRadius: CGFloat, pinRadius: CGFloat) -> SCNNode {
+        static func makePinNode(pin: GlobePin, globeRadius: CGFloat, pinRadius: CGFloat, reduceMotion: Bool) -> SCNNode {
             // Position on the sphere surface (slightly above, so pins stand on the skin)
             let r = Float(globeRadius) * 1.004
             let lat = Float(pin.lat) * .pi / 180
@@ -663,9 +675,9 @@ struct GlobeSceneView: UIViewRepresentable {
             // that diffraction-spike star look rather than a pastel blob.
             let color: UIColor
             switch pin.tint {
-            case .creative: color = UIColor(red: 0.0,  green: 1.0, blue: 0.32, alpha: 1)   // matrix green (#00FF52)
-            case .client:   color = UIColor(red: 1.0,  green: 0.08, blue: 0.56, alpha: 1)  // neon hot pink (#FF148F)
-            case .infinite: color = UIColor(red: 0.85, green: 0.0,  blue: 1.0,  alpha: 1)  // electric magenta (#D900FF)
+            case .creative: color = EKKOTheme.Neon.greenUI   // matrix green (#00FF52)
+            case .client:   color = EKKOTheme.Neon.pinkUI    // neon hot pink (#FF148F)
+            case .infinite: color = EKKOTheme.Neon.purpleUI  // electric magenta (#D900FF)
             }
 
             // Tiny solid core — just a bright pinprick so the star sprite has a
@@ -703,28 +715,31 @@ struct GlobeSceneView: UIViewRepresentable {
 
             // Twinkle: stagger start per-pin via userId hash so they don't all
             // blink in sync. Scale + opacity together for a breathing star.
-            let phase = Double(abs(pin.userId.hashValue % 1000)) / 1000.0
-            let twinkle = SCNAction.repeatForever(SCNAction.sequence([
-                SCNAction.group([
-                    SCNAction.scale(to: 1.35, duration: 1.1),
-                    SCNAction.fadeOpacity(to: 1.0, duration: 1.1),
-                ]),
-                SCNAction.group([
-                    SCNAction.scale(to: 0.85, duration: 1.1),
-                    SCNAction.fadeOpacity(to: 0.55, duration: 1.1),
-                ]),
-            ]))
-            starNode.runAction(SCNAction.sequence([
-                SCNAction.wait(duration: phase * 1.5),
-                twinkle,
-            ]))
+            // Skipped under Reduce Motion (pins render steady at full strength).
+            if !reduceMotion {
+                let phase = Double(abs(pin.userId.hashValue % 1000)) / 1000.0
+                let twinkle = SCNAction.repeatForever(SCNAction.sequence([
+                    SCNAction.group([
+                        SCNAction.scale(to: 1.35, duration: 1.1),
+                        SCNAction.fadeOpacity(to: 1.0, duration: 1.1),
+                    ]),
+                    SCNAction.group([
+                        SCNAction.scale(to: 0.85, duration: 1.1),
+                        SCNAction.fadeOpacity(to: 0.55, duration: 1.1),
+                    ]),
+                ]))
+                starNode.runAction(SCNAction.sequence([
+                    SCNAction.wait(duration: phase * 1.5),
+                    twinkle,
+                ]))
 
-            // Core breathes too, but more subtly — just intensity, no scale.
-            let breathe = SCNAction.repeatForever(SCNAction.sequence([
-                SCNAction.fadeOpacity(to: 1.0, duration: 0.9),
-                SCNAction.fadeOpacity(to: 0.7, duration: 0.9),
-            ]))
-            coreNode.runAction(breathe)
+                // Core breathes too, but more subtly — just intensity, no scale.
+                let breathe = SCNAction.repeatForever(SCNAction.sequence([
+                    SCNAction.fadeOpacity(to: 1.0, duration: 0.9),
+                    SCNAction.fadeOpacity(to: 0.7, duration: 0.9),
+                ]))
+                coreNode.runAction(breathe)
+            }
 
             return wrapper
         }

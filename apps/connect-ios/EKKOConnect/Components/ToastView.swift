@@ -129,7 +129,7 @@ struct MessageBannerHost: View {
                     .frame(width: 40, height: 40)
                     .background(
                         LinearGradient(
-                            colors: [Color.accentColor, Color(red: 1.0, green: 0.08, blue: 0.56)],
+                            colors: [Color.accentColor, EKKOTheme.Neon.pink],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
