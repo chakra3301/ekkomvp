@@ -174,7 +174,7 @@
 		06E6159F8DBC428A2811B432 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
 		0C38CF3D54B542DE50F33D2E /* MediaFullScreenViewer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFullScreenViewer.swift; sourceTree = "<group>"; };
 		0C524F663CEC490424290CCB /* ShareCardShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardShared.swift; sourceTree = "<group>"; };
-		0DD96C2014906F1C05C17676 /* LoadingScreen.mp4 */ = {isa = PBXFileReference; path = LoadingScreen.mp4; sourceTree = "<group>"; };
+		0DD96C2014906F1C05C17676 /* LoadingScreen.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = LoadingScreen.mp4; sourceTree = "<group>"; };
 		111182E0860949B7CD2A97E7 /* ProfileSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSetupView.swift; sourceTree = "<group>"; };
 		112188F5EBEFDFFE01282BB2 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		142C43C8AB03C82F981AE9FD /* ConnectProfileHeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileHeroView.swift; sourceTree = "<group>"; };
@@ -185,13 +185,13 @@
 		1B5099770EB5143E66F61661 /* EKKOFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOFont.swift; sourceTree = "<group>"; };
 		20AADCF80B1DAA6A126C0BBE /* EKKOConnectTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = EKKOConnectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		228D601B5509AA4D2A790714 /* JapaneseLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JapaneseLabel.swift; sourceTree = "<group>"; };
-		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		23523C059159557C91BE6D1B /* EKKOConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EKKOConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		23C67C7C1606AEFC752EA3E0 /* EKKOConnectWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOConnectWidgets.swift; sourceTree = "<group>"; };
 		25464A7A6B8484A571408E6D /* DeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkHandler.swift; sourceTree = "<group>"; };
 		26EDBACE2591AD93901171FD /* MediaSlotTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSlotTypeTests.swift; sourceTree = "<group>"; };
 		27814108308CE44D30ABFD97 /* MatchCelebrationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchCelebrationOverlay.swift; sourceTree = "<group>"; };
 		2954B95D97E4A99FE6ADD395 /* ConnectProfileMusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileMusicView.swift; sourceTree = "<group>"; };
-		2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */ = {isa = PBXFileReference; path = coastlines.geojson; sourceTree = "<group>"; };
+		2F54F1FD4BC3CFBEEA536E4E /* coastlines.geojson */ = {isa = PBXFileReference; lastKnownFileType = text; path = coastlines.geojson; sourceTree = "<group>"; };
 		309F82F33D091271B1A0BE30 /* KFImage+Downsample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KFImage+Downsample.swift"; sourceTree = "<group>"; };
 		37599C761D0200DAE7F3FD8C /* CompleteProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteProfileView.swift; sourceTree = "<group>"; };
 		377F577F7B59E7BA3BCC7D45 /* ConnectProfileEditorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileEditorialView.swift; sourceTree = "<group>"; };
@@ -222,7 +222,7 @@
 		7F196972C0FE82EA4A7B9468 /* EKKOConnect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EKKOConnect.entitlements; sourceTree = "<group>"; };
 		7FA796FEFEEF21ACBD9272F1 /* ConnectSwipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSwipe.swift; sourceTree = "<group>"; };
 		80BA77A5E707BF3A24517BFA /* LoadingScreenVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingScreenVideo.swift; sourceTree = "<group>"; };
-		811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		811CAAF7E56C93AA11BC50B8 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		85FE6C07E51E526F3BC4299A /* ConnectProfileCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileCard.swift; sourceTree = "<group>"; };
 		862E3087C1F7485828FE1614 /* IridescentBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IridescentBadge.swift; sourceTree = "<group>"; };
 		871BC70E098C57BEE2436D76 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
@@ -270,9 +270,9 @@
 		CD2EA2BD53985DE45F5B5447 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		CE5E3FA89419F1E6D935732C /* LegalLinks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalLinks.swift; sourceTree = "<group>"; };
 		CE6293A856B21826507BDAAD /* MediaSlotGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSlotGrid.swift; sourceTree = "<group>"; };
-		D08B3118FD262A697877D048 /* Products.storekit */ = {isa = PBXFileReference; path = Products.storekit; sourceTree = "<group>"; };
+		D08B3118FD262A697877D048 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		D0D70B1A8956D3C537DF6621 /* ConnectProfileVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectProfileVideoView.swift; sourceTree = "<group>"; };
-		D28D728C2BBE0AE70774584E /* EKKOConnectWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = EKKOConnectWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		D28D728C2BBE0AE70774584E /* EKKOConnectWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EKKOConnectWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2B61B9994A7B2E2DFB0D5A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D7556E0055DF8FFC25312217 /* ArchesRegularItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = ArchesRegularItalic.ttf; sourceTree = "<group>"; };
 		DD9F5F79C21AB212732A7643 /* PushManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
@@ -289,11 +289,11 @@
 		E9B2983FEC60425BB2002CBB /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		EB9478C8C0DE104FC8483C57 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		F1E9E97572DF4DE816EE020F /* GlobeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobeView.swift; sourceTree = "<group>"; };
-		F3BFE771C7969C50E459F9AD /* AmbientBackgroundDark.mp4 */ = {isa = PBXFileReference; path = AmbientBackgroundDark.mp4; sourceTree = "<group>"; };
+		F3BFE771C7969C50E459F9AD /* AmbientBackgroundDark.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = AmbientBackgroundDark.mp4; sourceTree = "<group>"; };
 		F5E35A587910461E3D00A183 /* EKKOTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOTheme.swift; sourceTree = "<group>"; };
 		F751F506688A2D55E2B49DD6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		FA892215FACB6BF82AA3E680 /* SocialLogos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLogos.swift; sourceTree = "<group>"; };
-		FB205460648CA890E4EB0C1D /* AmbientWavyDark.mp4 */ = {isa = PBXFileReference; path = AmbientWavyDark.mp4; sourceTree = "<group>"; };
+		FB205460648CA890E4EB0C1D /* AmbientWavyDark.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = AmbientWavyDark.mp4; sourceTree = "<group>"; };
 		FB39030676E81329E1BC87B5 /* EKKOConnectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKKOConnectApp.swift; sourceTree = "<group>"; };
 		FCBB43CEC7043E49F7DDA61A /* SwipeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -772,11 +772,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-					FD8336ECB0B238202B2AD9B0 = {
-						DevelopmentTeam = "";
-					};
-				};
 			};
 			buildConfigurationList = 5EE46B4119D061763E04ED6B /* Build configuration list for PBXProject "EKKOConnect" */;
 			developmentRegion = en;
@@ -983,7 +978,7 @@
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -991,7 +986,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.5;
+				MARKETING_VERSION = 2.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = app.ekkoconnect.connect;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
@@ -1122,6 +1117,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnectWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -1130,7 +1126,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.5;
+				MARKETING_VERSION = 2.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = app.ekkoconnect.connect.widgets;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -1166,7 +1162,7 @@
 				CODE_SIGN_ENTITLEMENTS = EKKOConnect/Resources/EKKOConnect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnect/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -1174,7 +1170,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.0.5;
+				MARKETING_VERSION = 2.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = app.ekkoconnect.connect;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
@@ -1186,6 +1182,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = X429L5AGXB;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = EKKOConnectWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -1194,7 +1191,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.5;
+				MARKETING_VERSION = 2.0.6;
 				PRODUCT_BUNDLE_IDENTIFIER = app.ekkoconnect.connect.widgets;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;

@@ -26,7 +26,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.ekkoconnect.connect
-        MARKETING_VERSION: "2.0.5"
+        MARKETING_VERSION: "2.0.6"
         CURRENT_PROJECT_VERSION: "1"
         DEVELOPMENT_TEAM: ""  # set in Xcode → Signing & Capabilities
         INFOPLIST_FILE: EKKOConnect/Resources/Info.plist
@@ -78,7 +78,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.ekkoconnect.connect.widgets
-        MARKETING_VERSION: "2.0.5"
+        MARKETING_VERSION: "2.0.6"
         CURRENT_PROJECT_VERSION: "1"
         INFOPLIST_FILE: EKKOConnectWidgets/Info.plist
         SWIFT_VERSION: "5.9"

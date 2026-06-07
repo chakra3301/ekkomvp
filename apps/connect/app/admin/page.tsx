@@ -10,9 +10,9 @@ export const metadata: Metadata = {
   description: "EKKO admin moderation dashboard",
 };
 
-// Admin dashboard. Authenticated admins only — non-admin or unauthenticated
-// visitors are bounced to the landing page. The native iOS app handles
-// login; there is no web sign-in surface anymore.
+// Admin dashboard. Authenticated admins only. Unauthenticated visitors are sent
+// to the web admin login (/admin/login, email + OTP, admin-only). A signed-in
+// but non-admin user is bounced to the landing page.
 export default async function AdminPage() {
   const supabase = createClient();
   const {
@@ -20,7 +20,7 @@ export default async function AdminPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/");
+    redirect("/admin/login");
   }
 
   const dbUser = await prisma.user.findUnique({
